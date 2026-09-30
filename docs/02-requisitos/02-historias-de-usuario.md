@@ -9,7 +9,7 @@
 
 | Épica | Historias | MVP (Fase 1) |
 |---|---|---|
-| [E01 Ingesta de fuentes](#e01--ingesta-de-fuentes-ros-1) | ROS-16…24 | 16, 17, 21, 22, 23 |
+| [E01 Ingesta de fuentes](#e01--ingesta-de-fuentes-ros-1) | ROS-16…24, ROS-191, ROS-192 | 16, 17, 21, 22, 23 |
 | [E02 Motor de evidencia](#e02--motor-de-evidencia-ros-2) | ROS-25…36 | 25, 26, 27, 28, 29, 33, 36 |
 | [E03 Panorama](#e03--panorama-ros-3) | ROS-37…41 | 37, 38, 39, 40 |
 | [E04 Revisión y validación](#e04--revisión-y-validación-ros-4) | ROS-42…49 | 42, 43, 44, 45, 46, 47, 48 |
@@ -111,6 +111,28 @@ Técnico/Infra · P2 · Could · Fase 3 · L · Medio
 - Conexión de solo lectura configurable.
 - Importa esquema y muestra acotada.
 - Credenciales gestionadas de forma segura.
+
+<a id="ros-191"></a>
+### ROS-191 · Ingerir vistas y procedimientos almacenados
+Funcionalidad · P1 · Should · Fase 2 · M · Medio
+
+*Como* analista, *quiero* cargar las definiciones de vistas y procedimientos almacenados *para* que su SQL aporte evidencia de uso, joins y alias de columnas.
+- Acepta el DDL de vistas y procedimientos (`CREATE VIEW`, `CREATE PROCEDURE`).
+- Extrae columnas referenciadas, joins y alias (`AS nombre_legible`) como evidencia citada.
+- Se muestra como la fuente "Vistas y procedimientos" del Panorama.
+
+> Añadida en CD-003 ([DP-001](../07-registro/02-decisiones-pendientes.md#dp-001)).
+
+<a id="ros-192"></a>
+### ROS-192 · Emparejar etiquetas de la aplicación con columnas
+Funcionalidad · P1 · Should · Fase 2 · M · Alto
+
+*Como* analista, *quiero* cargar las etiquetas de la interfaz de la aplicación heredada (formularios, reportes) *para* que los nombres que ve el usuario final aporten evidencia sobre el significado de las columnas.
+- Acepta un listado de etiquetas con su contexto (pantalla/campo), en CSV o texto.
+- Propone el emparejamiento etiqueta ↔ columna con evidencia citada y peso acotado.
+- Se muestra como la fuente "Etiquetas de aplicación" del Panorama.
+
+> Añadida en CD-003 ([DP-001](../07-registro/02-decisiones-pendientes.md#dp-001)). Candidata al piloto de Jev ([DP-021](../07-registro/02-decisiones-pendientes.md#dp-021)).
 
 ---
 
@@ -811,14 +833,14 @@ Requisito · **P0** · Must · Fase 1 · M · Alto
 
 <a id="ros-94"></a>
 ### ROS-94 · Restringir inicio de sesión a dominios permitidos
-Funcionalidad · P1 · Should · Fase 2 · S · Alto
+Funcionalidad · P1 · Should · **Fase 3** · S · Alto
 
 *Como* admin de empresa, *quiero* que solo los correos de mis dominios permitidos puedan entrar.
 - Valida el dominio del correo contra la allow-list.
 - Permite también los correos personalizados autorizados.
 - Rechazo claro si el dominio no está habilitado.
 
-> Depende de ROS-106 y ROS-108 (Fase 3): inconsistencia de fase [EC-018](../07-registro/01-errores-conocidos.md).
+> Movida de Fase 2 a Fase 3 porque depende de ROS-106 y ROS-108 ([DP-016](../07-registro/02-decisiones-pendientes.md#dp-016), CD-003).
 
 <a id="ros-95"></a>
 ### ROS-95 · Verificación de correo electrónico
@@ -1064,8 +1086,8 @@ Requisito · P3 · Could · Fase 4 · M · Bajo
 | Fase | Historias | Claves |
 |---|---|---|
 | 1 · MVP | 38 | 16, 17, 21, 22, 23, 25, 26, 27, 28, 29, 33, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 50, 51, 52, 54, 55, 74, 75, 78, 81, 84, 89, 90, 91, 92, 93 |
-| 2 | 32 | 18, 19, 30, 31, 32, 34, 35, 41, 49, 53, 56, 57, 58, 59, 60, 63, 64, 65, 66, 76, 82, 83, 85, 86, 88, 94, 95, 96, 97, 99, 100, 101 |
-| 3 | 29 | 20, 24, 61, 62, 67, 68, 69, 70, 77, 79, 80, 87, 98, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117 |
+| 2 | 33 | 18, 19, 30, 31, 32, 34, 35, 41, 49, 53, 56, 57, 58, 59, 60, 63, 64, 65, 66, 76, 82, 83, 85, 86, 88, 95, 96, 97, 99, 100, 101, 191, 192 |
+| 3 | 30 | 20, 24, 61, 62, 67, 68, 69, 70, 77, 79, 80, 87, 94, 98, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117 |
 | 4 | 5 | 71, 72, 73, 118, 119 |
 
 > **Nota sobre Jira:** el campo *Prioridad* nativo de Jira quedó en "Medium" para todas las historias; la prioridad real vive en las etiquetas `P0`–`P3`. Ver [EC-005](../07-registro/01-errores-conocidos.md).

@@ -8,8 +8,6 @@
 
 ```mermaid
 erDiagram
-    accounts_user ||--o{ accounts_auth_session : "tiene"
-    accounts_user ||--o{ socialaccount_socialaccount : "vincula (allauth)"
     accounts_user ||--o{ projects_project : "es propietario"
 
     projects_project ||--o{ sources_source : "contiene"
@@ -37,9 +35,7 @@ erDiagram
 
 | Entidad (tabla) | App | Qué representa | Historias |
 |---|---|---|---|
-| `accounts_user` | accounts | Persona que usa Rosetta (modelo de usuario propio de Django) | ROS-89, 180 |
-| `accounts_auth_session` | accounts | Sesión por dispositivo con refresh token hasheado | ROS-92, 180, 187 |
-| `socialaccount_socialaccount` | allauth | Vínculo usuario ↔ proveedor OAuth (`provider`, `uid`=sub). Tabla de la librería; equivale a "proveedores_vinculados" de ROS-180 | ROS-90, 180 |
+| `accounts_user` | accounts | Persona que usa Rosetta, vinculada a su identidad de Auth0 por `auth0_sub`. Sesiones y proveedores viven en Auth0 ([ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)) | ROS-89, 180 |
 | `projects_project` | projects | Un proyecto = una base de datos del cliente a descifrar | ROS-78, 172 |
 | `sources_source` | sources | Archivo cargado (DDL o muestra) y su estado de procesamiento | ROS-16, 17, 22, 175 |
 | `sources_naming_rule` | sources | Regla de nomenclatura (`IMPTE`→importe); global o del proyecto | ROS-21, 126 |
@@ -106,7 +102,7 @@ stateDiagram-v2
 | `evidence_evidence` | `(column_id)`; `(source_id)`; `(naming_rule_id)` | Ficha; borrado de fuente; recálculo por regla |
 | `evidence_conflict` | `(project_id, status)` | Conflictos abiertos |
 | `review_review_action` | `(column_id, created_at)`; `(project_id, created_at)` | Historial y auditoría |
-| `accounts_auth_session` | único `(refresh_token_hash)`; `(user_id, revoked_at)`; `(family_id)` | Refresh; sesiones activas; revocación por familia |
+| `accounts_user` | único `(auth0_sub)`; único `lower(email)` | Identificación por token; correos únicos |
 
 Todas las FK con `ON DELETE` explícito: `CASCADE` desde `project` hacia todo su contenido; `PROTECT` desde `review_review_action` hacia `accounts_user` (no se borra un usuario con acciones auditadas; se desactiva).
 

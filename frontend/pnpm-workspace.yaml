@@ -1,0 +1,4 @@
+# unrs-resolver (dependencia de eslint-config-next) trae binarios precompilados;
+# no necesita ejecutar su script de instalación.
+allowBuilds:
+  unrs-resolver: false

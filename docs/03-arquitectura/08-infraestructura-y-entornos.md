@@ -38,7 +38,7 @@ Nunca se copian datos de prod a otros entornos (Constitución V).
 
 | Servicio | Imagen | Puerto | Notas |
 |---|---|---|---|
-| `db` | `postgres:16` | 5432 | Volumen `pgdata` |
+| `db` | `postgres:16` | 5433 (host) → 5432 | Volumen `pgdata`. Puerto 5433 en el host para no chocar con un PostgreSQL local |
 | `redis` | `redis:7` | 6379 | |
 | `backend` | build `backend/` | 8000 | `runserver` con recarga |
 | `worker` | build `backend/` | — | `celery -A config worker -l info` |
@@ -56,7 +56,7 @@ make lint        # ruff, mypy, eslint, tsc
 make api-types   # regenera frontend/src/lib/api/schema.d.ts
 ```
 
-OAuth en local: redirect URIs `http://localhost:3000/auth/google/callback` y `…/microsoft/callback` registradas en las apps de desarrollo (ROS-182). Procedimiento paso a paso en el `quickstart.md` de la feature 002.
+Auth0 en local: en la aplicación del tenant de desarrollo, callback `http://localhost:3000/auth/callback`, logout `http://localhost:3000/login` y origen `http://localhost:3000` (ROS-182). Google funciona en local con las claves de desarrollo de Auth0; para staging/producción se cargan credenciales propias de Google y Microsoft en el panel. Paso a paso en el `quickstart.md` de la feature 002.
 
 ## 4. Variables de entorno
 
@@ -69,10 +69,12 @@ OAuth en local: redirect URIs `http://localhost:3000/auth/google/callback` y `�
 | `ALLOWED_HOSTS` | backend | `localhost,backend` | No |
 | `CSRF_TRUSTED_ORIGINS` | backend | `http://localhost:3000` | No |
 | `FRONTEND_URL` | backend | `http://localhost:3000` | No |
-| `JWT_SIGNING_KEY` | backend | — | **Sí** |
-| `JWT_PREVIOUS_SIGNING_KEY` | backend | vacío salvo en rotación | **Sí** |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | backend | — | **Sí** |
-| `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` / `MICROSOFT_TENANT` | backend | `common` | **Sí** (secret) |
+| `AUTH0_DOMAIN` | frontend, backend | `rosetta-dev.us.auth0.com` | No |
+| `AUTH0_AUDIENCE` | frontend, backend | `https://api.rosetta.local` | No |
+| `AUTH0_CLIENT_ID` | frontend | — | No |
+| `AUTH0_CLIENT_SECRET` | frontend | — | **Sí** |
+| `AUTH0_SECRET` | frontend | 32 bytes hex (`openssl rand -hex 32`) | **Sí** |
+| `APP_BASE_URL` | frontend | `http://localhost:3000` | No |
 | `STORAGE_BACKEND` | backend, worker | `local` \| `s3` | No |
 | `AWS_*` / `S3_ENDPOINT_URL` / `S3_BUCKET` | backend, worker | — | **Sí** |
 | `SENTRY_DSN` | backend, frontend | — | Sí |
@@ -115,6 +117,7 @@ Protección de `main`: PR obligatorio, CI verde, 1 revisión aprobada, sin *forc
 
 ## 8. Procedimientos operativos
 
-- **Rotar `JWT_SIGNING_KEY`:** poner la clave actual en `JWT_PREVIOUS_SIGNING_KEY`, nueva clave en `JWT_SIGNING_KEY`, desplegar; tras 15 min vaciar `JWT_PREVIOUS_SIGNING_KEY` y volver a desplegar.
-- **Rotar secretos OAuth:** crear nuevo secreto en la consola del proveedor, actualizar variable, desplegar, revocar el anterior.
+- **Rotar `AUTH0_CLIENT_SECRET`:** rotar en el panel de Auth0, actualizar la variable del frontend, desplegar.
+- **Rotar `AUTH0_SECRET`:** cambiar la variable y desplegar (cierra las sesiones activas).
+- **Rotar secretos de Google/Microsoft:** crear el nuevo secreto en su consola y cargarlo en la conexión de Auth0.
 - **Restaurar backup:** `[PENDIENTE]` se documenta al elegir proveedor.

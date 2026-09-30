@@ -1,6 +1,6 @@
 # ADR-0006 · Autenticación: allauth (OAuth/OIDC + PKCE) + JWT en cookies httpOnly detrás del proxy de Next.js
 
-- **Estado:** Propuesto
+- **Estado:** Reemplazado por [ADR-0007](ADR-0007-autenticacion-auth0.md) (2026-09-30, CD-004)
 - **Fecha:** 2026-09-29
 - **Relacionado:** ROS-89…93, ROS-180…190, RNF-07, RNF-08, [07-seguridad-y-autenticacion.md](../07-seguridad-y-autenticacion.md)
 

@@ -16,6 +16,7 @@
 | [ADR-0003](ADR-0003-trabajo-asincrono-celery-redis.md) | Trabajo asíncrono con Celery + Redis | Propuesto | 2026-09-29 |
 | [ADR-0004](ADR-0004-multitenancy-preparado.md) | Multi-tenant preparado pero no implementado en el MVP | Propuesto | 2026-09-29 |
 | [ADR-0005](ADR-0005-motor-determinista-sin-llm.md) | Motor de evidencia determinista, puro y sin LLM en el MVP | Propuesto | 2026-09-29 |
-| [ADR-0006](ADR-0006-autenticacion-oauth-jwt-cookies.md) | Autenticación: allauth (OAuth/OIDC + PKCE) + JWT en cookies httpOnly detrás del proxy de Next.js | Propuesto | 2026-09-29 |
+| [ADR-0006](ADR-0006-autenticacion-oauth-jwt-cookies.md) | Autenticación: allauth (OAuth/OIDC + PKCE) + JWT en cookies httpOnly detrás del proxy de Next.js | Reemplazado por ADR-0007 | 2026-09-29 |
+| [ADR-0007](ADR-0007-autenticacion-auth0.md) | Autenticación con Auth0 + SDK de Next.js + proxy BFF; Django valida el access token | Aceptado | 2026-09-30 |
 
 > Los ADR *Propuestos* se aceptan (o se cambian) en la Fase 0.5 de preparación, junto con la ratificación de la constitución. ADR-0001 está aceptado porque el stack lo fijó el responsable del proyecto.

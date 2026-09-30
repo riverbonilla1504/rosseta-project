@@ -23,8 +23,7 @@
 
 | Propósito | Librería | Notas |
 |---|---|---|
-| OAuth / cuentas | `django-allauth` (modo *headless*) | Google y Microsoft (OIDC) con PKCE. Ver [07-seguridad-y-autenticacion.md](07-seguridad-y-autenticacion.md) |
-| Tokens de sesión | `djangorestframework-simplejwt` | Access corto + refresh rotado con lista negra; transportados en cookies httpOnly |
+| Validación de tokens de Auth0 | `PyJWT[crypto]` (`PyJWKClient`) | Verifica RS256, `iss`, `aud`, `exp` del access token ([ADR-0007](adr/ADR-0007-autenticacion-auth0.md)) |
 | Parseo de DDL | `sqlglot` | Soporta T-SQL, Oracle, PostgreSQL, MySQL. Elegido en ROS-120 (evaluación registrada en `research.md` de la feature 004) |
 | Perfilado de CSV | `polars` (preferido) o `pandas` | Decisión final en `research.md` de 004; criterio: memoria con archivos de 100 MB |
 | Detección de codificación | `charset-normalizer` | Ya es dependencia transitiva de `requests` |
@@ -39,6 +38,7 @@
 
 | Propósito | Librería | Notas |
 |---|---|---|
+| Autenticación | `@auth0/nextjs-auth0` v4 | Login, callback, logout, sesión cifrada y `getAccessToken()` para el proxy BFF |
 | Datos del servidor / caché | `@tanstack/react-query` 5 | Implementa el "estado compartido" (RN-18) invalidando consultas tras mutaciones |
 | Estado de UI local | `zustand` | Solo estado efímero de UI (ítem seleccionado en la cola, paneles abiertos). Nunca datos de dominio |
 | Cliente API tipado | `openapi-typescript` + `openapi-fetch` | Tipos generados desde el OpenAPI del backend: el contrato se rompe en compilación, no en producción |
@@ -56,15 +56,17 @@ Además de **Django + PostgreSQL + Next.js**, Rosetta necesita estos servicios. 
 | **Redis 7** | **Sí** | MVP (Sprint 1) | Broker de Celery y caché de métricas | Redis local (Docker) / gestionado en la nube | [ADR-0003](adr/ADR-0003-trabajo-asincrono-celery-redis.md) |
 | **Celery worker** | **Sí** | MVP (Sprint 2) | Perfilado de muestras grandes y parseo de DDL sin bloquear la UI (RNF-12) | Proceso aparte con el mismo código del backend | [ADR-0003](adr/ADR-0003-trabajo-asincrono-celery-redis.md) |
 | **Almacenamiento de objetos** | **Sí** (en prod) | MVP | Guardar DDL y CSV subidos | Disco local en dev; S3 / MinIO / equivalente en prod | [DP-015](../07-registro/02-decisiones-pendientes.md) (proveedor) |
-| **Apps OAuth de proveedores** | **Sí** | MVP (Sprint 1) | Inicio de sesión | Google Cloud Console, Microsoft Entra ID. Apple: fuera del MVP | [DP-014](../07-registro/02-decisiones-pendientes.md) |
+| **Auth0** (proveedor de identidad) | **Sí** | MVP (Sprint 1) | Inicio de sesión con Google y Microsoft, sesión, rotación de tokens; en fases 2–3 MFA, SSO y organizaciones | Plan gratis (25.000 MAU, 1 conexión empresarial). MCP oficial para configurar el tenant de desarrollo | [ADR-0007](adr/ADR-0007-autenticacion-auth0.md) |
+| **Apps OAuth de Google y Microsoft** | **Sí** (para producción) | Antes de staging | Credenciales propias que se cargan **en Auth0** (en local bastan las claves de desarrollo de Auth0) | Google Cloud Console, Microsoft Entra ID | [DP-014](../07-registro/02-decisiones-pendientes.md#dp-014) |
 | **Hosting** (backend, frontend, BD) | **Sí** | Fin del MVP | Entorno de staging y producción | Por decidir | [DP-015](../07-registro/02-decisiones-pendientes.md) |
 | **Sentry** (o equivalente) | Recomendado | MVP | Errores de backend y frontend con contexto | Sentry SaaS / self-hosted / GlitchTip | [DP-015](../07-registro/02-decisiones-pendientes.md) |
 | **LLM local** (p. ej. Ollama) | No | Fase 2 | Redacción de descripciones ("redacción con LLM local" del prototipo) | Ollama + modelo abierto / ninguno | [DP-004](../07-registro/02-decisiones-pendientes.md) |
 | **Correo transaccional** | No | Fase 2 | Verificación de correo, recuperación, invitaciones (ROS-95, 96, 109) | SES / Postmark / Resend / SMTP | Se decide al especificar ROS-95 |
 | **Pasarela de pago** | No | Fase 3 | Cobros y suscripciones (ROS-112) | Stripe (sugerido por la historia) / Mercado Pago / otra | Se decide en E15 |
-| **Proveedor de SSO empresarial** | No | Fase 3 | SAML/OIDC de clientes (ROS-102) | allauth SAML / servicio externo | Se decide en E14 Fase 3 |
+| **Jev (TypeSafe AI)** | No | Fase 2 (piloto, si se aprueba) | Evidencia opcional: emparejar documentación/etiquetas con columnas; verificar redacción del LLM | API en la nube (early access) | [DP-021](../07-registro/02-decisiones-pendientes.md#dp-021), [evaluación](evaluaciones/2026-09-30-jev-typesafe-ai.md) |
+| **Proveedor de SSO empresarial** | No | Fase 3 | SAML/OIDC de clientes (ROS-102) | Conexiones empresariales de Auth0 (plan B2B) | Se decide en E14 Fase 3 |
 
-> **Resumen para el MVP:** además de Django, PostgreSQL y Next.js, hay que levantar **Redis + un worker de Celery**, tener **almacenamiento de archivos** (disco en desarrollo, S3 compatible en producción), registrar **apps OAuth en Google y Microsoft**, y elegir **hosting**. Se recomienda **Sentry**. Todo lo demás es de fases posteriores.
+> **Resumen para el MVP:** además de Django, PostgreSQL y Next.js, hay que levantar **Redis + un worker de Celery**, tener **almacenamiento de archivos** (disco en desarrollo, S3 compatible en producción), configurar **Auth0** (con Google y Microsoft), y elegir **hosting**. Se recomienda **Sentry**. Todo lo demás es de fases posteriores.
 
 ## 5. Herramientas de desarrollo y calidad
 
@@ -88,4 +90,4 @@ Estrategia completa: [06-calidad/01-estrategia-de-pruebas.md](../06-calidad/01-e
 - Librerías de componentes UI (MUI, Chakra, shadcn, Ant…) o Tailwind: la UI se construye con Nocturne.
 - SDKs de LLM (OpenAI, Anthropic, Ollama…) antes de la Fase 2.
 - Bases de datos adicionales (Mongo, Elastic…).
-- Servicios de autenticación externos (Auth0, Clerk, Firebase Auth…).
+- Otros servicios de autenticación (Clerk, Firebase Auth…): Auth0 es el elegido ([ADR-0007](adr/ADR-0007-autenticacion-auth0.md)).

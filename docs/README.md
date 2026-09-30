@@ -45,7 +45,7 @@ docs/
 │
 ├── 02-requisitos/                         ← QUÉ debe hacer el sistema
 │   ├── 01-epicas.md                       15 épicas (ROS-1 … ROS-15)
-│   ├── 02-historias-de-usuario.md         104 historias (ROS-16 … ROS-119) con criterios de aceptación
+│   ├── 02-historias-de-usuario.md         106 historias (ROS-16…119, 191, 192) con criterios
 │   ├── 03-tareas-mvp.md                   71 tareas técnicas del MVP (ROS-120 … ROS-190)
 │   ├── 04-reglas-de-negocio.md            Reglas del motor de evidencia, niveles, propagación
 │   └── 05-requisitos-no-funcionales.md    Seguridad, rendimiento, accesibilidad, auditabilidad
@@ -59,7 +59,8 @@ docs/
 │   ├── 06-motor-de-evidencia.md           Algoritmo de puntuación, niveles, conflictos, propagación
 │   ├── 07-seguridad-y-autenticacion.md    OAuth + PKCE, sesiones, aislamiento, cifrado
 │   ├── 08-infraestructura-y-entornos.md   Docker, entornos, CI/CD
-│   └── adr/                               Registro de decisiones de arquitectura (ADR)
+│   ├── adr/                               Registro de decisiones de arquitectura (ADR)
+│   └── evaluaciones/                      Evaluaciones de tecnologías candidatas (p. ej. Jev)
 │
 ├── 04-datos/                              ← LOS DATOS
 │   ├── 01-modelo-de-datos.md              Diagrama entidad-relación
@@ -98,7 +99,7 @@ docs/
 Cuando dos lugares dicen cosas distintas, manda el de arriba:
 
 ```text
-1. Constitución            .specify/memory/constitution.md  (borrador: 00-metodologia/08-constitucion.md)
+1. Constitución            .specify/memory/constitution.md  (v1.0.0)
 2. Documentación           docs/                            ← ESTA CARPETA
 3. Especificaciones        specs/NNN-feature/               (spec.md, plan.md, tasks.md…)
 4. Jira                    proyecto ROS                     (espejo de ejecución)
@@ -124,6 +125,6 @@ Cuando dos lugares dicen cosas distintas, manda el de arriba:
 
 ## Estado de la documentación
 
-- **Versión:** 1.0.0 — creación inicial (2026-09-29).
-- **Fase actual del proyecto:** Fase 0 — documentación. La siguiente fase es la preparación del repositorio para trabajar con specs (ver [01-producto/05-roadmap-y-sprints.md](01-producto/05-roadmap-y-sprints.md)).
+- **Versión:** 1.1.0 — Fase 0.5: Spec Kit, constitución 1.0.0, esqueletos (2026-09-30). Ver [changelog](07-registro/04-changelog.md).
+- **Fase actual del proyecto:** Fase 0.5 — preparación (casi terminada). La siguiente fase es especificar la feature 001 con `/speckit-specify` (ver [01-producto/05-roadmap-y-sprints.md](01-producto/05-roadmap-y-sprints.md)).
 - **Huecos conocidos de esta documentación:** listados en [07-registro/01-errores-conocidos.md](07-registro/01-errores-conocidos.md) y [07-registro/02-decisiones-pendientes.md](07-registro/02-decisiones-pendientes.md). Nada se ha inventado: donde falta información, está marcado como `[PENDIENTE]` o `[NECESITA ACLARACIÓN]`.

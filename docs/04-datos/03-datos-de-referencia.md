@@ -74,10 +74,10 @@ Comprobación: 4.120 + 7.980 + 2.913 + 3.429 = **18.442** ✔.
 | Fuente | Cantidad mostrada | En el MVP |
 |---|---|---|
 | Perfilado de datos | 18.442 (columnas) | Sí (ROS-17) |
-| Catálogos embebidos | 31 tablas | Parcial: contención entre muestras `[DP-001]` |
+| Catálogos embebidos | 31 tablas | Sí: contención entre muestras (DP-001) |
 | Logs de consulta | 5.000 consultas | No (ROS-18, Fase 2) |
-| Vistas y procedimientos | 1.284 objetos | No `[DP-001]` |
-| Etiquetas de aplicación | 2.109 campos | No `[DP-001]` |
+| Vistas y procedimientos | 1.284 objetos | No — Fase 2 ([ROS-191](../02-requisitos/02-historias-de-usuario.md#ros-191)) |
+| Etiquetas de aplicación | 2.109 campos | No — Fase 2 ([ROS-192](../02-requisitos/02-historias-de-usuario.md#ros-192)) |
 | Nombre de columna | peso 0,40 | Sí (ROS-21) |
 
 Texto al pie: "El nombre de la columna es la fuente de menor peso, deliberadamente: 0,40 contra 0,90 de una contención con catálogo."

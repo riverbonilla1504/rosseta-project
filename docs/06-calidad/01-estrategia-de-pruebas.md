@@ -17,7 +17,7 @@
 | **Unitarias — motor** | `evidence_engine`: puntaje, niveles, conflictos, propagación, impacto, plantillas | pytest + **hypothesis** | `backend/tests/engine/` |
 | **Unitarias — backend** | Parseo DDL (sqlglot), perfilador, adaptadores de evidencia, utilidades | pytest | `backend/tests/unit/` |
 | **Integración / API** | Endpoints, services, transacciones, permisos, tareas Celery (modo eager) | pytest-django, `APIClient`, factory_boy, **PostgreSQL 16 real** | `backend/tests/api/` |
-| **Seguridad** | Acceso cruzado, OAuth malicioso, cabeceras, cookies, logs sin PII | pytest | `backend/tests/security/` |
+| **Seguridad** | Acceso cruzado, tokens maliciosos, cabeceras, logs sin PII | pytest | `backend/tests/security/` |
 | **Unitarias — frontend** | Componentes Nocturne, hooks (atajos, sesión), formateo es-CO | Vitest + Testing Library | `frontend/tests/unit/` |
 | **Contrato** | OpenAPI generado = versionado; tipos TS compilan | drf-spectacular, openapi-typescript, `tsc` | CI job `contract` |
 | **E2E** | Flujos de usuario reales contra el stack completo | Playwright + @axe-core/playwright | `frontend/tests/e2e/` |
@@ -38,7 +38,7 @@
    `tools/check_traceability.py` falla si un `FR` de una spec activa no tiene al menos una prueba.
 2. **Nombres que describen comportamiento**: `test_confirm_propagates_to_same_name_and_type`, no `test_confirm_2`.
 3. **Estructura AAA** (preparar, actuar, afirmar); una razón de fallo por prueba.
-4. **Sin mocks de base de datos** (Constitución II). Sí se simulan: proveedores OAuth (respuestas firmadas con claves de prueba), almacenamiento S3 (`moto` o disco), reloj (`time-machine`).
+4. **Sin mocks de base de datos** (Constitución II). Sí se simulan: Auth0 (tokens firmados con claves RSA de prueba y JWKS simulado), almacenamiento S3 (`moto` o disco), reloj (`time-machine`).
 5. **Datos sintéticos** con factory_boy y los fixtures de [03-datos-de-referencia.md](../04-datos/03-datos-de-referencia.md). Prohibidos datos reales.
 6. **Deterministas**: semillas fijas, sin dependencia del orden de ejecución (`pytest-randomly` activado para detectarlo), sin `sleep`.
 7. **Prohibido** desactivar, marcar `skip`/`xfail` o debilitar una prueba para que CI pase sin un error conocido registrado (`EC-NNN`) y aprobación en el PR.
@@ -60,7 +60,7 @@ La cobertura es un mínimo, no el objetivo: un FR sin prueba de comportamiento n
 | Feature | Pruebas que no pueden faltar |
 |---|---|
 | **001 Nocturne** | Snapshot de los 5 `ConfidenceChip`; "HIGH_UNVALIDATED no dice Confirmada"; contraste AA de pares de tokens (script que calcula ratios desde `tokens.css`); foco visible (axe) |
-| **002 OAuth** | Flujo completo con proveedor simulado; `state` inválido → rechazo; redirect URI no permitido → rechazo; código reusado → rechazo; `id_token` con `aud`/`iss` erróneo → rechazo; correo no verificado → rechazo; refresh rota; reuso de refresh → revoca familia; logout invalida; cookies con flags correctos; logs sin tokens/correos |
+| **002 OAuth (Auth0)** | Validación del token en Django con claves RSA de prueba: válido, expirado, `aud`/`iss` erróneos, firma alterada, `alg: none`, `kid` desconocido; alta del usuario en el primer acceso sin duplicar; URL de `/auth/login` con `code_challenge` S256 y `state`; proxy BFF añade Bearer, no expone el token y rechaza mutaciones de otro origen; logout invalida la sesión; cookies con flags correctos; logs sin tokens/correos; E2E de login con proveedor simulado (usuario de prueba del tenant de desarrollo) |
 | **003 Proyectos y núcleo** | CRUD; acceso cruzado 100 % endpoints; UUID en rutas; migraciones desde cero; estado igual tras cerrar/reabrir (RNF-16); CHECK de BD `CONFIRMED ⇔ confirmed_by_action` |
 | **004 Ingesta** | DDL T-SQL/Oracle/Postgres de ejemplo → tablas/columnas/tipos/PK/FK/índices sin pérdida; reimportar idempotente; CSV con `;` y `latin-1`; archivo grande → segundo plano; cabeceras sin coincidencia; eliminar fuente → evidencia retirada y recálculo; regla editada → recálculo; peso de regla > 0,40 rechazado |
 | **005 Motor** | Propiedades (determinismo, monotonía, rango, "solo nombre ≤ 0,40", "nunca CONFIRMED"); 11 casos de MOV0010 con su nivel; RESERV3 = UNKNOWN; conflicto limita nivel; sin cita no supera Hipótesis; desglose suma coherente |

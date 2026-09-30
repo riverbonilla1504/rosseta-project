@@ -13,7 +13,7 @@
 ## 2. Idioma y registro
 
 - **Español** en toda la interfaz; identificadores de esquema tal cual el origen (`MOV0010`).
-- El prototipo usa **voseo rioplatense** ("confirmás", "querés"). Para Rosetta se propone **tuteo neutro** ("confirmas", "quieres") por ser el producto para mercado latinoamericano amplio. `[NECESITA ACLARACIÓN]` [DP-009](../07-registro/02-decisiones-pendientes.md) ([EC-008](../07-registro/01-errores-conocidos.md)).
+- **Tuteo neutro** ("confirmas", "quieres") en toda la interfaz, aunque el prototipo usa voseo (decidido en [DP-009](../07-registro/02-decisiones-pendientes.md#dp-009)).
 - Formato de números **es-CO**: `18.442`, `0,91`, `84.500`, `4,1 TB`, porcentajes `96,1%`.
 - Fechas: `29 sep 2026, 14:03` en la UI; relativas cuando aporta ("hace 14 minutos").
 

@@ -20,7 +20,7 @@ backend/
 │   ├── wsgi.py
 │   └── asgi.py
 ├── apps/
-│   ├── accounts/               # usuario, sesiones, OAuth (allauth headless), onboarding
+│   ├── accounts/               # usuario local (auth0_sub), validación del token de Auth0, onboarding
 │   ├── projects/               # proyectos y pertenencia
 │   ├── catalog/                # tablas, columnas, interpretaciones, perfiles
 │   ├── sources/                # fuentes, ingesta (DDL, muestras), convenciones de nombres
@@ -92,7 +92,7 @@ flowchart LR
 | App | Modelos | Services clave | Historias |
 |---|---|---|---|
 | `core` | `UUIDModel`, `TimeStampedModel` (abstractos) | Manejador de errores DRF, paginación, `IsProjectOwner` | ROS-178 |
-| `accounts` | `User`, `AuthSession` | `sign_in_with_provider()`, `issue_session()`, `rotate_refresh()`, `revoke_session()`, `complete_onboarding()` | ROS-89…93, 180–190 |
+| `accounts` | `User` | `Auth0JWTAuthentication` (DRF), `get_or_create_from_token()`, `complete_onboarding()` | ROS-89…93, 180–190 |
 | `projects` | `Project` | `create_project()`, `archive_project()`, `get_project_state()` | ROS-78, 81, 172–177 |
 | `catalog` | `Table`, `Column`, `ColumnInterpretation`, `ColumnProfile` | `upsert_schema()` (idempotente), selectors de catálogo | ROS-50, 81, 162, 175 |
 | `sources` | `Source`, `NamingRule` | `register_schema_upload()`, `register_sample_upload()`, `delete_source()`, adaptadores → evidencia | ROS-16, 17, 21, 22, 23, 120–131 |
@@ -149,7 +149,7 @@ Formato único de error (manejador en `core`):
 | HTTP | Cuándo |
 |---|---|
 | 400 | Validación (`details` = errores por campo) |
-| 401 | Sin sesión o token expirado (el cliente intenta `refresh` una vez) |
+| 401 | Sin token o token inválido/expirado (el proxy BFF redirige a `/auth/login`) |
 | 403 | Autenticado pero la acción no está permitida |
 | 404 | Recurso inexistente **o de otro usuario** (no se revela la existencia: RNF-03) |
 | 409 | Conflicto de estado (p. ej. confirmar algo ya confirmado; reimportación en curso) |

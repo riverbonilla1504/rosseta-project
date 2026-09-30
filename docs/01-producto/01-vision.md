@@ -66,5 +66,5 @@ Más adelante: hallazgos (informe de calidad), generador de datos sintéticos, g
 ## 7. Origen del producto
 
 - El prototipo final se construyó en **Claude Design** fusionando dos documentos de concepto (≈1.000 y ≈500 líneas) en un solo prototipo de cinco pantallas con el sistema de diseño **Nocturne**. Esos documentos de origen **no están disponibles** en el repositorio ([EC-001](../07-registro/01-errores-conocidos.md)).
-- El backlog (15 épicas, 104 historias, 71 tareas) se derivó de ese prototipo y se cargó en Notion y luego en Jira.
+- El backlog (15 épicas, 104 historias, 71 tareas) se derivó de ese prototipo y se cargó en Notion y luego en Jira. En CD-003 se añadieron ROS-191 y ROS-192 (106 historias).
 - Una nota antigua en Notion sobre una "app de clonación RFID" es **otra idea, no relacionada** con Rosetta.
