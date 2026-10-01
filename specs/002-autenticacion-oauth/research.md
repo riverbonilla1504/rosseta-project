@@ -71,7 +71,7 @@ Las decisiones estructurales (Auth0, patrón BFF, JWT validado en Django, un sol
   - Públicas: `/login`, `/auth/error`, `/auth/denied` (R-07), `/auth/*` del SDK, `/api/*` (el *route handler* responde por sí mismo, ver R-08) y los recursos estáticos de `_next`.
   - El resto exige sesión. **Sin sesión → `/login?returnTo=<ruta pedida>`** (pantalla de acceso de Rosetta con Nocturne).
   - Con sesión, `/login` redirige a `/` (R-09).
-- **Desviación respecto a `docs/`:** [04-frontend §4](../../docs/03-arquitectura/04-frontend.md), [07-seguridad §3](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) y ROS-188 dicen redirigir a `/auth/login?returnTo=`. Esa ruta, sin `connection`, abre la pantalla alojada por Auth0 y no la de Rosetta, lo que contradice FR-002 y FR-040. Por eso **el plan usa `/login?returnTo=`**; los botones de `/login` reenvían `returnTo` a `/auth/login?connection=…&returnTo=…`. Requiere un CD (ver *Desviaciones* en [plan.md](plan.md)).
+- **Desviación respecto a `docs/`:** [04-frontend §4](../../docs/03-arquitectura/04-frontend.md), [07-seguridad §3](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) y ROS-188 dicen redirigir a `/auth/login?returnTo=`. Esa ruta, sin `connection`, abre la pantalla alojada por Auth0 y no la de Rosetta, lo que contradice FR-002 y FR-040. Por eso **el plan usa `/login?returnTo=`**; los botones de `/login` reenvían `returnTo` a `/auth/login?connection=…&returnTo=…`. Resuelto por CD-007 (ver *Desviaciones* en [plan.md](plan.md)).
 
 ### R-07 · Errores de acceso y cómo llegan a la pantalla de error
 
@@ -105,7 +105,7 @@ Contrato completo en [contracts/bff-proxy.md](contracts/bff-proxy.md). Decisione
 
 - **Next.js:** nonce por petición generado en `middleware.ts` y `Content-Security-Policy` con `default-src 'self'`, `script-src 'self' 'nonce-…' 'strict-dynamic'` (más `'unsafe-eval'` solo en desarrollo, V8), `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`, `font-src 'self' https://fonts.gstatic.com`, `img-src` con los orígenes de avatar de [07-seguridad §5](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md), `connect-src 'self'`, `object-src 'none'`, `base-uri 'self'`, `frame-ancestors 'none'`. Las demás (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, y `Strict-Transport-Security` solo en producción) se declaran en `next.config.ts`.
 - **Django (respuestas JSON):** un middleware mínimo en `apps/core` añade `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`; el resto ya está en `settings` (nosniff, `X-Frame-Options`, política de referencia, HSTS en producción). Sin dependencia nueva (Constitución VI).
-- **Desviación respecto a `docs/`:** la CSP escrita en [07-seguridad §5](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) no tiene `script-src` y, con `default-src 'self'`, bloquearía los scripts en línea de Next. Requiere un CD.
+- **Desviación respecto a `docs/`:** la CSP escrita en [07-seguridad §5](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) no tiene `script-src` y, con `default-src 'self'`, bloquearía los scripts en línea de Next. Resuelto por CD-007.
 
 ### R-11 · Registros sin datos sensibles
 

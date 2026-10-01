@@ -38,7 +38,7 @@ Cubre los 40 FR y los 10 criterios de éxito de la spec. Las decisiones y lo que
 
 | Principio | Antes de Fase 0 | Después del diseño | Evidencia |
 |---|---|---|---|
-| **I. La especificación es la fuente de verdad** | Pasa con observaciones | Pasa con observaciones | Cada FR rastrea a una historia ROS. El plan **se aparta de `docs/` en 6 puntos** (tabla *Desviaciones*) y exige un CD antes de implementar; hasta entonces `/speckit-analyze` los reportará |
+| **I. La especificación es la fuente de verdad** | Pasa con observaciones | Pasa | Cada FR rastrea a una historia ROS. El plan se apartaba de `docs/` en 6 puntos (tabla *Desviaciones*); **CD-007 los alineó** y los documentos ya coinciden con el plan |
 | **II. Pruebas primero** | Pasa | Pasa | Estrategia de pruebas abajo; commit de prueba roja por criterio; PostgreSQL real en integración; sin pruebas omitidas |
 | **III. El motor nunca inventa** | No aplica | No aplica | Esta feature no toca el motor de evidencia |
 | **IV. Auditabilidad y determinismo** | Pasa | Pasa | Eventos de seguridad con campos cerrados y sin datos personales ([research R-11](research.md#r-11--registros-sin-datos-sensibles)); el usuario conserva su identidad inmutable (`auth0_sub`) |
@@ -48,13 +48,13 @@ Cubre los 40 FR y los 10 criterios de éxito de la spec. Las decisiones y lo que
 | **Restricciones** (versiones, idioma, dependencias) | Pasa con observación | Pasa con observación | Versiones dentro de lo fijado; React sube de parche. Identificadores en inglés, textos de producto en español |
 | **Gates del flujo** (1 a 5) | Pendiente | Pendiente | Faltan `tasks.md` y `/speckit-analyze` sin hallazgos CRITICAL; los DP/EC abiertos están registrados |
 
-**Veredicto:** el diseño cumple la constitución. Lo único pendiente es la alineación con `docs/` (tabla siguiente), que **bloquea `/speckit-implement` pero no `/speckit-tasks`**.
+**Veredicto:** el diseño cumple la constitución. La alineación con `docs/` (tabla siguiente) la resolvió CD-007.
 
-## Desviaciones respecto a `docs/` (requieren un CD antes de implementar)
+## Desviaciones respecto a `docs/` (resueltas por CD-007)
 
-La restricción de la constitución dice que un `plan.md` no puede contradecir `docs/03-arquitectura/`. Estos puntos lo hacen y están justificados; **un CD** debe cambiar los documentos antes de implementar (el CD lo redacta una persona o un agente con tu OK; este plan no toca `docs/`).
+La constitución no permite que un `plan.md` contradiga `docs/03-arquitectura/`. Estos seis puntos se apartaban de ella y estaban justificados; **CD-007** (2026-10-01) cambió los documentos y hoy coinciden con el plan. La tabla se conserva como registro de qué cambió y por qué. Siguen pendientes en Jira y en el tenant de desarrollo (ver el [registro de sincronización](../../docs/07-registro/03-registro-de-sincronizacion.md)).
 
-| # | Qué cambia | Dónde dice otra cosa hoy | Por qué | Documentos que tocaría el CD |
+| # | Qué cambia | Dónde decía otra cosa | Por qué | Documentos que tocó CD-007 |
 |---|---|---|---|---|
 | D1 | Sin sesión, la persona va a **`/login?returnTo=`**, no a `/auth/login?returnTo=` | [04-frontend §4](../../docs/03-arquitectura/04-frontend.md), [07-seguridad §3](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md), actividad de ROS-188 | `/auth/login` sin `connection` abre la pantalla alojada por Auth0, no la de Rosetta: contradice FR-002 y FR-040 ([research R-06](research.md#r-06--dónde-se-protege-cada-ruta-y-a-dónde-se-redirige)) | 04-frontend, 07-seguridad, 03-tareas-mvp (ROS-188) |
 | D2 | **CSP con nonce** en el middleware y `script-src` explícito | [07-seguridad §5](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md): la CSP no tiene `script-src` | Con `default-src 'self'` Next.js no ejecutaría sus propios scripts en línea ([research R-10](research.md#r-10--cabeceras-de-seguridad)) | 07-seguridad §5 |

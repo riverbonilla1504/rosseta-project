@@ -8,7 +8,7 @@ Los valores marcados **provisional** dependen de una decisión pendiente (DP) y 
 
 | Ruta | Pública | Qué muestra | Requisitos |
 |---|---|---|---|
-| `/login` | Sí | Pantalla de acceso: "Continuar con Google", "Continuar con Microsoft" y nota de privacidad. Con sesión abierta redirige a `/` | FR-001, FR-002, FR-040 |
+| `/login` | Sí | Pantalla de acceso: "Continuar con Google", "Continuar con Microsoft" y nota de privacidad. Con sesión abierta redirige a `/`. Si llega `notice=session_expired`, muestra encima el aviso de sesión vencida (FR-026) | FR-001, FR-002, FR-026, FR-040 |
 | `/auth/error?code=<código>` | Sí | Pantalla de error de acceso: mensaje por código y "Volver a intentar" (a `/login`, conservando `returnTo` si es un destino interno) | FR-036…FR-039 |
 | `/auth/denied?code=<código>` | Sí | Sin pantalla: guarda el código en una cookie efímera, cierra la sesión del SDK y redirige a `/auth/error` (§5) | FR-009, FR-011, FR-039 |
 | `/` | No | Resuelve el destino: onboarding pendiente → `/onboarding`; si no → `/projects` | FR-014, FR-018 |

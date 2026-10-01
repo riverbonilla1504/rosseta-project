@@ -43,7 +43,7 @@ Mismo formato que el backend: `{ "error": { "code", "message", "details" } }`.
 
 | Situación | Estado | `code` | Qué hace el cliente |
 |---|---|---|---|
-| Sin sesión, sesión vencida o no renovable (FR-026) | 401 | `session_expired` | Muestra "Tu sesión terminó. Vuelve a iniciar sesión para continuar." y lleva a `/login?returnTo=<ruta actual>` |
+| Sin sesión, sesión vencida o no renovable (FR-026) | 401 | `session_expired` | Muestra "Tu sesión terminó. Vuelve a iniciar sesión para continuar." y lleva a `/login?returnTo=<ruta actual>&notice=session_expired` |
 | El servicio de identidad no respondió al renovar | 503 | `identity_unavailable` | Muestra el mensaje de proveedor sin respuesta y permite reintentar; **no** cierra la sesión |
 | `Origin` inválido en una mutación | 403 | `forbidden_origin` | Error genérico |
 | Ruta mal formada | 400 | `validation_error` | Error genérico |
