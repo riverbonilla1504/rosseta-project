@@ -5,7 +5,7 @@
 
 | ID | Jira | Épica | Descripción | Prioridad | Fases | Historias |
 |---|---|---|---|---|---|---|
-| E01 | [ROS-1](https://fermentai.atlassian.net/browse/ROS-1) | **Ingesta de fuentes** | Conectar e importar las fuentes de evidencia (esquema/DDL, datos de muestra, consultas/logs, documentación, código, convenciones de nombres) y normalizarlas a un formato común | P0 | 1–3 | 9 (ROS-16…24) |
+| E01 | [ROS-1](https://fermentai.atlassian.net/browse/ROS-1) | **Ingesta de fuentes** | Conectar e importar las fuentes de evidencia (esquema/DDL, datos de muestra, consultas/logs, documentación, código, convenciones de nombres) y normalizarlas a un formato común | P0 | 1–3 | 11 (ROS-16…24, ROS-191, ROS-192) |
 | E02 | [ROS-2](https://fermentai.atlassian.net/browse/ROS-2) | **Motor de evidencia** | El núcleo: ponderar fuentes (el nombre de la columna pesa 0,40), calcular confianza por columna, asignar niveles, detectar conflictos, propagar confirmaciones y ofrecer un modo sin LLM | P0 | 1–2 | 12 (ROS-25…36) |
 | E03 | [ROS-3](https://fermentai.atlassian.net/browse/ROS-3) | **Panorama** | Dashboard de entrada: cobertura por nivel de confianza, fuentes recolectadas, cola priorizada por impacto y hallazgos abiertos | P0 | 1–2 | 5 (ROS-37…41) |
 | E04 | [ROS-4](https://fermentai.atlassian.net/browse/ROS-4) | **Revisión y validación** | El circuito humano: ficha de evidencia con citas verificables, perfil de datos, efecto de propagación y avisos de conflicto; confirmar, editar o rechazar con atajos de teclado. **Pantalla central del producto** | P0 | 1–2 | 8 (ROS-42…49) |
@@ -21,11 +21,11 @@
 | E14 | [ROS-14](https://fermentai.atlassian.net/browse/ROS-14) | **Inicio de sesión (OAuth)** | OAuth (Google/Microsoft/Apple) y todo lo derivado: registro y onboarding, sesión y tokens, seguridad del flujo (PKCE/state), MFA, verificación de correo, SSO empresarial y restricción por dominio permitido | P0/P2 | 1–3 | 15 (ROS-89…103) |
 | E15 | [ROS-15](https://fermentai.atlassian.net/browse/ROS-15) | **Administración y monetización** | Backoffice B2B: organizaciones multi-tenant, dominios permitidos y su verificación, correos personalizados por dominio, planes y precios, pagos y facturación, suscripciones y límites por plan. **Épica final** | P1/P3 | 3–4 | 16 (ROS-104…119) |
 
-**Totales:** 15 épicas · 104 historias · 71 subtareas del MVP.
+**Totales:** 15 épicas · 106 historias · 71 subtareas del MVP.
 
 ## Notas
 
 - **E11 vs. E14:** la historia genérica "Autenticación de usuarios" nació en E11 y se movió a E14 para que toda la autenticación viva en una sola épica. E11 quedó con proyectos, roles y colaboración.
-- **E14 ↔ E15:** "Restringir inicio de sesión a dominios permitidos" (ROS-94, E14) consume la "Gestión de dominios permitidos" (ROS-106) y los "Correos personalizados por dominio" (ROS-108) de E15. ROS-94 está en Fase 2 pero ROS-106/108 están en Fase 3: **inconsistencia de fase** registrada en [EC-018](../07-registro/01-errores-conocidos.md).
+- **E14 ↔ E15:** "Restringir inicio de sesión a dominios permitidos" (ROS-94, E14) consume la gestión de dominios (ROS-106) y los correos personalizados (ROS-108) de E15; por eso ROS-94 se movió a **Fase 3** (CD-003, [DP-016](../07-registro/02-decisiones-pendientes.md#dp-016)).
 - **E03 ↔ E06:** el widget "Resumen de hallazgos abiertos" (ROS-40, MVP) se anticipa a la épica Hallazgos (Fase 2). Ver [RN-15](04-reglas-de-negocio.md).
 - Las prioridades mixtas (P0/P2) indican que la épica tiene historias en varias fases.

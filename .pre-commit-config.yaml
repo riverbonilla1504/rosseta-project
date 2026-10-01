@@ -1,0 +1,25 @@
+# Instalar una vez:  uv tool install pre-commit  &&  pre-commit install
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+        exclude: ^(\.specify|\.claude)/
+      - id: trailing-whitespace
+        exclude: ^(\.specify|\.claude)/|\.md$
+      - id: check-added-large-files
+        args: [--maxkb=1024]

@@ -8,6 +8,10 @@
 | CD | Fecha | Título | Docs (commit) | Specs | Jira | PRs de código | Estado |
 |---|---|---|---|---|---|---|---|
 | CD-000 | 2026-09-29 | Creación inicial de `docs/` v1.0.0 a partir del prototipo, Notion y Jira | — (sin git: [EC-010](01-errores-conocidos.md#ec-010)) | — | Ya existían ROS-1…190 (creadas antes de la metodología) | — | Cerrado |
+| CD-002 | 2026-09-30 | Fase 0.5: Spec Kit v1.0.13, constitución 1.0.0 ratificada (III y V amplían reglas sobre IA externa), esqueletos backend/frontend, docker-compose, CI; EC-010 resuelto, EC-021, DP-021 (Jev) | rama `chore/fase-0-5-preparacion` | — | — | — | Abierto (falta PR) |
+| CD-003 | 2026-09-30 | Decisiones del responsable: DP-001, 005, 009, 011, 014, 016, 020, 021. ROS-94 → Fase 3; 2 historias nuevas en E01 (vistas/procedimientos, etiquetas de aplicación) | rama `chore/fase-0-5-preparacion` | — | ROS-94 (etiqueta de fase), ROS-191, ROS-192 creadas | — | Abierto (falta PR) |
+| CD-004 | 2026-09-30 | Autenticación con Auth0 (ADR-0007 reemplaza a ADR-0006); tareas ROS-180…190 reescritas (75 h → 56 h; Sprint 1 155 h; MVP 513 h). Tenant de desarrollo configurado con el MCP (Rosetta API, Rosetta Web, Action post-login) | rama `chore/fase-0-5-preparacion` | — (002 aún sin spec) | ROS-180…190 | — | Abierto (falta PR) |
+| CD-005 | 2026-09-30 | Reglas de agentes: nunca coautoría de IA en commits/PRs (`.claude/settings.json`), no commitear sin permiso, protocolo de sesión (07-delegacion §6) | rama `chore/fase-0-5-preparacion` | — | — | — | Abierto (falta PR) |
 | CD-001 | *planificado* | Fase 0.5: bloque "Fuente de verdad" en ROS-1…190, prioridad nativa, horas en estimación, reformular actividad de ROS-135, crear tareas de preparación | — | — | ROS-1…190 + tareas nuevas | — | Planificado |
 
 ## Auditorías de sincronización

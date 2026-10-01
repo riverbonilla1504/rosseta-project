@@ -1,0 +1,77 @@
+/*
+ * Tokens de Nocturne — PROVISIONALES.
+ * Fuente: docs/05-diseno/01-sistema-de-diseno-nocturne.md (valores medidos sobre capturas, ±6 por canal).
+ * La tarea ROS-168 (feature 001) los reemplaza por los del styles.css original (EC-001) mediante un CD.
+ * Regla (Constitución VII): ningún CSS de la app usa colores, tamaños o sombras literales; solo var(--nx-*).
+ */
+:root {
+  /* Superficies y bordes */
+  --nx-bg: #161825;
+  --nx-surface: #232532;
+  --nx-surface-raised: #2d2e42;
+  --nx-border: #292b38;
+  --nx-border-strong: #3b3b59;
+  --nx-badge-bg: #3c3c48;
+
+  /* Texto */
+  --nx-text: #eaeaf6;
+  --nx-text-strong-mono: #ded8de;
+  --nx-text-secondary: #848490;
+  --nx-text-muted: #8a8a96;
+  --nx-text-header: #9c9ca8;
+  --nx-text-mono-muted: #848a96;
+
+  /* Acento */
+  --nx-accent: #9284d9;
+  --nx-accent-strong: #8a7eba;
+  --nx-accent-link: #7872a2;
+  --nx-accent-label: #6c6c90; /* EC-020: contraste probablemente insuficiente */
+  --nx-accent-soft: #c6ccea;
+  --nx-accent-outline: #787896;
+
+  /* Niveles de confianza */
+  --nx-level-confirmed-bg: #42366c;
+  --nx-level-confirmed-fg: #ccc6f0;
+  --nx-level-confirmed-bar: #9284d9;
+  --nx-level-high-border: #726ca2;
+  --nx-level-inferred-bg: #3c3c5a;
+  --nx-level-inferred-bar: #5c5192;
+  --nx-level-hypothesis-bg: #3c3c48;
+  --nx-level-hypothesis-bar: #5b5d6c;
+  --nx-level-unknown-bg: #3c3c48;
+  --nx-level-unknown-bar: #3f414e;
+
+  /* Semánticos (propuestos, no observados en el prototipo) */
+  --nx-warning: #d9a54a;
+  --nx-danger: #e0736f;
+  --nx-success: #6fbf8f;
+
+  /* Tipografía (las familias las inyecta next/font en layout.tsx) */
+  --nx-font-sans: var(--font-inter), system-ui, sans-serif;
+  --nx-font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --nx-text-display: 40px;
+  --nx-text-title-mono: 32px;
+  --nx-text-kpi: 28px;
+  --nx-text-kpi-xl: 44px;
+  --nx-text-body: 14px;
+  --nx-text-label: 11px;
+  --nx-text-caption: 12px;
+  --nx-label-tracking: 0.08em;
+
+  /* Espaciado, radios */
+  --nx-space-1: 4px;
+  --nx-space-2: 8px;
+  --nx-space-3: 12px;
+  --nx-space-4: 16px;
+  --nx-space-5: 20px;
+  --nx-space-6: 24px;
+  --nx-space-7: 32px;
+  --nx-space-8: 48px;
+  --nx-radius-sm: 4px;
+  --nx-radius-md: 6px;
+  --nx-radius-lg: 8px;
+  --nx-content-max-width: 1280px;
+
+  /* Movimiento */
+  --nx-transition: 140ms ease;
+}

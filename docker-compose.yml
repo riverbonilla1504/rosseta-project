@@ -1,0 +1,84 @@
+# Entorno de desarrollo local — docs/03-arquitectura/08-infraestructura-y-entornos.md §3
+# Uso:  docker compose up -d db redis          (solo servicios, backend/frontend en el host)
+#       docker compose --profile app up -d     (todo en contenedores)
+name: rosetta
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: rosetta
+      POSTGRES_USER: rosetta
+      POSTGRES_PASSWORD: rosetta_dev_only
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rosetta -d rosetta"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    profiles: ["app"]
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://rosetta:rosetta_dev_only@db:5432/rosetta
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  worker:
+    profiles: ["app"]
+    build: ./backend
+    command: celery -A config worker -l info
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://rosetta:rosetta_dev_only@db:5432/rosetta
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  frontend:
+    profiles: ["app"]
+    build: ./frontend
+    command: pnpm dev --hostname 0.0.0.0
+    env_file:
+      - path: ./frontend/.env.local
+        required: false
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

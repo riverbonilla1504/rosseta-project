@@ -20,24 +20,25 @@
 |---|---|---|---|---|---|
 | [EC-001](#ec-001) | Artefactos de origen del diseño y documentos de concepto no disponibles | diseño | S2 | Abierto | ROS-168 (tokens exactos) |
 | [EC-002](#ec-002) | Solo 2 de 5 pantallas del prototipo capturadas | diseño | S3 | Abierto | ROS-151 |
-| [EC-003](#ec-003) | Las "seis fuentes" del prototipo no coinciden con las fuentes del MVP | producto | S2 | Abierto | Sprint 2, ROS-22, ROS-38 |
+| [EC-003](#ec-003) | Las "seis fuentes" del prototipo no coinciden con las fuentes del MVP | producto | S2 | Mitigado | — |
 | [EC-004](#ec-004) | Incidencias de Jira sin bloque "Fuente de verdad" | herramienta | S3 | Abierto | Fase 0.5 |
 | [EC-005](#ec-005) | Prioridad nativa de Jira en "Medium" para todo | herramienta | S4 | Abierto | — |
 | [EC-006](#ec-006) | JQL `issuetype = Historia` devuelve 0 resultados | herramienta | S4 | Mitigado | — |
 | [EC-007](#ec-007) | El prototipo muestra conexión en vivo a SQL Server; el MVP trabaja con archivos | producto | S3 | Abierto | — |
-| [EC-008](#ec-008) | Voseo rioplatense en los textos del prototipo | diseño | S4 | Abierto | Textos de UI |
-| [EC-009](#ec-009) | Sprint 1 sobrecargado (174 h) | proceso | S3 | Abierto | Planificación |
-| [EC-010](#ec-010) | La carpeta del proyecto no es un repositorio git; Spec Kit sin inicializar | proceso | S2 | Abierto | Fase 0.5 |
+| [EC-008](#ec-008) | Voseo rioplatense en los textos del prototipo | diseño | S4 | Resuelto | — |
+| [EC-009](#ec-009) | Sprint 1 sobrecargado (174 h) | proceso | S3 | Aceptado | — |
+| [EC-010](#ec-010) | La carpeta del proyecto no es un repositorio git; Spec Kit sin inicializar | proceso | S2 | Resuelto | — |
 | [EC-011](#ec-011) | El control `umbralConfirmada` en realidad es el umbral de "Alta · sin validar" | producto | S4 | Abierto | — |
-| [EC-012](#ec-012) | Panorama: barra de cobertura sin "Alta · sin validar" y cifras 3.810 vs 4.120 | producto | S3 | Abierto | ROS-37, ROS-146 |
-| [EC-013](#ec-013) | "Exportar YAML" y "Publicar comentarios al catálogo" en el prototipo | producto | S3 | Abierto | ROS-50 (UI) |
+| [EC-012](#ec-012) | Panorama: barra de cobertura sin "Alta · sin validar" y cifras 3.810 vs 4.120 | producto | S3 | Resuelto | — |
+| [EC-013](#ec-013) | "Exportar YAML" y "Publicar comentarios al catálogo" en el prototipo | producto | S3 | Mitigado | DP-006 (formatos) |
 | [EC-014](#ec-014) | El widget de hallazgos del MVP anticipa una épica de Fase 2 | producto | S4 | Mitigado | ROS-40 |
 | [EC-015](#ec-015) | Parámetros numéricos del motor incompletos | producto | S1 | Abierto | Sprint 3 |
 | [EC-016](#ec-016) | Horas de las subtareas solo en la descripción de Jira | herramienta | S4 | Abierto | Informes de esfuerzo |
 | [EC-017](#ec-017) | ROS-89 figura bajo E11 en Notion y bajo E14 en docs | herramienta | S4 | Aceptado | — |
-| [EC-018](#ec-018) | Inconsistencia de fase: ROS-94 (Fase 2) depende de ROS-106/108 (Fase 3) | producto | S3 | Abierto | Plan Fase 2 |
+| [EC-018](#ec-018) | Inconsistencia de fase: ROS-94 (Fase 2) depende de ROS-106/108 (Fase 3) | producto | S3 | Resuelto | — |
 | [EC-019](#ec-019) | ROS-135 (MVP) incluye recalcular al cambiar el umbral, que es Fase 2 | producto | S4 | Abierto | ROS-135 |
 | [EC-020](#ec-020) | Contraste insuficiente probable en etiquetas de sección | diseño | S3 | Abierto | ROS-168, RNF-24 |
+| [EC-021](#ec-021) | PostgreSQL local del equipo de desarrollo ocupa el puerto 5432 | herramienta | S4 | Mitigado | — |
 
 ---
 
@@ -64,6 +65,7 @@
 - **Descripción:** El Panorama del prototipo muestra seis fuentes: *Perfilado de datos, Catálogos embebidos, Logs de consulta, Vistas y procedimientos, Etiquetas de aplicación, Nombre de columna*. El backlog define otras: DDL, muestras, logs (F2), documentación (F2), código (F3), convenciones. *Vistas y procedimientos* y *Etiquetas de aplicación* **no tienen historia**; *Catálogos embebidos* no tiene historia explícita (se aproxima con contención entre muestras); el DDL no aparece como fuente en el prototipo. Además, varias descripciones del prototipo citan fuentes fuera del MVP ("sin referencias en consultas ni en el repositorio").
 - **Impacto:** ROS-22 ("las seis fuentes") y ROS-38 no se pueden cumplir literalmente en el MVP; riesgo de que las descripciones mencionen fuentes inexistentes.
 - **Resolución propuesta:** decidir en [DP-001](02-decisiones-pendientes.md#dp-001) qué fuentes muestra el MVP y crear historias para las que falten (Fase 2+). Mientras tanto: el MVP muestra solo las fuentes cargadas y las plantillas no mencionan fuentes ausentes.
+- **Decisión (CD-003):** [DP-001](02-decisiones-pendientes.md#dp-001): contención en el MVP; vistas/procedimientos y etiquetas de aplicación como historias nuevas de Fase 2. Sigue vigente que las plantillas no citen fuentes ausentes (se exige en la spec 005).
 
 <a id="ec-004"></a>
 ### EC-004 · Incidencias de Jira sin bloque "Fuente de verdad"
@@ -97,19 +99,14 @@
 - **Tipo / Sev.:** diseño · S4
 - **Descripción:** El prototipo usa voseo ("confirmás", "querés").
 - **Resolución propuesta:** [DP-009](02-decisiones-pendientes.md#dp-009). Propuesta por defecto: tuteo neutro.
+- **Resolución (CD-003):** tuteo neutro ([DP-009](02-decisiones-pendientes.md#dp-009)).
 
 <a id="ec-009"></a>
 ### EC-009 · Sprint 1 sobrecargado (174 h)
 - **Tipo / Sev.:** proceso · S3
 - **Descripción:** El Sprint 1 suma 174 h frente a 79–104 h de los demás.
 - **Resolución propuesta:** dividir en 1a (Design system + OAuth, 99 h) y 1b (Proyectos + persistencia + seguridad, 75 h) — [DP-011](02-decisiones-pendientes.md#dp-011).
-
-<a id="ec-010"></a>
-### EC-010 · La carpeta del proyecto no es un repositorio git; Spec Kit sin inicializar
-- **Tipo / Sev.:** proceso · S2 — **Detectado:** 2026-09-29
-- **Descripción:** `DB_MVP/` no tiene `.git` ni remoto; no existen `.specify/`, `specs/`, `backend/`, `frontend/`.
-- **Impacto:** no hay historial de la documentación ni se puede aplicar el flujo de ramas/PR.
-- **Resolución propuesta:** tareas 1–2 de la Fase 0.5 ([05-roadmap-y-sprints.md §4](../01-producto/05-roadmap-y-sprints.md)); primer commit = esta carpeta `docs/`.
+- **Decisión (CD-003):** no dividir ([DP-011](02-decisiones-pendientes.md#dp-011)); riesgo aceptado. Mitigación: dentro del sprint priorizar 002 (OAuth) y 003 (núcleo de datos); 001 en paralelo.
 
 <a id="ec-011"></a>
 ### EC-011 · El control `umbralConfirmada` en realidad es el umbral de "Alta · sin validar"
@@ -123,12 +120,14 @@
 - **Descripción:** (1) La barra y la leyenda de cobertura muestran 4 niveles (Confirmadas, Inferidas, Hipótesis, Desconocidas) que suman 18.442, pero el catálogo del mismo prototipo tiene columnas "Alta · sin validar": o se contaron dentro de otro nivel o falta el segmento. (2) "34 validaciones … documentaron 3.810 columnas" pero Confirmadas = 4.120: la diferencia (310) no se explica.
 - **Impacto:** ambigüedad en ROS-37 y en el invariante de ROS-146.
 - **Resolución propuesta:** mostrar **5 niveles** en la cobertura; `columns_documented_by_validations` = directas + propagadas; `CONFIRMED` = ese mismo número (sin diferencia). Ratificar en [DP-020](02-decisiones-pendientes.md#dp-020).
+- **Resolución (CD-003):** 5 niveles en la cobertura; confirmadas = directas + propagadas ([DP-020](02-decisiones-pendientes.md#dp-020)).
 
 <a id="ec-013"></a>
 ### EC-013 · "Exportar YAML" y "Publicar comentarios al catálogo" en el prototipo
 - **Tipo / Sev.:** producto · S3
 - **Descripción:** El Catálogo del prototipo tiene dos botones que contradicen el backlog: exportación es Fase 2 y en Markdown/JSON/SQL (ROS-57, no YAML); "Publicar comentarios al catálogo" implica **escribir** en la base del cliente, contra el principio de solo lectura (NO-02, RN-25), mientras el prototipo muestra además la insignia "solo lectura".
 - **Resolución propuesta:** fuera del MVP; formatos en [DP-006](02-decisiones-pendientes.md#dp-006); escritura en [DP-005](02-decisiones-pendientes.md#dp-005) (alternativa: generar un script `COMMENT ON` que el cliente ejecuta él mismo).
+- **Decisión (CD-003):** Rosetta nunca escribe en el origen; en Fase 2 exporta script SQL ([DP-005](02-decisiones-pendientes.md#dp-005)). Pendiente: formatos ([DP-006](02-decisiones-pendientes.md#dp-006)).
 
 <a id="ec-014"></a>
 ### EC-014 · El widget de hallazgos del MVP anticipa una épica de Fase 2
@@ -155,6 +154,7 @@
 - **Tipo / Sev.:** producto · S3
 - **Descripción:** "Restringir inicio de sesión a dominios permitidos" (ROS-94, Fase 2) necesita la gestión de dominios (ROS-106) y correos personalizados (ROS-108), que son Fase 3.
 - **Resolución propuesta:** [DP-016](02-decisiones-pendientes.md#dp-016): mover ROS-94 a Fase 3, o adelantar a Fase 2 una versión mínima de ROS-106/108 (lista gestionada por el super-admin).
+- **Resolución (CD-003):** ROS-94 movida a Fase 3 ([DP-016](02-decisiones-pendientes.md#dp-016)).
 
 <a id="ec-019"></a>
 ### EC-019 · ROS-135 (MVP) incluye recalcular al cambiar el umbral, que es Fase 2
@@ -169,6 +169,12 @@
 - **Impacto:** incumplimiento de RNF-24 si se replica tal cual.
 - **Resolución propuesta:** confirmar con los valores reales (EC-001); si se confirma, aclarar el token en ROS-168 y registrarlo como desviación del prototipo.
 
+<a id="ec-021"></a>
+### EC-021 · PostgreSQL local del equipo de desarrollo ocupa el puerto 5432
+- **Tipo / Sev.:** herramienta · S4 — **Detectado:** 2026-09-30 — **Estado:** Mitigado
+- **Descripción:** en la máquina de desarrollo hay un PostgreSQL nativo escuchando en `0.0.0.0:5432`; las conexiones a `localhost:5432` llegaban a él y no al contenedor (error de autenticación).
+- **Mitigación:** el contenedor `db` publica en el puerto **5433** del host (`docker-compose.yml`, `.env.example`, [08-infraestructura §3](../03-arquitectura/08-infraestructura-y-entornos.md)). Dentro de Docker y en CI se sigue usando 5432.
+
 ---
 
 ## Aceptados (no se corregirán)
@@ -181,4 +187,11 @@
 
 ## Resueltos
 
-*(vacío)*
+<a id="ec-010"></a>
+### EC-010 · La carpeta del proyecto no es un repositorio git; Spec Kit sin inicializar
+- **Tipo / Sev.:** proceso · S2 — **Detectado:** 2026-09-29 — **Estado:** Resuelto 2026-09-30
+- **Descripción:** `DB_MVP/` no tiene `.git` ni remoto; no existen `.specify/`, `specs/`, `backend/`, `frontend/`.
+- **Impacto:** no hay historial de la documentación ni se puede aplicar el flujo de ramas/PR.
+- **Resolución propuesta:** tareas 1–2 de la Fase 0.5 ([05-roadmap-y-sprints.md §4](../01-producto/05-roadmap-y-sprints.md)); primer commit = esta carpeta `docs/`.
+- **Resolución:** el responsable creó el repositorio `riverbonilla1504/rosseta-project` (GitHub); Spec Kit v1.0.13 inicializado (`specify init --here --integration claude --script sh`) en la rama `chore/fase-0-5-preparacion` (CD-002).
+

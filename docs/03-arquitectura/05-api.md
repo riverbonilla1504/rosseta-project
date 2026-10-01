@@ -9,7 +9,7 @@
 | Base | `/api/` (datos) y `/auth/` (sesión). El navegador llama al origen de Next.js, que reenvía al backend |
 | Formato | JSON UTF-8; `snake_case` en campos; fechas ISO 8601 UTC (`2026-09-29T14:03:00Z`); números decimales como número (`0.91`) |
 | Identificadores | UUID v4 en todas las rutas (RNF-04). Nunca IDs secuenciales |
-| Autenticación | Cookie httpOnly `rosetta_access` (JWT, 15 min). Mutaciones requieren cabecera `X-CSRFToken` = cookie `csrftoken` |
+| Autenticación | Django recibe `Authorization: Bearer <access token de Auth0>` desde el proxy BFF de Next.js. El navegador usa la cookie de sesión del SDK; las mutaciones solo se aceptan desde el mismo origen |
 | Paginación | `?page=1&page_size=50` (máx. 200). Respuesta `{count, next, previous, results}` |
 | Errores | `{ "error": { "code", "message", "details" } }` — ver [03-backend.md §6](03-backend.md) |
 | Niveles | `CONFIRMED`, `HIGH_UNVALIDATED`, `INFERRED`, `HYPOTHESIS`, `UNKNOWN` |
@@ -20,10 +20,10 @@
 
 | Método | Ruta | Descripción | Historia / tarea |
 |---|---|---|---|
-| GET | `/auth/{provider}/login` | Inicia OAuth (`google`, `microsoft`). Redirige al proveedor con PKCE + `state` | ROS-90 / 183, 189 |
-| GET | `/auth/{provider}/callback` | Callback OAuth. Crea/recupera usuario, emite cookies, redirige a `/projects` o `/onboarding` | ROS-90, 91 / 183, 185 |
-| POST | `/auth/refresh` | Rota el refresh token y emite nuevo access | ROS-92 / 187 |
-| POST | `/auth/logout` | Revoca la sesión y borra cookies | ROS-92 / 187 |
+| GET | `/auth/login?connection=google-oauth2\|<microsoft>&returnTo=` | **SDK de Auth0 (Next.js).** Inicia el login con PKCE + `state` | ROS-90 / 183, 189 |
+| GET | `/auth/callback` | **SDK de Auth0.** Recibe el código, crea la sesión cifrada, redirige | ROS-90 / 183 |
+| GET | `/auth/logout` | **SDK de Auth0.** Cierra la sesión de Rosetta y la de Auth0 | ROS-92 / 187 |
+| GET | `/auth/profile` | **SDK de Auth0.** Perfil de la sesión (para la UI) | ROS-89 / 183 |
 | GET | `/api/me` | Usuario actual y estado de onboarding | ROS-89, 91 / 185 |
 | POST | `/api/me/onboarding/complete` | Marca el onboarding como completado | ROS-91 / 185 |
 | GET | `/api/projects` | Lista proyectos del usuario (`?archived=false`) | ROS-78 / 173 |
@@ -208,9 +208,9 @@ Excluye `CONFIRMED`. Orden: `impact` desc, luego `has_open_conflict` desc, luego
 ```
 Invariante probado: `sum(by_level) == total_columns` (tarea ROS-146). Los números del ejemplo son los del prototipo; ver la inconsistencia de la barra en [EC-012](../07-registro/01-errores-conocidos.md).
 
-### 3.8 `POST /auth/refresh`
+### 3.8 Autenticación de la API
 
-Sin cuerpo; usa la cookie `rosetta_refresh` (path `/auth`). `204` con nuevas cookies. Si el refresh fue **ya usado** (reuso de token rotado), se revoca **toda la familia de sesiones** del dispositivo y responde `401` (detección de robo de token).
+Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: Bearer <access token>` emitido por el tenant de Auth0 para la audiencia `AUTH0_AUDIENCE`. Django valida firma RS256 (JWKS), `iss` = `https://<AUTH0_DOMAIN>/`, `aud`, `exp`. El primer request válido de un `sub` nuevo crea el usuario local (onboarding pendiente). Token ausente o inválido → `401 session_expired`.
 
 ## 4. Códigos de error de dominio
 
@@ -228,4 +228,5 @@ Sin cuerpo; usa la cookie `rosetta_refresh` (path `/auth`). `204` con nuevas coo
 | `global_rule_readonly` | 403 | Intento de editar una regla global |
 | `oauth_denied` | — | (redirección a `/auth/error?code=oauth_denied`) el usuario canceló |
 | `oauth_failed` | — | (redirección) proveedor caído o respuesta inválida |
-| `session_expired` | 401 | Access vencido y refresh inválido |
+| `session_expired` | 401 | Sin token, token inválido o vencido y no renovable |
+| `account_exists_other_provider` | — | (redirección) el correo ya existe con otro proveedor; vinculación en ROS-98 |

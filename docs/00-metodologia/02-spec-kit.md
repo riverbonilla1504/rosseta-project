@@ -3,21 +3,25 @@
 > Repositorio: https://github.com/github/spec-kit — revisado el 2026-09-29.
 > Spec Kit es el **framework** con el que aplicamos la **metodología** SDD. Las reglas de *cuándo* y *cómo* se usa cada comando en Rosetta están aquí; lo que diga la documentación oficial de Spec Kit aplica para todo lo demás.
 
-## 1. Instalación (se hará en la fase de preparación)
+## 1. Instalación (hecha el 2026-09-30, versión fijada **v1.0.13**)
 
-Requisitos: **Python 3.11+**, **[uv](https://docs.astral.sh/uv/)**, **Git** y un agente de IA compatible (usaremos **Claude Code**).
+Requisitos: **Python 3.11+**, **[uv](https://docs.astral.sh/uv/)**, **Git** y un agente de IA compatible (usamos **Claude Code**).
 
-```bash
-uv tool install specify-cli
-```
-
-Inicialización sobre el repositorio existente (el directorio ya tiene `docs/`):
+Cada persona instala la CLI una vez en su equipo, **fijando la misma versión** que el repositorio:
 
 ```bash
-specify init . --integration claude
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.0.13
 ```
 
-> `[PENDIENTE]` La inicialización se ejecuta en la **fase de preparación**, después de crear el repositorio git (ver [EC-010](../07-registro/01-errores-conocidos.md)). Antes de ejecutarla se revisa la guía oficial "existing projects" porque la carpeta no está vacía.
+Inicialización ya ejecutada sobre el repositorio (no hay que repetirla):
+
+```bash
+specify init --here --force --non-interactive --integration claude --script sh
+```
+
+- Integración Claude: las órdenes se instalan como **skills** en `.claude/skills/speckit-*/SKILL.md` y se invocan como `/speckit-<orden>`. Una sesión de Claude Code abierta **antes** de instalarlas no las ve: hay que abrir una sesión nueva.
+- Scripts `sh` (Git Bash en Windows, bash en macOS/Linux) para que todo el equipo use los mismos.
+- Actualizar Spec Kit = cambiar la versión aquí (CD) y ejecutar `specify init --here --force --integration claude --script sh` en una rama, revisando el diff de `.specify/` y `.claude/skills/`.
 
 ## 2. Estructura que crea Spec Kit
 

@@ -38,7 +38,7 @@
 
 **Decisiones para el MVP:**
 - La cobertura muestra **los cinco niveles**, incluido "Alta · sin validar" (el prototipo muestra 4: [EC-012](../07-registro/01-errores-conocidos.md)). Etiqueta propuesta: "ALTA · SIN VALIDAR — puntaje alto, falta una persona".
-- Las fuentes del MVP son DDL, perfil de datos, contención y nombre; las demás filas no se muestran (o aparecen como "no cargada" — [DP-001](../07-registro/02-decisiones-pendientes.md)).
+- Las fuentes del MVP son DDL, perfil de datos, contención y nombre ([DP-001](../07-registro/02-decisiones-pendientes.md#dp-001)); las fuentes de fases posteriores no se muestran.
 - "22 min al primer hallazgo" y "1,8 h perfilado incremental": `[NECESITA ACLARACIÓN]` definición de estas métricas; **fuera del MVP** salvo que se defina ([DP-018](../07-registro/02-decisiones-pendientes.md)).
 - **Estado vacío** (proyecto sin fuentes): "Todavía no hay evidencia. Sube el DDL de tu base para empezar." + botón a Fuentes.
 
@@ -108,7 +108,7 @@ Deben diseñarse con Nocturne en la feature correspondiente (la spec incluye un 
 
 | Pantalla | Ruta | Contenido mínimo | Feature |
 |---|---|---|---|
-| Login | `/login` | Marca, frase de valor, "Continuar con Google", "Continuar con Microsoft", nota de privacidad (qué datos se piden) | 002 |
+| Login | `/login` | Marca, frase de valor, "Continuar con Google", "Continuar con Microsoft" (van a `/auth/login?connection=…` de Auth0), nota de privacidad | 002 |
 | Error de acceso | `/auth/error` | Mensaje según código (`oauth_denied`, `oauth_failed`, `account_exists_other_provider`) + "Volver a intentar" | 002 |
 | Onboarding | `/onboarding` | Bienvenida con el nombre; 1) crear primer proyecto (nombre, dialecto) 2) subir DDL; se puede saltar | 002, 003 |
 | Proyectos | `/projects` | Lista (nombre, fecha, nº tablas/columnas, % confirmado), crear, renombrar, archivar, filtro archivados | 003 |

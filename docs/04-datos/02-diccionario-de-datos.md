@@ -11,43 +11,22 @@
 ---
 
 ## accounts_user
-Usuario de Rosetta. Modelo de usuario propio (`AUTH_USER_MODEL = "accounts.User"`) basado en `AbstractBaseUser`.
+Usuario de Rosetta. Modelo propio (`AUTH_USER_MODEL = "accounts.User"`) basado en `AbstractBaseUser`, creado **antes de la primera migración**. La identidad, las sesiones y los proveedores viven en **Auth0** ([ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 | Columna | Tipo | Nulo | Descripción |
 |---|---|---|---|
 | id | uuid | No | PK |
-| email | varchar(254) | No | Correo verificado del proveedor. Único (sin distinguir mayúsculas: índice sobre `lower(email)`) |
+| auth0_sub | varchar(255) | No | Claim `sub` del access token (`google-oauth2\|1234…`, `windowslive\|…`). Único |
+| email | varchar(254) | No | Correo verificado (claim de la Action post-login). Único sin distinguir mayúsculas (`lower(email)`) |
 | full_name | varchar(200) | No | Nombre del proveedor; editable en Fase 2 (ROS-99) |
 | avatar_url | varchar(500) | Sí | URL de avatar del proveedor |
 | is_active | boolean | No | `false` = desactivado (no se borran usuarios con acciones auditadas) |
 | is_staff | boolean | No | Acceso al admin de Django (soporte interno) |
 | onboarding_completed_at | timestamptz | Sí | `null` = onboarding pendiente (ROS-91, 185) |
-| last_login_at | timestamptz | Sí | Último inicio de sesión |
+| last_login_at | timestamptz | Sí | Último request autenticado del día (se actualiza como máximo una vez por hora) |
 | created_at, updated_at | timestamptz | No | |
 
-Sin contraseña utilizable en el MVP (`set_unusable_password`), porque el único método es OAuth ([DP-014](../07-registro/02-decisiones-pendientes.md)).
-
-## accounts_auth_session
-Una sesión por dispositivo/inicio de sesión. Implementa ROS-92, 180, 187.
-
-| Columna | Tipo | Nulo | Descripción |
-|---|---|---|---|
-| id | uuid | No | PK; va en el claim `sid` del access token |
-| user_id | uuid FK → accounts_user | No | `CASCADE` |
-| family_id | uuid | No | Igual para todas las rotaciones de un mismo inicio de sesión; permite revocar la familia ante reuso |
-| refresh_token_hash | char(64) | No | SHA-256 hex del refresh vigente. Único |
-| user_agent | varchar(300) | Sí | Para identificar el dispositivo (ROS-103) |
-| ip_prefix | varchar(64) | Sí | IP truncada (/24 IPv4, /48 IPv6) — no la IP completa (privacidad) |
-| created_at | timestamptz | No | |
-| last_used_at | timestamptz | No | Último refresh |
-| expires_at | timestamptz | No | Caducidad deslizante (14 días, *provisional*) |
-| absolute_expires_at | timestamptz | No | Caducidad máxima (30 días, *provisional*) |
-| rotated_at | timestamptz | Sí | Si no es nulo, este refresh ya se usó; presentarlo de nuevo = reuso |
-| revoked_at | timestamptz | Sí | Logout o revocación |
-| revoked_reason | varchar(30) | Sí | `LOGOUT` \| `REUSE_DETECTED` \| `EXPIRED` \| `ADMIN` |
-
-## socialaccount_socialaccount (django-allauth)
-Tabla de la librería. Campos relevantes: `user_id`, `provider` (`google` \| `microsoft`), `uid` (claim `sub`), `extra_data` (JSON del perfil; **no** se guardan tokens del proveedor: `SOCIALACCOUNT_STORE_TOKENS = False`).
+Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google o Microsoft ([DP-014](../07-registro/02-decisiones-pendientes.md#dp-014)). El admin de Django se protege aparte (usuario staff con contraseña fuerte, solo en red interna) `[PENDIENTE]` definir en 002.
 
 ---
 

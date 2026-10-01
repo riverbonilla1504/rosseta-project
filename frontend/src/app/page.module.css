@@ -1,0 +1,22 @@
+.main {
+  max-width: var(--nx-content-max-width);
+  margin: 0 auto;
+  padding: var(--nx-space-8) var(--nx-space-6);
+}
+
+.brand {
+  font-size: var(--nx-text-display);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tagline {
+  font-size: var(--nx-text-label);
+  letter-spacing: var(--nx-label-tracking);
+  color: var(--nx-text-secondary);
+  font-weight: 500;
+}
+
+.note {
+  color: var(--nx-text-secondary);
+}

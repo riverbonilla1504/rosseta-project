@@ -1,0 +1,92 @@
+# CI — docs/03-arquitectura/08-infraestructura-y-entornos.md §5
+# Jobs pendientes (se añaden con su feature): contract (OpenAPI ↔ tipos TS, feature 003),
+# e2e con Playwright + axe (feature 001/002), traceability (tools/check_traceability.py).
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: rosetta
+          POSTGRES_USER: rosetta
+          POSTGRES_PASSWORD: rosetta_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rosetta" --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      DJANGO_SECRET_KEY: ci-only-not-secret
+      DATABASE_URL: postgres://rosetta:rosetta_ci@localhost:5432/rosetta
+      REDIS_URL: redis://localhost:6379/0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Tipos
+        run: uv run mypy .
+      - name: Migraciones al día
+        run: uv run python manage.py makemigrations --check --dry-run
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.test
+      - name: Pruebas + cobertura (≥ 85 %)
+        run: uv run pytest --cov --cov-report=xml
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          # La versión sale de "packageManager" en frontend/package.json
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Lint y formato
+        run: pnpm lint && pnpm format:check
+      - name: Tipos
+        run: pnpm typecheck
+      - name: Pruebas + cobertura (≥ 80 %)
+        run: pnpm test:coverage
+      - name: Build
+        run: pnpm build
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Secretos (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

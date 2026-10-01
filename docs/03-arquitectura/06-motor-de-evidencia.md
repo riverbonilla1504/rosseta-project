@@ -53,7 +53,7 @@ class EvidenceItem:
 | `DDL_DECLARED_FK` | DDL | `REFERENCES` | DDL | MVP |
 | `PROFILE_PATTERN` | PROFILE | `SEMANTIC_TYPE` (fecha AAAAMMDD, importe, código, booleano, enum) | Muestra (ROS-17) | MVP |
 | `PROFILE_EMPTY` | PROFILE | `NO_INFORMATION` (100 % NULL o constante sin catálogo) | Muestra | MVP |
-| `CONTAINMENT` | CONTAINMENT | `REFERENCES` (valores contenidos en la columna de otra tabla) | Muestras de ambas tablas | MVP `[NECESITA ACLARACIÓN]` [DP-001](../07-registro/02-decisiones-pendientes.md) |
+| `CONTAINMENT` | CONTAINMENT | `REFERENCES` (valores contenidos en la columna de otra tabla) | Muestras de ambas tablas | MVP (decidido en [DP-001](../07-registro/02-decisiones-pendientes.md#dp-001)) |
 | `HUMAN_REJECTION` | HUMAN | niega un valor (`polarity=-1`) | Acción *Rechazar* | MVP |
 | `HUMAN_EDIT` | HUMAN | `BUSINESS_NAME` con peso máximo | Acción *Editar* | Fase 2 como evidencia (ROS-49); en el MVP la edición solo cambia el texto |
 | `QUERY_LOG`, `VIEW_DEFINITION`, `APP_LABEL`, `CODE_MAPPING`, `DOCUMENTATION` | propias | varios | ROS-18, 19, 20 | Fase 2–3 |

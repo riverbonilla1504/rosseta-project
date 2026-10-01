@@ -7,6 +7,46 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.4.0] — 2026-09-30 · CD-005
+
+### Añadido
+- Regla 13 (nunca coautoría de IA en commits/PRs) y 14 (sin commit/push/PR sin permiso) para agentes; configurado en `.claude/settings.json`.
+- Protocolo de sesión: mensaje de arranque, lo que el agente muestra al empezar y resumen de cierre ([07-delegacion-a-ia.md §6](../00-metodologia/07-delegacion-a-ia.md)).
+
+## [1.3.0] — 2026-09-30 · CD-004
+
+### Cambiado
+- Autenticación con **Auth0** ([ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md), reemplaza a ADR-0006): SDK de Next.js, proxy BFF, Django valida el access token. Actualizados seguridad, stack, visión general, backend, frontend, API, infraestructura, modelo y diccionario de datos, estrategia de pruebas, RNF-07/08.
+- Tareas ROS-180…190 reescritas: 75 h → 56 h. Sprint 1: 155 h. MVP: 513 h.
+- Se elimina la tabla `accounts_auth_session`; `accounts_user` gana `auth0_sub`.
+
+## [1.2.0] — 2026-09-30 · CD-003
+
+### Decidido
+- DP-001 (contención en el MVP), DP-005 (nunca escribir en el origen), DP-009 (tuteo), DP-011 (no dividir Sprint 1), DP-014 (Google + Microsoft), DP-016 (ROS-94 → Fase 3), DP-020 (5 niveles en cobertura), DP-021 (Jev: piloto en Fase 2).
+
+### Añadido
+- Historias ROS-191 (vistas y procedimientos) y ROS-192 (etiquetas de aplicación), E01, Fase 2. Total: 106 historias.
+
+### Cambiado
+- ROS-94 pasa a Fase 3. Recuento por fase: 38 / 33 / 30 / 5.
+- EC-003, EC-013 mitigados; EC-008, EC-012, EC-018 resueltos; EC-009 aceptado.
+
+## [1.1.0] — 2026-09-30 · CD-002
+
+### Añadido
+- Evaluación de Jev (TypeSafe AI): [03-arquitectura/evaluaciones/2026-09-30-jev-typesafe-ai.md](../03-arquitectura/evaluaciones/2026-09-30-jev-typesafe-ai.md) y [DP-021](02-decisiones-pendientes.md#dp-021).
+- EC-021 (puerto 5432 ocupado en la máquina de desarrollo).
+- Estado de la Fase 0.5 en el roadmap.
+
+### Cambiado
+- Constitución ratificada v1.0.0 en `.specify/memory/constitution.md`; [08-constitucion.md](../00-metodologia/08-constitucion.md) pasa a ser un puntero. III y V añaden reglas para servicios de IA externos.
+- PostgreSQL de desarrollo en el puerto 5433 del host.
+- Nombre del estado final de Jira: *Listo* (antes se documentó como "Hecho").
+
+### Resuelto
+- EC-010: repositorio git creado y Spec Kit inicializado.
+
 ## [1.0.0] — 2026-09-29 · CD-000
 
 ### Añadido

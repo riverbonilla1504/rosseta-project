@@ -20,12 +20,12 @@
 flowchart LR
     analista([Analista de datos / Revisor])
     rosetta[[Rosetta<br/>catálogo con motor de evidencia]]
-    idp[(Proveedores OAuth<br/>Google · Microsoft)]
+    idp[(Auth0<br/>Google · Microsoft)]
     archivos[/Archivos del cliente<br/>DDL .sql · muestras .csv/]
     analista -- usa en el navegador --> rosetta
     analista -- exporta desde su BD --> archivos
     archivos -- carga --> rosetta
-    rosetta -- OIDC / OAuth 2.0 + PKCE --> idp
+    rosetta -- OIDC + PKCE (SDK de Auth0) --> idp
 ```
 
 Fuera del MVP: conexión directa a motores (ROS-24, Fase 3), SSO empresarial (ROS-102), pasarela de pago (ROS-112), servidor MCP (ROS-71).
@@ -38,7 +38,7 @@ flowchart TB
       web[Next.js 15 · React 19<br/>frontend/]
     end
     subgraph servidor[Servidor]
-      next[Servidor Next.js<br/>SSR + proxy /api]
+      next[Servidor Next.js<br/>SSR + SDK Auth0 + proxy BFF /api]
       api[Django 5.2 + DRF<br/>backend/ · gunicorn]
       worker[Celery worker<br/>mismo código que backend/]
     end
@@ -57,8 +57,8 @@ flowchart TB
 
 | Contenedor | Tecnología | Responsabilidad |
 |---|---|---|
-| **frontend** | Next.js 15 (App Router), React 19, TypeScript | Pantallas, navegación, atajos de teclado, caché de datos del cliente. Sirve la app y **reenvía** `/api/*` y `/auth/*` al backend (mismo origen → cookies `SameSite=Lax` sin CORS) |
-| **backend (api)** | Django 5.2, DRF, drf-spectacular, django-allauth | API REST, autenticación OAuth, reglas de negocio, persistencia, orquestación del motor |
+| **frontend** | Next.js 15 (App Router), React 19, TypeScript, `@auth0/nextjs-auth0` | Pantallas, navegación, atajos de teclado, caché de datos del cliente. Maneja el login con Auth0 (`/auth/*`) y **reenvía** `/api/*` a Django añadiendo el access token (proxy BFF, mismo origen, sin CORS) |
+| **backend (api)** | Django 5.2, DRF, drf-spectacular, PyJWT | API REST, validación del access token de Auth0, reglas de negocio, persistencia, orquestación del motor |
 | **worker** | Celery 5 | Parseo de DDL, perfilado de muestras, recálculo de puntajes a gran escala |
 | **PostgreSQL** | 16 | Todos los datos de Rosetta (usuarios, proyectos, catálogo, evidencia, acciones) |
 | **Redis** | 7 | Broker de Celery, resultados de tareas, caché de métricas (cobertura) |
@@ -119,7 +119,7 @@ Detalle de cada app: [03-backend.md](03-backend.md). Frontend: [04-frontend.md](
 | Atributo | Mecanismo | RNF |
 |---|---|---|
 | Auditabilidad | Motor puro y determinista; `ReviewAction` inmutable; desglose de puntaje persistido | RNF-21, 22, 23 |
-| Seguridad | OAuth + PKCE vía allauth; JWT en cookies httpOnly; filtrado por propietario en todos los querysets; UUID públicos | RNF-01…09 |
+| Seguridad | Auth0 (OIDC + PKCE); tokens solo en el servidor (BFF); filtrado por propietario en todos los querysets; UUID públicos | RNF-01…09 |
 | Rendimiento | Celery para trabajo pesado; `select_related`/`prefetch_related`; paginación; índices; virtualización en UI | RNF-10…15 |
 | Consistencia | Confirmación + propagación en una transacción con bloqueo de filas (`select_for_update`) | RNF-17, 18 |
 | Mantenibilidad | Apps por dominio; OpenAPI; tipado estricto; pruebas con trazabilidad | RNF-31…35 |

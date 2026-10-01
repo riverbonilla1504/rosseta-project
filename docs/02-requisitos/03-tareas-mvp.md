@@ -8,24 +8,24 @@
 
 | Sprint | Foco | Feature(s) Spec Kit | Tareas | Horas |
 |---|---|---|---|---|
-| [1 · Fundaciones](#sprint-1) | Design system, OAuth y sesiones, proyectos, núcleo de datos, seguridad | 001, 002, 003 | 23 | 174 h |
+| [1 · Fundaciones](#sprint-1) | Design system, OAuth y sesiones, proyectos, núcleo de datos, seguridad | 001, 002, 003 | 23 | 155 h |
 | [2 · Ingesta](#sprint-2) | Parser DDL, perfilado, convenciones, evidencia normalizada | 004 | 12 | 93 h |
 | [3 · Motor](#sprint-3) | Puntuación, niveles, abstención, conflictos, propagación, citas, cola | 005, 006 | 14 | 104 h |
 | [4 · Revisión](#sprint-4) | Ficha, perfil, previsualización, avisos, acciones, atajos, estados | 007 | 11 | 82 h |
 | [5 · Catálogo y Panorama](#sprint-5) | Catálogo, chips, rastro, estado compartido, dashboard y widgets | 008, 009 | 11 | 79 h |
-| **Total** | | | **71** | **532 h** |
+| **Total** | | | **71** | **513 h** |
 
-**Horas por área:** Frontend 201 h · Backend 184 h · Motor/Algoritmo 74 h · Base de datos 26 h · Seguridad 21 h · Diseño UI 16 h · DevOps/Infra 10 h.
+**Horas por área:** Frontend 204 h · Backend 168 h · Motor/Algoritmo 74 h · Base de datos 23 h · Seguridad 18 h · Diseño UI 16 h · DevOps/Infra 10 h.
 
 > Las horas son **esfuerzo estimado**, no calendario. En Jira las horas están solo en la descripción, no en el campo de estimación ([EC-016](../07-registro/01-errores-conocidos.md)).
-> El Sprint 1 está sobrecargado; propuesta de división 1a/1b en [05-roadmap-y-sprints.md](../01-producto/05-roadmap-y-sprints.md) ([DP-011](../07-registro/02-decisiones-pendientes.md)).
+> El Sprint 1 es el más cargado (155 h); se decidió no dividirlo ([DP-011](../07-registro/02-decisiones-pendientes.md#dp-011)). Orden interno recomendado en [05-roadmap-y-sprints.md](../01-producto/05-roadmap-y-sprints.md).
 
 **Etiquetas de área en Jira:** Backend · Frontend · BaseDeDatos · Motor · Seguridad · DevOps · DisenoUI (+ `Sprint-N`).
 
 ---
 
 <a id="sprint-1"></a>
-## Sprint 1 · Fundaciones — 174 h
+## Sprint 1 · Fundaciones — 155 h
 
 ### Historia [ROS-74](02-historias-de-usuario.md#ros-74) · Fundaciones del sistema de diseño Nocturne
 Feature: `001-design-system-nocturne` · 2 tarea(s) · 14 h
@@ -193,152 +193,168 @@ DevOps/Infra · **6 h** · Sprint 1
 **Listo cuando:** una revisión de configuración no encuentra tráfico ni almacenamiento sin cifrar.
 
 ### Historia [ROS-89](02-historias-de-usuario.md#ros-89) · Autenticación de usuarios
-Feature: `002-autenticacion-oauth` · 2 tarea(s) · 14 h
+Feature: `002-autenticacion-oauth` · 2 tarea(s) · 11 h
 
 <a id="ros-180"></a>
-#### ROS-180 · Diseñar modelo de datos de usuarios y sesiones
-Base de datos · **6 h** · Sprint 1
+#### ROS-180 · Modelar el usuario local vinculado a Auth0
+Base de datos · **3 h** · Sprint 1
 
-- [ ] Tabla usuarios (id, correo, nombre, avatar, fechas)
-- [ ] Tabla sesiones (refresh token hasheado, expiración, dispositivo)
-- [ ] Tabla proveedores_vinculados (usuario, proveedor, id externo)
-- [ ] Índices y restricción de unicidad por correo
-- [ ] Escribir la migración inicial
+- [ ] Modelo de usuario propio (AUTH_USER_MODEL = accounts.User) antes de la primera migración
+- [ ] Campos: auth0_sub (único), email, full_name, avatar_url, onboarding_completed_at, last_login_at
+- [ ] Índices: único por auth0_sub y por lower(email)
+- [ ] Migración inicial y fábrica de pruebas
 
-**Listo cuando:** la migración corre limpia y permite crear un usuario con proveedor vinculado.
+**Listo cuando:** la migración corre limpia y se puede crear un usuario identificado por su auth0_sub.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 <a id="ros-181"></a>
-#### ROS-181 · Implementar middleware de autenticación y guardas de ruta
+#### ROS-181 · Validar el access token de Auth0 en la API y proteger rutas
 Backend · **8 h** · Sprint 1
 
-- [ ] Middleware que verifica y decodifica el token de acceso
-- [ ] Aplicar el middleware a todas las rutas privadas
-- [ ] Respuestas 401 / 403 consistentes
-- [ ] Guarda de rutas en el frontend con redirección a login
-- [ ] Pruebas: sin token, token expirado, token válido
+- [ ] Clase de autenticación DRF que valida el JWT de Auth0 (RS256, JWKS en caché, iss, aud, exp)
+- [ ] Aplicarla por defecto a toda la API salvo /api/health y /api/schema
+- [ ] Respuestas 401 / 403 con el formato de error estándar
+- [ ] Guarda de rutas en el frontend (middleware del SDK) con redirección a /auth/login
+- [ ] Pruebas: sin token, expirado, audiencia o emisor incorrectos, firma inválida, alg none, kid desconocido
 
-**Listo cuando:** ninguna ruta privada responde sin un token válido.
+**Listo cuando:** ninguna ruta privada responde sin un access token válido emitido por el tenant de Rosetta.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 ### Historia [ROS-90](02-historias-de-usuario.md#ros-90) · Inicio de sesión con OAuth (Google, Microsoft, Apple)
-Feature: `002-autenticacion-oauth` · 3 tarea(s) · 20 h
+Feature: `002-autenticacion-oauth` · 3 tarea(s) · 13 h
 
 <a id="ros-182"></a>
-#### ROS-182 · Registrar apps OAuth y configurar proveedores
+#### ROS-182 · Configurar el tenant de Auth0 y los proveedores Google y Microsoft
 DevOps/Infra · **4 h** · Sprint 1
 
-- [ ] Crear credenciales OAuth en Google Cloud Console
-- [ ] Crear credenciales en Microsoft Entra ID
-- [ ] Configurar redirect URIs de desarrollo y producción
-- [ ] Guardar client id/secret en variables de entorno (nunca en el repo)
-- [ ] Documentar el procedimiento de configuración
+- [ ] Aplicación Regular Web 'Rosetta Web' con URLs de callback, logout y orígenes permitidos (local y staging)
+- [ ] API 'Rosetta API' (audiencia) con vida de access token de 15 min y RS256
+- [ ] Conexiones Google y Microsoft habilitadas solo para Rosetta; desactivar la base de datos de contraseñas (DP-014)
+- [ ] Registrar apps propias en Google Cloud y Microsoft Entra ID para producción (las claves de desarrollo de Auth0 solo sirven en local)
+- [ ] Variables AUTH0_* en .env (nunca en el repo) y procedimiento documentado en el quickstart de 002
 
-**Listo cuando:** existen credenciales válidas por entorno y documentadas.
+**Listo cuando:** un usuario de prueba entra con Google en local y el tenant está descrito en el quickstart.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 <a id="ros-183"></a>
-#### ROS-183 · Implementar flujo OAuth en backend (callback e intercambio de código)
-Backend · **10 h** · Sprint 1
+#### ROS-183 · Integrar el SDK de Auth0 para Next.js y enriquecer el token
+Frontend · **4 h** · Sprint 1
 
-- [ ] Endpoint GET /auth/:provider que inicia el flujo
-- [ ] Endpoint GET /auth/:provider/callback
-- [ ] Intercambiar el code por el token del proveedor
-- [ ] Obtener el perfil (correo, nombre, avatar)
-- [ ] Crear el usuario si no existe, o recuperarlo por correo
-- [ ] Emitir la sesión propia y redirigir a la app
+- [ ] Instalar @auth0/nextjs-auth0 v4; cliente en src/lib/auth0.ts y middleware.ts
+- [ ] Rutas /auth/login, /auth/logout, /auth/callback montadas por el SDK (quitar el rewrite /auth hacia Django)
+- [ ] Pedir audiencia de Rosetta API y scopes openid profile email offline_access
+- [ ] Action post-login en Auth0 que añade email, nombre y avatar como claims del access token
 
-**Listo cuando:** un usuario real entra con Google y queda persistido.
+**Listo cuando:** tras iniciar sesión, el servidor de Next obtiene un access token para Rosetta API con email y nombre.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 <a id="ros-184"></a>
 #### ROS-184 · Construir pantalla de login con botones de proveedor
-Frontend · **6 h** · Sprint 1
+Frontend · **5 h** · Sprint 1
 
-- [ ] Maquetar la pantalla de login con componentes Nocturne
-- [ ] Botones de Google, Microsoft y Apple
-- [ ] Estados de carga y de error del proveedor
-- [ ] Redirección al destino previo tras iniciar sesión
-- [ ] Prueba manual del flujo completo
+- [ ] Pantalla /login con Nocturne: 'Continuar con Google' y 'Continuar con Microsoft'
+- [ ] Cada botón va a /auth/login?connection=<conexión>&returnTo=<ruta>
+- [ ] Página /auth/error con mensajes por código (cancelado, proveedor caído, cuenta existente)
+- [ ] Nota de privacidad: qué datos se piden y para qué
+- [ ] Pruebas de componente y E2E con proveedor simulado
 
-**Listo cuando:** desde la pantalla se completa el login end-to-end.
+**Listo cuando:** desde /login se inicia sesión con ambos proveedores y un error nunca deja pantalla en blanco.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 ### Historia [ROS-91](02-historias-de-usuario.md#ros-91) · Registro y onboarding de cuenta nueva
-Feature: `002-autenticacion-oauth` · 2 tarea(s) · 14 h
+Feature: `002-autenticacion-oauth` · 2 tarea(s) · 13 h
 
 <a id="ros-185"></a>
-#### ROS-185 · Implementar alta de usuario en el primer inicio
-Backend · **6 h** · Sprint 1
+#### ROS-185 · Alta del usuario en el primer acceso a la API
+Backend · **5 h** · Sprint 1
 
-- [ ] Detectar si es el primer inicio de sesión del usuario
-- [ ] Crear el usuario y su espacio de trabajo
-- [ ] Marcar el estado de onboarding como pendiente
-- [ ] Endpoint para consultar y actualizar el estado de onboarding
-- [ ] Pruebas de alta y de segundo inicio
+- [ ] Crear el usuario local la primera vez que llega un token válido (por auth0_sub) y actualizar email/nombre/avatar
+- [ ] Marcar el onboarding como pendiente en el alta
+- [ ] GET /api/me y POST /api/me/onboarding/complete
+- [ ] Pruebas de primer acceso, segundo acceso y datos del perfil actualizados
 
-**Listo cuando:** el primer login deja al usuario listo para crear su primer proyecto.
+**Listo cuando:** el primer request autenticado crea el usuario y los siguientes lo reconocen sin duplicarlo.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 <a id="ros-186"></a>
 #### ROS-186 · Construir flujo de onboarding en la UI
 Frontend · **8 h** · Sprint 1
 
-- [ ] Pantalla de bienvenida con el propósito de Rosetta
-- [ ] Paso 1: crear o abrir un proyecto
-- [ ] Paso 2: cargar la primera fuente (esquema)
-- [ ] Persistir el progreso del onboarding
-- [ ] Permitir omitir y retomar después
+- [ ] Pantalla /onboarding con bienvenida por nombre
+- [ ] Paso 1: crear el primer proyecto (nombre, dialecto)
+- [ ] Paso 2: subir el DDL (o saltar)
+- [ ] Redirección a /onboarding mientras esté pendiente; a /projects al completarlo
+- [ ] Pruebas del recorrido completo
 
-**Listo cuando:** un usuario nuevo llega solo hasta tener un proyecto con una fuente cargada.
+**Listo cuando:** un usuario nuevo termina el onboarding con un proyecto creado y no vuelve a verlo.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 ### Historia [ROS-92](02-historias-de-usuario.md#ros-92) · Gestión de sesión y tokens (refresh, expiración, cierre)
-Feature: `002-autenticacion-oauth` · 2 tarea(s) · 14 h
+Feature: `002-autenticacion-oauth` · 2 tarea(s) · 9 h
 
 <a id="ros-187"></a>
-#### ROS-187 · Implementar emisión, refresh y revocación de tokens
-Backend · **8 h** · Sprint 1
+#### ROS-187 · Configurar expiración, renovación y cierre de sesión
+Backend · **3 h** · Sprint 1
 
-- [ ] Generar access token de vida corta y refresh token de vida larga
-- [ ] Endpoint POST /auth/refresh con rotación del refresh
-- [ ] Endpoint POST /auth/logout que invalida la sesión
-- [ ] Guardar solo el hash del refresh token
-- [ ] Pruebas de expiración, rotación y reuso de token revocado
+- [ ] Access token de 15 min; refresh token con rotación y detección de reuso activadas en el tenant
+- [ ] Sesión del SDK con duración deslizante 14 días y máxima 30 días (provisional)
+- [ ] Logout de /auth/logout cierra la sesión de Rosetta y la de Auth0
+- [ ] Pruebas: token expirado se renueva en silencio; tras logout la API rechaza la sesión
 
-**Listo cuando:** un token revocado o expirado deja de dar acceso de inmediato.
+**Listo cuando:** la sesión se renueva sola, caduca en los plazos definidos y el logout la invalida.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 <a id="ros-188"></a>
-#### ROS-188 · Gestionar la sesión en el cliente
+#### ROS-188 · Proxy /api del servidor de Next con el token de Auth0
 Frontend · **6 h** · Sprint 1
 
-- [ ] Almacenar la sesión de forma segura (cookie httpOnly)
-- [ ] Renovación silenciosa antes de que expire el access token
-- [ ] Interceptor que reintenta una vez ante un 401
-- [ ] Cerrar sesión y limpiar todo el estado del cliente
-- [ ] Pruebas de sesión larga y de expiración
+- [ ] Route handler /api/[...path] que obtiene el access token en el servidor y lo reenvía como Bearer a Django
+- [ ] El navegador nunca ve el access token
+- [ ] Rechazar mutaciones sin Origin propio (protección CSRF) y pasar /api/health sin token
+- [ ] Ante sesión vencida: 401 al cliente y redirección a /auth/login?returnTo=
+- [ ] Pruebas unitarias del proxy
 
-**Listo cuando:** el usuario no ve cortes de sesión inesperados durante el uso normal.
+**Listo cuando:** todas las llamadas del navegador a /api llegan a Django autenticadas y sin exponer tokens.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 ### Historia [ROS-93](02-historias-de-usuario.md#ros-93) · Seguridad del flujo OAuth (PKCE, state, redirect URIs)
-Feature: `002-autenticacion-oauth` · 2 tarea(s) · 13 h
+Feature: `002-autenticacion-oauth` · 2 tarea(s) · 10 h
 
 <a id="ros-189"></a>
-#### ROS-189 · Implementar PKCE, state y validación de redirect URIs
-Seguridad · **8 h** · Sprint 1
+#### ROS-189 · Verificar la seguridad del flujo OAuth con Auth0
+Seguridad · **5 h** · Sprint 1
 
-- [ ] Generar code_verifier / code_challenge y verificarlos en el callback
-- [ ] Generar y validar el parámetro state (anti-CSRF)
-- [ ] Lista blanca de redirect URIs permitidas
-- [ ] Validar firma, issuer y audience del token del proveedor
-- [ ] Pruebas con state inválido, redirect no permitido y código reusado
+- [ ] Comprobar que el SDK usa PKCE y state (prueba de la URL de /auth/login)
+- [ ] Lista blanca de callback, logout y orígenes en el tenant sin comodines
+- [ ] La API valida iss, aud, exp, algoritmo y kid (casos maliciosos en pruebas)
+- [ ] Checklist de configuración del tenant revisado y anexado al acta de 002
 
-**Listo cuando:** los casos maliciosos de prueba son rechazados por el backend.
+**Listo cuando:** los casos maliciosos (token de otra audiencia, redirect no permitido, firma alterada) se rechazan.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 <a id="ros-190"></a>
 #### ROS-190 · Endurecer manejo de secretos y cookies
 Seguridad · **5 h** · Sprint 1
 
-- [ ] Mover todos los secretos a variables de entorno
-- [ ] Cookies con httpOnly, secure y SameSite
-- [ ] Cabeceras de seguridad (CSP, HSTS, X-Frame-Options)
-- [ ] Revisar que no se registren tokens ni PII en los logs
+- [ ] Todos los secretos (AUTH0_SECRET, AUTH0_CLIENT_SECRET…) solo en variables de entorno
+- [ ] Cookie de sesión del SDK httpOnly, Secure y SameSite=Lax
+- [ ] Cabeceras de seguridad (CSP, HSTS, X-Frame-Options) en Next y Django
+- [ ] Verificar que no se registren tokens ni PII en logs
 - [ ] Checklist de seguridad revisado
 
-**Listo cuando:** no hay secretos en el repositorio y las cabeceras están activas.
+**Listo cuando:** gitleaks limpio, cookies con los flags correctos y logs sin tokens ni correos.
+
+> Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
 ---
 

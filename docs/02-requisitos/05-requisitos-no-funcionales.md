@@ -12,8 +12,8 @@
 | RNF-04 | Identificadores no predecibles | UUID en todas las rutas públicas | ROS-178 |
 | RNF-05 | Sin secretos en el repositorio | Escáner de secretos en CI sin hallazgos | ROS-190 |
 | RNF-06 | Sin tokens ni PII en logs | Revisión + prueba que inspecciona logs de un flujo de login | ROS-190 |
-| RNF-07 | OAuth seguro | PKCE, `state`, redirect URIs en lista blanca; casos maliciosos rechazados | ROS-189 |
-| RNF-08 | Sesión segura | Cookies `httpOnly` + `Secure` + `SameSite=Lax`; access token ≤ 15 min; refresh rotado | ROS-187, ROS-188 |
+| RNF-07 | OAuth seguro | PKCE y `state` (SDK de Auth0), callback/logout/orígenes en lista blanca del tenant; tokens de otra audiencia o firma alterada rechazados | ROS-189 |
+| RNF-08 | Sesión segura | Cookie de sesión cifrada `httpOnly` + `Secure` + `SameSite=Lax`; access token ≤ 15 min y solo en el servidor; refresh con rotación | ROS-187, ROS-188 |
 | RNF-09 | Cabeceras de seguridad | CSP, HSTS, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` | ROS-190 |
 
 ## Rendimiento
