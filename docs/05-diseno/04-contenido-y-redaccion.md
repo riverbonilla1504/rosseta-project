@@ -69,6 +69,12 @@
 | OAuth cancelado | "Cancelaste el inicio de sesión con {proveedor}. Puedes intentarlo de nuevo cuando quieras." |
 | Proveedor caído | "{proveedor} no respondió. Intenta en unos minutos o usa otro proveedor." |
 | Error genérico | "Algo salió mal y no se guardó ningún cambio. Intenta de nuevo." |
+| Frase de valor (acceso) | `[PENDIENTE: DP-025]` |
+| Nota de privacidad (acceso) | `[PENDIENTE: DP-025]` |
+| Bienvenida (onboarding) | `[PENDIENTE: DP-025]` |
+| Correo ya registrado con otro proveedor | `[PENDIENTE: DP-025]` |
+| Correo no verificado o no entregado | `[PENDIENTE: DP-025]` |
+| Cuenta desactivada | `[PENDIENTE: DP-025]` |
 | Insignia de solo lectura | "solo lectura" (title: "Rosetta nunca escribe en tu base de datos.") |
 | Modo de redacción (MVP) | "redacción por reglas" (title: "Descripciones generadas con plantillas deterministas, sin LLM.") |
 

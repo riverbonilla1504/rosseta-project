@@ -21,7 +21,7 @@
 | [ROS-74](../02-requisitos/02-historias-de-usuario.md#ros-74) | Fundaciones del sistema de diseño Nocturne | 001 | 168, 169 | — | RNF-24, 27 | 10 | — | — | — | ⬜ |
 | [ROS-75](../02-requisitos/02-historias-de-usuario.md#ros-75) | Biblioteca de componentes (chips, fichas, tablas, cola) | 001 | 170, 171 | — | — | 10 | — | — | — | ⬜ |
 | [ROS-89](../02-requisitos/02-historias-de-usuario.md#ros-89) | Autenticación de usuarios | 002 | 180, 181 | — | RNF-03 | 01 | — | — | — | ⬜ |
-| [ROS-90](../02-requisitos/02-historias-de-usuario.md#ros-90) | Inicio de sesión con OAuth (Google, Microsoft, Apple) | 002 | 182, 183, 184 | — | — | 01 | — | — | — | ⬜ |
+| [ROS-90](../02-requisitos/02-historias-de-usuario.md#ros-90) | Inicio de sesión con OAuth (Google y Microsoft) | 002 | 182, 183, 184 | — | — | 01 | — | — | — | ⬜ |
 | [ROS-91](../02-requisitos/02-historias-de-usuario.md#ros-91) | Registro y onboarding de cuenta nueva | 002 | 185, 186 | — | — | 01 | — | — | — | ⬜ |
 | [ROS-92](../02-requisitos/02-historias-de-usuario.md#ros-92) | Gestión de sesión y tokens (refresh, expiración, cierre) | 002 | 187, 188 | — | RNF-08 | 08 | — | — | — | ⬜ |
 | [ROS-93](../02-requisitos/02-historias-de-usuario.md#ros-93) | Seguridad del flujo OAuth (PKCE, state, redirect URIs) | 002 | 189, 190 | — | RNF-05…07, 09 | — | — | — | — | ⬜ |

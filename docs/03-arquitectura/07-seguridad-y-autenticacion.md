@@ -48,9 +48,9 @@ sequenceDiagram
 ```
 
 - El flujo OAuth (PKCE, `state`, `nonce`, validación del `id_token`) lo hace el **SDK de Auth0**. Rosetta **no** implementa criptografía.
-- Proveedores: **Google** (`google-oauth2`) y **Microsoft** (DP-014). La base de datos de usuario/contraseña de Auth0 está **desactivada**.
+- Proveedores: **Google** (`google-oauth2`) y **Microsoft** (DP-014), este último **solo con cuentas personales** en el MVP (conexión social). Las cuentas de trabajo o institucionales (Entra ID) exigen una conexión empresarial y llegan con el SSO empresarial (ROS-102, Fase 3). La base de datos de usuario/contraseña de Auth0 está **desactivada**.
 - Scopes: `openid profile email offline_access`, con audiencia `AUTH0_AUDIENCE` (Rosetta API). Nada más (RNF-36, ROS-101).
-- Identidad: el usuario local se vincula por **`auth0_sub`**. Si el correo ya existe con otro proveedor, Auth0 crea otra identidad; en el MVP **no** se vinculan automáticamente y Rosetta muestra el error `account_exists_other_provider` (la vinculación es ROS-98, Fase 3).
+- Identidad: el usuario local se vincula por **`auth0_sub`**. Si el correo ya existe con otro proveedor, Auth0 crea otra identidad; en el MVP **no** se vinculan automáticamente y Rosetta muestra el error `account_exists_other_provider` (la vinculación es ROS-98, Fase 3). Si para un `auth0_sub` ya conocido el proveedor informa un correo que ya pertenece a otro usuario, se deja entrar, **se conserva el correo anterior** (no se actualiza) y se registra un evento `WARNING` sin datos personales (CD-006).
 - Solo se aceptan correos **verificados** (la Action post-login rechaza `email_verified=false`).
 - Cancelar el consentimiento o fallo del proveedor → `/auth/error?code=…` con mensaje claro y botón para reintentar (sin pantalla en blanco ni bucle).
 
@@ -58,7 +58,7 @@ sequenceDiagram
 
 | Elemento | Valor |
 |---|---|
-| Sesión | Cookie cifrada del SDK (`__session`), `HttpOnly; Secure; SameSite=Lax`; duración deslizante **14 días**, máximo **30 días** *(provisional)* |
+| Sesión | Cookie cifrada del SDK (`__session`), `HttpOnly; Secure; SameSite=Lax`; duración deslizante **14 días**, máximo **30 días** *(provisional, [DP-022](../07-registro/02-decisiones-pendientes.md#dp-022))* |
 | Access token | JWT **RS256** emitido por Auth0 para la API "Rosetta API"; vida **15 min** (configurado en la API del tenant). Solo existe en el servidor de Next.js |
 | Refresh token | Lo guarda el SDK dentro de la sesión cifrada; **rotación y detección de reuso activadas** en la aplicación del tenant |
 | Renovación | `auth0.getAccessToken()` renueva en silencio cuando el access vence |
