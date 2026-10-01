@@ -156,6 +156,8 @@ Formato único de error (manejador en `core`):
 | 413 | Archivo demasiado grande |
 | 422 | Archivo válido pero no procesable (DDL sin `CREATE TABLE`) |
 
+Un código propio definido por la excepción (p. ej. `account_disabled`, 403) tiene prioridad sobre el código por defecto de su estado HTTP.
+
 ## 7. Configuración
 
 - Toda configuración por variables de entorno (`django-environ`). Lista completa en [08-infraestructura-y-entornos.md](08-infraestructura-y-entornos.md).

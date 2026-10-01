@@ -215,7 +215,7 @@ Backend · **8 h** · Sprint 1
 - [ ] Clase de autenticación DRF que valida el JWT de Auth0 (RS256, JWKS en caché, iss, aud, exp)
 - [ ] Aplicarla por defecto a toda la API salvo /api/health y /api/schema
 - [ ] Respuestas 401 / 403 con el formato de error estándar
-- [ ] Guarda de rutas en el frontend (middleware del SDK) con redirección a /auth/login
+- [ ] Guarda de rutas en el frontend (middleware del SDK) con redirección a /login?returnTo=
 - [ ] Pruebas: sin token, expirado, audiencia o emisor incorrectos, firma inválida, alg none, kid desconocido
 
 **Listo cuando:** ninguna ruta privada responde sin un access token válido emitido por el tenant de Rosetta.
@@ -229,7 +229,7 @@ Feature: `002-autenticacion-oauth` · 3 tarea(s) · 13 h
 #### ROS-182 · Configurar el tenant de Auth0 y los proveedores Google y Microsoft
 DevOps/Infra · **4 h** · Sprint 1
 
-- [ ] Aplicación Regular Web 'Rosetta Web' con URLs de callback, logout y orígenes permitidos (local y staging)
+- [ ] Aplicación Regular Web 'Rosetta Web' con URLs de callback, logout (/login y /auth/error) y orígenes permitidos, sin comodines (local y staging)
 - [ ] API 'Rosetta API' (audiencia) con vida de access token de 15 min y RS256
 - [ ] Conexiones Google y Microsoft (esta última solo con cuentas personales) habilitadas solo para Rosetta; desactivar la base de datos de contraseñas (DP-014)
 - [ ] Registrar apps propias en Google Cloud y Microsoft Entra ID para producción, con audiencia de Microsoft solo para cuentas personales (las claves de desarrollo de Auth0 solo sirven en local)
@@ -259,6 +259,7 @@ Frontend · **5 h** · Sprint 1
 - [ ] Pantalla /login con Nocturne: 'Continuar con Google' y 'Continuar con Microsoft'
 - [ ] Cada botón va a /auth/login?connection=<conexión>&returnTo=<ruta>
 - [ ] Página /auth/error con mensajes por código (cancelado, proveedor caído, cuenta existente)
+- [ ] Ruta /auth/denied: guarda el código, cierra la sesión del SDK y lleva a /auth/error cuando el backend rechaza una cuenta (evita el bucle)
 - [ ] Nota de privacidad: qué datos se piden y para qué
 - [ ] Pruebas de componente y E2E con proveedor simulado
 
@@ -320,7 +321,7 @@ Frontend · **6 h** · Sprint 1
 - [ ] Route handler /api/[...path] que obtiene el access token en el servidor y lo reenvía como Bearer a Django
 - [ ] El navegador nunca ve el access token
 - [ ] Rechazar mutaciones sin Origin propio (protección CSRF) y pasar /api/health sin token
-- [ ] Ante sesión vencida: 401 al cliente y redirección a /auth/login?returnTo=
+- [ ] Ante sesión vencida: 401 al cliente y redirección a /login?returnTo=
 - [ ] Pruebas unitarias del proxy
 
 **Listo cuando:** todas las llamadas del navegador a /api llegan a Django autenticadas y sin exponer tokens.

@@ -212,6 +212,23 @@ Invariante probado: `sum(by_level) == total_columns` (tarea ROS-146). Los númer
 
 Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: Bearer <access token>` emitido por el tenant de Auth0 para la audiencia `AUTH0_AUDIENCE`. Django valida firma RS256 (JWKS), `iss` = `https://<AUTH0_DOMAIN>/`, `aud`, `exp`. El primer request válido de un `sub` nuevo crea el usuario local (onboarding pendiente). Token ausente o inválido → `401 session_expired`.
 
+### 3.9 `GET /api/me` y `POST /api/me/onboarding/complete`
+
+`GET /api/me` devuelve la cuenta de la persona autenticada; el primer acceso válido de una identidad nueva la crea (onboarding pendiente). `200`:
+```json
+{
+  "id": "3f2b…",
+  "email": "ana@example.test",
+  "full_name": "Ana Prueba",
+  "avatar_url": null,
+  "onboarding_completed": false
+}
+```
+- `avatar_url` es opcional (`null` si el proveedor no entrega avatar).
+- `POST /api/me/onboarding/complete` no tiene cuerpo, devuelve la misma forma con `onboarding_completed: true` y es **idempotente** (repetirla no cambia la fecha de finalización). No comprueba que exista un proyecto: la interfaz la llama tras crear el primero.
+- Ambas pueden responder `401 session_expired` o `403` con `account_disabled`, `account_exists_other_provider` o `email_missing` (ver §4).
+- Contrato detallado en `specs/002-autenticacion-oauth/contracts/accounts-api.yaml`.
+
 ## 4. Códigos de error de dominio
 
 | `code` | HTTP | Significado |
@@ -229,4 +246,10 @@ Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: 
 | `oauth_denied` | — | (redirección a `/auth/error?code=oauth_denied`) el usuario canceló |
 | `oauth_failed` | — | (redirección) proveedor caído o respuesta inválida |
 | `session_expired` | 401 | Sin token, token inválido o vencido y no renovable |
-| `account_exists_other_provider` | — | (redirección) el correo ya existe con otro proveedor; vinculación en ROS-98 |
+| `account_exists_other_provider` | 403 | El correo ya existe con otro proveedor; el cliente navega a `/auth/denied` (la vinculación es ROS-98). Código **provisional** hasta [DP-025](../07-registro/02-decisiones-pendientes.md#dp-025) |
+| `account_disabled` | 403 | La cuenta está desactivada. **Provisional** (DP-025) |
+| `email_missing` | 403 | La identidad no trae correo y no se puede crear la cuenta. **Provisional** (DP-025) |
+| `email_not_verified` | — | (redirección a `/auth/error`) el proveedor no declara verificado el correo; lo deniega la Acción post-login. **Provisional** (DP-025) |
+| `forbidden_origin` | 403 | Mutación cuyo `Origin` no es el de Rosetta (proxy BFF) |
+| `identity_unavailable` | 503 | El servicio de identidad no respondió al renovar la sesión (proxy BFF); la sesión no se toca |
+| `backend_unavailable` | 502 | El proxy BFF no pudo contactar con el backend |
