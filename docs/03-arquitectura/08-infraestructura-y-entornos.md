@@ -42,7 +42,7 @@ Nunca se copian datos de prod a otros entornos (Constitución V).
 | `redis` | `redis:7` | 6379 | |
 | `backend` | build `backend/` | 8000 | `runserver` con recarga |
 | `worker` | build `backend/` | — | `celery -A config worker -l info` |
-| `frontend` | build `frontend/` o `pnpm dev` en el host | 3000 | Reescribe `/api` y `/auth` a `backend:8000` |
+| `frontend` | build `frontend/` o `pnpm dev` en el host | 3000 | Sirve `/auth/*` (SDK de Auth0) y `/api/*` (proxy BFF que reenvía a `BACKEND_INTERNAL_URL`); sin *rewrites* |
 
 Comandos estándar (Makefile o `justfile`, se crea en la preparación):
 
@@ -56,7 +56,7 @@ make lint        # ruff, mypy, eslint, tsc
 make api-types   # regenera frontend/src/lib/api/schema.d.ts
 ```
 
-Auth0 en local: en la aplicación del tenant de desarrollo, callback `http://localhost:3000/auth/callback`, logout `http://localhost:3000/login` y origen `http://localhost:3000` (ROS-182). Google funciona en local con las claves de desarrollo de Auth0; para staging/producción se cargan credenciales propias de Google y Microsoft en el panel. Paso a paso en el `quickstart.md` de la feature 002.
+Auth0 en local: en la aplicación del tenant de desarrollo, callback `http://localhost:3000/auth/callback`, logout `http://localhost:3000/login` y `http://localhost:3000/auth/error` (sin comodines) y origen `http://localhost:3000` (ROS-182). Google funciona en local con las claves de desarrollo de Auth0; para staging/producción se cargan credenciales propias de Google y Microsoft en el panel. Paso a paso en el `quickstart.md` de la feature 002.
 
 ## 4. Variables de entorno
 
@@ -79,6 +79,8 @@ Auth0 en local: en la aplicación del tenant de desarrollo, callback `http://loc
 | `AWS_*` / `S3_ENDPOINT_URL` / `S3_BUCKET` | backend, worker | — | **Sí** |
 | `SENTRY_DSN` | backend, frontend | — | Sí |
 | `BACKEND_INTERNAL_URL` | frontend | `http://backend:8000` | No |
+| `AUTH0_ISSUER` / `AUTH0_JWKS_URL` | backend | `http://localhost:4010` (solo pruebas y E2E: sobreescriben el emisor y las claves; producción exige `https` y las rechaza) | No |
+| `E2E_ALLOW_INSECURE_IDP` | frontend | `1` (solo E2E con el proveedor simulado; el SDK lo ignora si `NODE_ENV=production`) | No |
 | `MAX_DDL_UPLOAD_MB` / `MAX_SAMPLE_UPLOAD_MB` | backend | `20` / `200` (provisional) | No |
 
 Dos archivos de entorno en local: **`.env`** en la raíz (Django, Celery, compose; plantilla `.env.example`) y **`frontend/.env.local`** (Next.js lee el `.env` de su propia carpeta; plantilla `frontend/.env.example`). Ambos ignorados por git y versionados solo como ejemplo **sin** secretos.

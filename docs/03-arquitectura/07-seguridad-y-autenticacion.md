@@ -52,7 +52,7 @@ sequenceDiagram
 - Scopes: `openid profile email offline_access`, con audiencia `AUTH0_AUDIENCE` (Rosetta API). Nada más (RNF-36, ROS-101).
 - Identidad: el usuario local se vincula por **`auth0_sub`**. Si el correo ya existe con otro proveedor, Auth0 crea otra identidad; en el MVP **no** se vinculan automáticamente y Rosetta muestra el error `account_exists_other_provider` (la vinculación es ROS-98, Fase 3). Si para un `auth0_sub` ya conocido el proveedor informa un correo que ya pertenece a otro usuario, se deja entrar, **se conserva el correo anterior** (no se actualiza) y se registra un evento `WARNING` sin datos personales (CD-006).
 - Solo se aceptan correos **verificados** (la Action post-login rechaza `email_verified=false`).
-- Cancelar el consentimiento o fallo del proveedor → `/auth/error?code=…` con mensaje claro y botón para reintentar (sin pantalla en blanco ni bucle).
+- Cancelar el consentimiento o fallo del proveedor → `/auth/error?code=…` con mensaje claro y botón para reintentar (sin pantalla en blanco ni bucle). Si el backend rechaza la cuenta después de autenticarse (403 `account_*`), `/auth/denied?code=…` cierra la sesión del SDK y lleva a `/auth/error`, para evitar un bucle; la lista blanca de cierre de sesión del tenant es exactamente `/login` y `/auth/error` (CD-007).
 
 ## 3. Sesión y tokens (ROS-92, ROS-187, ROS-188)
 
@@ -66,7 +66,7 @@ sequenceDiagram
 | CSRF | El proxy BFF solo acepta `POST/PATCH/PUT/DELETE` si `Origin` coincide con `APP_BASE_URL` |
 | Backend | Sin estado de sesión: cada petición trae su Bearer. JWKS en caché (Redis/memoria) con recarga ante `kid` desconocido |
 
-Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route handler* añade el token. Ante sesión vencida responde `401` y el cliente redirige a `/auth/login?returnTo=<ruta actual>`. El middleware del SDK protege las rutas de la app.
+Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route handler* añade el token. Ante sesión vencida responde `401` y el cliente redirige a `/login?returnTo=<ruta actual>` (la pantalla de acceso de Rosetta). El middleware del SDK protege las rutas de la app y, sin sesión, también redirige a `/login?returnTo=`.
 
 ## 4. Autorización y aislamiento (ROS-84, ROS-178)
 
@@ -81,7 +81,7 @@ Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route han
 | Cabecera / ajuste | Valor |
 |---|---|
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` (prod) |
-| `Content-Security-Policy` | `default-src 'self'; img-src 'self' data: https://lh3.googleusercontent.com https://s.gravatar.com https://*.auth0.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; connect-src 'self'` *(ajustar en 001 si las fuentes se autoalojan)* |
+| `Content-Security-Policy` | **Next.js** (middleware, con un nonce nuevo por petición): `default-src 'self'; script-src 'self' 'nonce-<nonce>' 'strict-dynamic'; img-src 'self' data: https://lh3.googleusercontent.com https://s.gravatar.com https://*.auth0.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'` (`'unsafe-eval'` solo en desarrollo; sin `script-src` Next no ejecutaría sus scripts en línea). **Django** (respuestas JSON): `default-src 'none'; frame-ancestors 'none'`. *(ajustar en 001 si las fuentes se autoalojan)* |
 | `X-Frame-Options` | `DENY` |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
