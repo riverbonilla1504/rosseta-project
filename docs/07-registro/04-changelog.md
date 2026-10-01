@@ -7,6 +7,22 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.5.0] — 2026-10-01 · CD-006
+
+### Decidido
+- [DP-014](02-decisiones-pendientes.md#dp-014) (actualización): Microsoft solo con cuentas personales en el MVP; las de trabajo o institucionales son SSO empresarial (ROS-102, Fase 3). Si el correo que informa el proveedor choca con otra cuenta, se conserva el anterior y se registra el evento sin datos personales.
+- Onboarding de un solo paso en el MVP: crear el primer proyecto. El paso "subir el DDL" se añade con la feature 004.
+
+### Cambiado
+- ROS-90 pasa a titularse "Inicio de sesión con OAuth (Google y Microsoft)"; Apple ya estaba fuera del MVP.
+- ROS-186: se retira la actividad "subir el DDL (o saltar)"; ROS-182: Microsoft solo con cuentas personales.
+- [07-seguridad §2 y §3](../03-arquitectura/07-seguridad-y-autenticacion.md), [diccionario de datos](../04-datos/02-diccionario-de-datos.md), [03-pantallas §7](../05-diseno/03-pantallas.md), NO-14 y la matriz de trazabilidad.
+
+### Añadido
+- [DP-022](02-decisiones-pendientes.md#dp-022) (duración de la sesión), [DP-023](02-decisiones-pendientes.md#dp-023) (proveedor sin nombre), [DP-024](02-decisiones-pendientes.md#dp-024) (acceso de administración interna), [DP-025](02-decisiones-pendientes.md#dp-025) (textos de acceso y onboarding, con propuestas).
+- [EC-022](01-errores-conocidos.md#ec-022) (voseo en ROS-174) y [EC-023](01-errores-conocidos.md#ec-023) (`check-prerequisites.sh` exige `plan.md`).
+- Filas `[PENDIENTE: DP-025]` en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+
 ## [1.4.0] — 2026-09-30 · CD-005
 
 ### Añadido

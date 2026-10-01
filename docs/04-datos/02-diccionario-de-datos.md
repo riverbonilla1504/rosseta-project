@@ -17,8 +17,8 @@ Usuario de Rosetta. Modelo propio (`AUTH_USER_MODEL = "accounts.User"`) basado e
 |---|---|---|---|
 | id | uuid | No | PK |
 | auth0_sub | varchar(255) | No | Claim `sub` del access token (`google-oauth2\|1234…`, `windowslive\|…`). Único |
-| email | varchar(254) | No | Correo verificado (claim de la Action post-login). Único sin distinguir mayúsculas (`lower(email)`) |
-| full_name | varchar(200) | No | Nombre del proveedor; editable en Fase 2 (ROS-99) |
+| email | varchar(254) | No | Correo verificado (claim de la Action post-login). Único sin distinguir mayúsculas (`lower(email)`). Si para un `auth0_sub` ya conocido el proveedor informa un correo que ya pertenece a otro usuario, se conserva el anterior (CD-006) |
+| full_name | varchar(200) | No | Nombre del proveedor; editable en Fase 2 (ROS-99). Si el proveedor no lo entrega: `[PENDIENTE: DP-023]` |
 | avatar_url | varchar(500) | Sí | URL de avatar del proveedor |
 | is_active | boolean | No | `false` = desactivado (no se borran usuarios con acciones auditadas) |
 | is_staff | boolean | No | Acceso al admin de Django (soporte interno) |
@@ -26,7 +26,7 @@ Usuario de Rosetta. Modelo propio (`AUTH_USER_MODEL = "accounts.User"`) basado e
 | last_login_at | timestamptz | Sí | Último request autenticado del día (se actualiza como máximo una vez por hora) |
 | created_at, updated_at | timestamptz | No | |
 
-Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google o Microsoft ([DP-014](../07-registro/02-decisiones-pendientes.md#dp-014)). El admin de Django se protege aparte (usuario staff con contraseña fuerte, solo en red interna) `[PENDIENTE]` definir en 002.
+Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google o Microsoft ([DP-014](../07-registro/02-decisiones-pendientes.md#dp-014)). El admin de Django se protege aparte (usuario staff con contraseña fuerte, solo en red interna) `[PENDIENTE: DP-024]` decidir si hace falta en el MVP y cómo se protege.
 
 ---
 

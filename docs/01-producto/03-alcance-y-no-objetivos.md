@@ -38,7 +38,7 @@ Lo que **deliberadamente NO** se construye en la Fase 1:
 | NO-11 | **Exportar catálogo** (YAML/Markdown/JSON/SQL) | Fase 2 | ROS-57 — [DP-006](../07-registro/02-decisiones-pendientes.md) |
 | NO-12 | **Búsqueda y filtros** avanzados del catálogo | Fase 2 | ROS-56 |
 | NO-13 | **Roles, permisos y colaboración multiusuario** | Fase 3; en el MVP cada proyecto tiene un solo usuario | ROS-79, ROS-80 |
-| NO-14 | **MFA, verificación de correo, recuperación de contraseña, SSO empresarial** | Fase 2–3; en el MVP solo hay OAuth | E14 |
+| NO-14 | **MFA, verificación de correo, recuperación de contraseña, SSO empresarial** (incluye las cuentas de Microsoft de trabajo o institucionales) | Fase 2–3; en el MVP solo hay OAuth | E14 |
 | NO-15 | **Organizaciones, dominios permitidos, planes, pagos, facturación** | Fase 3–4 | E15 |
 | NO-16 | **Historial/versionado** con comparación y reversión | Fase 2; en el MVP sí se registra quién hizo cada acción (auditoría básica) | ROS-82, ROS-83 |
 | NO-17 | **Tema claro** | Nocturne es oscuro; no se diseña tema claro | Sin fecha |

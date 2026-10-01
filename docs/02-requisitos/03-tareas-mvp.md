@@ -222,7 +222,7 @@ Backend · **8 h** · Sprint 1
 
 > Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
-### Historia [ROS-90](02-historias-de-usuario.md#ros-90) · Inicio de sesión con OAuth (Google, Microsoft, Apple)
+### Historia [ROS-90](02-historias-de-usuario.md#ros-90) · Inicio de sesión con OAuth (Google y Microsoft)
 Feature: `002-autenticacion-oauth` · 3 tarea(s) · 13 h
 
 <a id="ros-182"></a>
@@ -231,8 +231,8 @@ DevOps/Infra · **4 h** · Sprint 1
 
 - [ ] Aplicación Regular Web 'Rosetta Web' con URLs de callback, logout y orígenes permitidos (local y staging)
 - [ ] API 'Rosetta API' (audiencia) con vida de access token de 15 min y RS256
-- [ ] Conexiones Google y Microsoft habilitadas solo para Rosetta; desactivar la base de datos de contraseñas (DP-014)
-- [ ] Registrar apps propias en Google Cloud y Microsoft Entra ID para producción (las claves de desarrollo de Auth0 solo sirven en local)
+- [ ] Conexiones Google y Microsoft (esta última solo con cuentas personales) habilitadas solo para Rosetta; desactivar la base de datos de contraseñas (DP-014)
+- [ ] Registrar apps propias en Google Cloud y Microsoft Entra ID para producción, con audiencia de Microsoft solo para cuentas personales (las claves de desarrollo de Auth0 solo sirven en local)
 - [ ] Variables AUTH0_* en .env (nunca en el repo) y procedimiento documentado en el quickstart de 002
 
 **Listo cuando:** un usuario de prueba entra con Google en local y el tenant está descrito en el quickstart.
@@ -287,12 +287,13 @@ Backend · **5 h** · Sprint 1
 Frontend · **8 h** · Sprint 1
 
 - [ ] Pantalla /onboarding con bienvenida por nombre
-- [ ] Paso 1: crear el primer proyecto (nombre, dialecto)
-- [ ] Paso 2: subir el DDL (o saltar)
+- [ ] Crear el primer proyecto (nombre, dialecto); el onboarding termina al crearlo
 - [ ] Redirección a /onboarding mientras esté pendiente; a /projects al completarlo
 - [ ] Pruebas del recorrido completo
 
 **Listo cuando:** un usuario nuevo termina el onboarding con un proyecto creado y no vuelve a verlo.
+
+> Ajustada en CD-006: se retira el paso "subir el DDL (o saltar)", que se añade cuando exista la ingesta de fuentes (feature 004). La estimación de 8 h no se recalcula; se revisa al planificar.
 
 > Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
