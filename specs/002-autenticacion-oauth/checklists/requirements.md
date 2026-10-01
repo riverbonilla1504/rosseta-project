@@ -13,8 +13,8 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
-- [ ] Requirements are testable and unambiguous
+- [x] No [NEEDS CLARIFICATION] markers remain
+- [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
 - [x] All acceptance scenarios are defined
@@ -24,7 +24,7 @@
 
 ## Feature Readiness
 
-- [ ] All functional requirements have clear acceptance criteria
+- [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
@@ -34,6 +34,8 @@
 Validación del 2026-09-30, una iteración (los fallos de contenido encontrados se corrigieron en la misma pasada).
 
 ### Elementos que no pasan (esperado: hay 3 marcadores abiertos)
+
+> **Actualización 2026-10-01 (`/speckit-clarify`):** los tres marcadores quedaron resueltos y los tres ítems pasan (13/16 → 16/16); ver `Clarifications` en `spec.md`. Esta sección se conserva como registro de la validación inicial.
 
 Tres `[NEEDS CLARIFICATION]` siguen en la spec, dentro del máximo de 3. Por la metodología (`07-delegacion-a-ia.md` §3.3) los resuelve `/speckit-clarify`, no esta fase:
 

@@ -12,6 +12,14 @@
 
 **Fuentes de verdad**: historias en [02-historias-de-usuario.md](../../docs/02-requisitos/02-historias-de-usuario.md) (`#ros-89`…`#ros-93`), tareas en [03-tareas-mvp.md](../../docs/02-requisitos/03-tareas-mvp.md), reglas RN-24, requisitos RNF-03, RNF-05…09, RNF-36, decisiones [DP-014](../../docs/07-registro/02-decisiones-pendientes.md#dp-014) y [DP-009](../../docs/07-registro/02-decisiones-pendientes.md#dp-009), no-objetivos NO-13, NO-14 y NO-15 de [03-alcance-y-no-objetivos.md](../../docs/01-producto/03-alcance-y-no-objetivos.md).
 
+## Clarifications
+
+### Session 2026-10-01
+
+- Q: ¿Qué cuentas de Microsoft pueden iniciar sesión en el MVP: solo las personales, o también las de trabajo o institucionales? → A: Solo las personales. Las cuentas de trabajo o institucionales quedan para la Fase 3 junto con el SSO empresarial (ROS-102).
+- Q: Si una persona con cuenta entra y su proveedor informa un correo nuevo que ya pertenece a otra cuenta de Rosetta, ¿qué debe hacer el sistema? → A: Dejarla entrar, conservar el correo anterior sin actualizarlo y registrar el evento sin datos personales.
+- Q: ¿Qué debe pasar con el segundo paso del onboarding ("subir el DDL") cuando se entregue esta feature, si la carga de DDL todavía no existe? → A: Omitirlo hasta que exista la feature 004; el onboarding es de un solo paso y termina al crear el primer proyecto.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -30,7 +38,7 @@
 **Acceptance Scenarios**:
 
 1. **Dado** un visitante sin sesión en la pantalla de acceso, **cuando** elige "Continuar con Google" y autoriza en Google, **entonces** queda autenticado y su cuenta de Rosetta existe con el nombre, el correo y el avatar (si lo hay) que entregó Google.
-2. **Dado** un visitante sin sesión, **cuando** elige "Continuar con Microsoft" y autoriza en Microsoft, **entonces** ocurre lo mismo con los datos que entregó Microsoft.
+2. **Dado** un visitante sin sesión con una cuenta personal de Microsoft, **cuando** elige "Continuar con Microsoft" y autoriza en Microsoft, **entonces** ocurre lo mismo con los datos que entregó Microsoft.
 3. **Dado** una persona que ya tiene cuenta, **cuando** vuelve a entrar con el mismo proveedor, **entonces** se la reconoce, no se crea otra cuenta y conserva su estado (onboarding, proyectos).
 4. **Dado** una persona que cambió su nombre, su avatar o su correo en el proveedor (sin que el correo nuevo choque con otra cuenta), **cuando** entra de nuevo, **entonces** sigue siendo la misma cuenta y Rosetta guarda y muestra los datos actualizados.
 5. **Dado** un correo que ya pertenece a una cuenta creada con otro proveedor, **cuando** esa persona intenta entrar con el proveedor distinto, **entonces** el acceso se rechaza con un error claro: no se vinculan cuentas automáticamente y no se crea una segunda cuenta.
@@ -38,6 +46,7 @@
 7. **Dado** la pantalla de acceso, **cuando** se carga, **entonces** ofrece exactamente dos métodos (Google y Microsoft), no tiene campo de contraseña ni de registro por correo, y muestra una nota de privacidad que explica qué datos se piden y para qué.
 8. **Dado** un acceso con cualquiera de los dos proveedores, **cuando** se revisan los datos que Rosetta solicita, **entonces** son solo el nombre, el correo y el avatar, y ningún otro dato de la cuenta del proveedor.
 9. **Dado** las pantallas de acceso, de error de acceso y de onboarding, **cuando** se auditan, **entonces** usan el sistema de diseño Nocturne, están en español con tuteo neutro y cumplen WCAG 2.1 AA (teclado, foco visible, contraste, estados no dependientes solo del color).
+10. **Dado** una persona con cuenta cuyo proveedor ahora informa un correo que ya pertenece a otra cuenta de Rosetta, **cuando** entra, **entonces** accede a su propia cuenta, su correo anterior se conserva sin cambios, no se vinculan cuentas y el evento queda registrado sin datos personales.
 
 ---
 
@@ -71,7 +80,7 @@
 
 1. **Dado** un primer acceso, **cuando** termina el acceso con el proveedor, **entonces** la cuenta queda creada con el onboarding pendiente y la persona ve una bienvenida con su nombre.
 2. **Dado** una persona con el onboarding pendiente, **cuando** intenta abrir cualquier otra pantalla privada, **entonces** es llevada de vuelta al onboarding.
-3. **Dado** el primer paso del onboarding, **cuando** la persona crea su primer proyecto con nombre y dialecto SQL válidos, **entonces** el proyecto existe y, una vez cubierto lo que decida FR-020, el onboarding queda completado y la persona llega a su lista de proyectos.
+3. **Dado** el primer paso del onboarding, **cuando** la persona crea su primer proyecto con nombre y dialecto SQL válidos, **entonces** el proyecto existe, el onboarding queda completado y la persona llega a su lista de proyectos, sin ningún paso adicional de carga de archivos.
 4. **Dado** una persona que completó el onboarding, **cuando** vuelve a entrar (también desde otro navegador o dispositivo), **entonces** no ve el onboarding.
 5. **Dado** una persona que abandonó el onboarding a medias, **cuando** vuelve a entrar (también desde otro navegador), **entonces** retoma el onboarding.
 
@@ -140,6 +149,7 @@
 - **Abandono en el proveedor:** la persona cierra la ventana del proveedor o vuelve atrás durante el acceso. No se crea sesión ni cuenta parcial; puede reintentar desde la pantalla de acceso.
 - **Primer acceso simultáneo:** la misma identidad entra por primera vez desde dos navegadores a la vez. Resulta una sola cuenta (FR-005).
 - **Correo con otra capitalización:** `Ana@x.com` y `ana@x.com` son el mismo correo (FR-008, FR-009).
+- **Cuenta de Microsoft de trabajo o institucional:** no se admite en el MVP (FR-001). No se crea cuenta ni sesión en Rosetta.
 - **Cambio de correo en el proveedor que choca con otra cuenta:** ver FR-010.
 - **Datos incompletos del proveedor:** el avatar es opcional. Un proveedor que no entrega correo no permite crear la cuenta y se trata como un fallo de acceso (FR-038). El comportamiento ante un nombre ausente no está definido en `docs/` y se registra como propuesta de decisión pendiente, no se resuelve aquí.
 - **Sesión que vence a mitad de una operación:** la operación se rechaza completa, nunca a medias; ningún dato ya guardado se pierde (FR-026).
@@ -157,7 +167,7 @@
 
 **Acceso con proveedor externo**
 
-- **FR-001** [ROS-90]: El sistema DEBE permitir iniciar sesión con una cuenta de **Google** y con una cuenta de **Microsoft** [NEEDS CLARIFICATION: ¿"cuenta de Microsoft" incluye las cuentas de trabajo o institucionales además de las personales? La nota de DP-014/ADR-0007 indica que las cuentas de trabajo exigen una configuración distinta y consumen la única conexión empresarial del plan gratuito]. Son los únicos métodos de acceso del MVP: no hay contraseña propia de Rosetta, ni registro por correo, ni acceso con Apple (DP-014).
+- **FR-001** [ROS-90]: El sistema DEBE permitir iniciar sesión con una cuenta de **Google** y con una cuenta **personal** de **Microsoft**. Las cuentas de Microsoft de trabajo o institucionales NO se admiten en el MVP (Fase 3, junto con el SSO empresarial, ROS-102). Son los únicos métodos de acceso del MVP: no hay contraseña propia de Rosetta, ni registro por correo, ni acceso con Apple (DP-014).
 - **FR-002** [ROS-90]: La pantalla de acceso DEBE ofrecer una acción por proveedor, "Continuar con Google" y "Continuar con Microsoft", y una nota de privacidad que diga qué datos se piden y para qué. Elegir una acción inicia el acceso con ese proveedor.
 - **FR-003** [ROS-90, ROS-93]: El sistema DEBE pedir al proveedor solo los datos necesarios para identificar a la persona: nombre, correo y avatar. NO DEBE pedir acceso a ningún otro dato de la cuenta del proveedor (RNF-36).
 - **FR-004** [ROS-93]: El sistema DEBE aceptar solo cuentas cuyo correo el proveedor declare verificado. Con un correo no verificado, el acceso se rechaza con un mensaje claro y no se crea cuenta.
@@ -166,10 +176,10 @@
 
 - **FR-005** [ROS-90, ROS-91]: La primera vez que accede una identidad del proveedor, el sistema DEBE crear exactamente una cuenta de Rosetta con su nombre, su correo y su avatar (si lo hay). En cada acceso posterior DEBE reconocer esa misma cuenta, sin duplicarla, incluso si dos accesos de la misma identidad llegan a la vez.
 - **FR-006** [ROS-90]: El sistema DEBE reconocer la cuenta por la identidad que asegura el proveedor, no por el correo: si la persona cambia su correo en el proveedor, sigue siendo la misma cuenta.
-- **FR-007** [ROS-90]: En cada acceso el sistema DEBE actualizar el nombre, el correo y el avatar de la cuenta con los datos que el proveedor entregue en ese momento.
+- **FR-007** [ROS-90]: En cada acceso el sistema DEBE actualizar el nombre, el correo y el avatar de la cuenta con los datos que el proveedor entregue en ese momento, salvo el correo cuando el nuevo choca con otra cuenta (FR-010).
 - **FR-008** [ROS-90]: NO DEBEN existir dos cuentas con el mismo correo, sin distinguir mayúsculas de minúsculas.
 - **FR-009** [ROS-90]: Si el correo del proveedor ya pertenece a una cuenta creada con otro proveedor, el sistema DEBE rechazar el acceso con un error claro, sin vincular las cuentas automáticamente y sin crear una segunda cuenta (DP-014; la vinculación manual es ROS-98, Fase 3).
-- **FR-010** [ROS-90]: Si el proveedor informa, para una identidad ya conocida, un correo distinto que ya pertenece a otra cuenta de Rosetta, el sistema DEBE [NEEDS CLARIFICATION: ¿se rechaza el acceso o se conserva el correo anterior y se deja entrar? `docs/` exige correo único y ninguna vinculación automática, pero no dice qué hacer cuando un cambio de correo choca con otra cuenta].
+- **FR-010** [ROS-90]: Si el proveedor informa, para una identidad ya conocida, un correo distinto que ya pertenece a otra cuenta de Rosetta, el sistema DEBE dejar entrar a la persona, conservar el correo anterior de su cuenta sin actualizarlo y registrar el evento sin datos personales (FR-033). No se vinculan cuentas ni se crea una segunda.
 - **FR-011** [ROS-89]: Una cuenta desactivada NO DEBE poder iniciar sesión ni seguir usando una sesión abierta, y DEBE ver un mensaje claro (diccionario de datos: el estado "desactivada" existe para conservar a las personas con acciones auditadas).
 
 **Acceso protegido y datos propios**
@@ -184,8 +194,8 @@
 
 - **FR-017** [ROS-91]: En el primer acceso el sistema DEBE crear la cuenta y su espacio personal (sin proyectos) y marcar el onboarding como pendiente.
 - **FR-018** [ROS-91]: Mientras el onboarding esté pendiente, toda persona autenticada que intente entrar al área de trabajo DEBE ser llevada al onboarding. Al completarlo DEBE llegar a su lista de proyectos y no volver a ver el onboarding.
-- **FR-019** [ROS-91]: El onboarding DEBE dar la bienvenida por el nombre de la persona y guiarla en el primer paso: crear su primer proyecto (nombre y dialecto SQL). Crear ese proyecto es lo que permite completar el onboarding.
-- **FR-020** [ROS-91]: El segundo paso del onboarding DEBE [NEEDS CLARIFICATION: ROS-186 pide "subir el DDL (o saltar)", pero la carga de DDL pertenece a la ingesta de fuentes (feature 004, Sprint 2), que no existirá cuando se entregue esta feature en el Sprint 1. ¿El paso 2 se omite hasta la 004, se muestra solo como "saltar", o se adelanta la carga de DDL?].
+- **FR-019** [ROS-91]: El onboarding DEBE dar la bienvenida por el nombre de la persona y guiarla en un único paso: crear su primer proyecto (nombre y dialecto SQL). Crear ese proyecto completa el onboarding.
+- **FR-020** [ROS-91]: El onboarding NO DEBE incluir en esta feature un paso de carga de DDL: ese paso pertenece a la ingesta de fuentes (feature 004) y se añadirá cuando esta exista. Hasta entonces el onboarding termina al crear el primer proyecto.
 - **FR-021** [ROS-91]: El estado del onboarding (pendiente o completado) DEBE guardarse en la cuenta, no en el dispositivo: quien lo abandona a medias lo retoma al volver, también desde otro navegador, y quien lo completó no lo ve de nuevo.
 
 **Sesión**
@@ -206,7 +216,7 @@
 - **FR-032** [ROS-93]: Los secretos DEBEN existir solo en la configuración del entorno de ejecución: nunca en el repositorio ni en el código que llega al navegador. Los secretos de Google y Microsoft se guardan en el servicio de identidad, no en Rosetta. El escáner de secretos NO DEBE reportar hallazgos (RNF-05).
 - **FR-033** [ROS-93]: El sistema NO DEBE registrar credenciales, códigos de autorización, correos ni nombres en ningún registro (RNF-06), tampoco en los del intermediario entre el navegador y el servicio.
 - **FR-034** [ROS-93]: Las respuestas del producto DEBEN incluir las protecciones de navegador exigidas por RNF-09.
-- **FR-035** [ROS-93]: La configuración del servicio de identidad (destinos de regreso y de cierre, orígenes, audiencia, vida de las credenciales, proveedores habilitados y acceso por contraseña desactivado) DEBE revisarse contra una lista de comprobación que se anexa al acta de verificación de esta feature (ADR-0007).
+- **FR-035** [ROS-93]: La configuración del servicio de identidad (destinos de regreso y de cierre, orígenes, audiencia, vida de las credenciales, proveedores habilitados, con solo cuentas personales en Microsoft, y acceso por contraseña desactivado) DEBE revisarse contra una lista de comprobación que se anexa al acta de verificación de esta feature (ADR-0007).
 
 **Fallos de acceso**
 
@@ -222,7 +232,7 @@
 ### Key Entities *(include if feature involves data)*
 
 - **Usuario**: la persona que usa Rosetta. Atributos: identidad asegurada por el proveedor (única y estable), correo (único sin distinguir mayúsculas), nombre, avatar (opcional), estado activo o desactivado, estado del onboarding (pendiente o fecha de finalización), fecha del último acceso. Es propietario de sus proyectos (feature 003). En el MVP existe un solo rol (propietario).
-- **Proveedor de acceso**: Google o Microsoft. Asegura quién es la persona y si su correo está verificado; Rosetta nunca ve ni guarda su contraseña.
+- **Proveedor de acceso**: Google o Microsoft (en el MVP, solo cuentas personales de Microsoft). Asegura quién es la persona y si su correo está verificado; Rosetta nunca ve ni guarda su contraseña.
 - **Sesión**: periodo en el que la persona está autenticada. Tiene vigencia por inactividad y vigencia máxima, se renueva en silencio y se puede cerrar. Una sesión pertenece a una sola persona.
 - **Onboarding**: estado persistente de la cuenta que indica si la persona ya completó su alta guiada (crear el primer proyecto).
 
@@ -271,11 +281,10 @@ Las tres pantallas no existen en el prototipo y deben diseñarse con Nocturne ([
 ┌──────────────────────────────────────────────────────────┐
 │  ‹bienvenida con el nombre de la persona›                │
 │                                                          │
-│  1 · Crea tu primer proyecto                             │
+│  ‹título: crear el primer proyecto›                      │
 │      Nombre  [______________]   Dialecto SQL [‹lista›▾]  │
-│                                       [ Crear proyecto ] │
+│                                    [ ‹crear proyecto› ]  │
 │                                                          │
-│  2 · ‹subir el DDL — sujeto a FR-020›      [ Saltar ]    │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -296,9 +305,10 @@ Las tres pantallas no existen en el prototipo y deben diseñarse con Nocturne ([
 
 ## Assumptions
 
-- **Alcance de acceso (DP-014):** solo Google y Microsoft. Sin Apple, sin correo y contraseña, sin vinculación automática de cuentas. El título de ROS-90 aún nombra a Apple; está fuera del MVP.
+- **Alcance de acceso (DP-014):** solo Google y Microsoft (esta última, únicamente con cuentas personales). Sin Apple, sin correo y contraseña, sin vinculación automática de cuentas. El título de ROS-90 aún nombra a Apple; está fuera del MVP.
 - **Un solo rol (NO-13):** la persona autenticada es propietaria de sus proyectos; no hay roles, permisos ni proyectos compartidos. Tampoco hay MFA, verificación de correo, recuperación de contraseña ni SSO empresarial (NO-14), ni dominios permitidos ni organizaciones (NO-15).
 - **Dependencias entre features del Sprint 1:** el primer paso del onboarding usa la capacidad de crear proyectos de la feature 003 (ROS-78); las pantallas usan Nocturne de la feature 001. La lista de dialectos SQL del formulario la define el producto (DP-019: T-SQL obligatorio) y no se fija aquí.
+- **Onboarding de un solo paso (clarificación 2026-10-01):** ROS-186 menciona un segundo paso para subir el DDL; se omite hasta la feature 004. Hace falta un cambio de documentación que reformule esa actividad de ROS-186 antes de implementar.
 - **Servicio de identidad externo:** el acceso lo respalda un servicio de identidad de un tercero (decisión [ADR-0007](../../docs/03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)). El nombre, el correo y el avatar de las personas se guardan en él; los esquemas y las muestras de los clientes no pasan por él (Constitución V). La región donde opera está pendiente de DP-015.
 - **Duración de la sesión:** 14 días sin uso y 30 días como máximo son valores provisionales de [07-seguridad-y-autenticacion.md §3](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) que aún no tienen una decisión pendiente asociada; se proponen como DP.
 - **Sin metas de tiempo:** `docs/` no define objetivos de tiempo para el acceso o el onboarding (DP-018). Esta spec no inventa umbrales; los criterios de éxito son invariantes verificables (100 %, cero).
@@ -312,12 +322,12 @@ Las tres pantallas no existen en el prototipo y deben diseñarse con Nocturne ([
 Ningún elemento de esta lista se construye en esta feature sin un cambio de documentación aprobado.
 
 - **Otros métodos de acceso:** Apple, correo y contraseña, y la vinculación de varios proveedores a una cuenta (ROS-98, Fase 3). Si un correo ya existe con otro proveedor, solo se muestra el error; no se ofrece vincular (la oferta de vincular de ROS-100 es de Fase 2).
-- **Seguridad avanzada de cuentas:** MFA (ROS-97), verificación de correo (ROS-95), recuperación de contraseña (ROS-96), SSO empresarial (ROS-102), cierre de sesión en todos los dispositivos (ROS-103). NO-14.
+- **Seguridad avanzada de cuentas:** MFA (ROS-97), verificación de correo (ROS-95), recuperación de contraseña (ROS-96), SSO empresarial, incluidas las cuentas de Microsoft de trabajo o institucionales (ROS-102), cierre de sesión en todos los dispositivos (ROS-103). NO-14.
 - **Organizaciones:** restringir el acceso por dominios permitidos (ROS-94, Fase 3), gestión de organizaciones, planes y pagos (E15, NO-15).
 - **Roles y colaboración:** roles, permisos y proyectos compartidos (ROS-79, ROS-80, NO-13).
 - **Perfil de usuario:** ver y editar nombre, avatar o idioma, y proveedores vinculados (ROS-99, Fase 2). En el MVP el nombre y el avatar solo se leen del proveedor.
 - **Aislamiento y protección de los datos de los proyectos:** aislamiento por usuario y proyecto en todas las operaciones, y cifrado de las comunicaciones y de los datos almacenados (ROS-84, ROS-178, ROS-179, feature 003). Esta feature solo aporta la identidad en la que se apoyan.
-- **Proyectos y carga de fuentes:** la pantalla de proyectos, la creación y el listado de proyectos (ROS-78, feature 003) y la carga y el procesamiento del DDL (ROS-16, feature 004).
+- **Proyectos y carga de fuentes:** la pantalla de proyectos, la creación y el listado de proyectos (ROS-78, feature 003) y la carga y el procesamiento del DDL (ROS-16, feature 004), incluido el paso de carga de DDL del onboarding que pide ROS-186, que se añade cuando exista la 004.
 - **Sistema de diseño:** los tokens y los componentes de Nocturne (ROS-74, ROS-75, feature 001); aquí solo se usan.
 - **Notificaciones:** correos de bienvenida o de alerta de acceso (NO-19).
 - **Acceso de administración interna:** no está cubierto por ROS-89…93; el diccionario de datos lo marca `[PENDIENTE]` para esta feature sin una decisión asociada y se registra como propuesta de decisión.
