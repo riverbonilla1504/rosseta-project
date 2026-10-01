@@ -16,6 +16,8 @@
 10. **No toques lo que no te corresponde:** no cambies `docs/` fuera de un CD, no edites títulos/criterios en Jira, no borres incidencias, no cambies la constitución.
 11. **Seguridad:** nunca escribas secretos en el repositorio; nunca uses datos reales de un cliente en pruebas o semillas (usa los datos de [03-datos-de-referencia.md](../04-datos/03-datos-de-referencia.md)).
 12. **Registra errores.** Si encuentras un error o inconsistencia fuera de tu tarea, anótalo como propuesta de `EC-NNN` en tu reporte final; no lo arregles de paso.
+13. **Nunca te pongas como coautor.** Ningún commit lleva `Co-Authored-By:` ni otra línea de atribución a una IA, y ningún PR lleva "Generated with …" ni enlaces de sesión. El único autor es la persona del repositorio. Si una herramienta añade la atribución sola, quítala antes de hacer el commit (ver [05-trazabilidad-y-convenciones.md §3.2](05-trazabilidad-y-convenciones.md)). Está configurado en `.claude/settings.json` (`attribution` vacío), pero la regla aplica a cualquier agente y herramienta.
+14. **No hagas commit, push ni PR sin que te lo pidan** en esa sesión. Al final de cada sesión, propón el commit y espera la confirmación.
 
 ## 2. Roles que puede tomar un agente
 
@@ -117,4 +119,43 @@ y propone el EC-NNN o CD-NNN correspondiente.
 
 ## 5. Archivo de instrucciones del agente en el repositorio
 
-En la fase de preparación se creará en la raíz un `CLAUDE.md` (y un `AGENTS.md` equivalente para otros agentes) **corto**, que solo diga: *"Este proyecto usa SDD con Spec Kit. La fuente de verdad es `docs/`. Antes de cualquier tarea lee `docs/00-metodologia/07-delegacion-a-ia.md`"*. Toda regla vive aquí, no allí, para no duplicar fuentes de verdad.
+En la raíz existen `CLAUDE.md` y `AGENTS.md` (para otros agentes), **cortos**: solo apuntan a este documento y a la constitución, y repiten las reglas que no se negocian (incluida la 13). Toda regla vive aquí, no allí, para no duplicar fuentes de verdad.
+
+## 6. Protocolo de sesión (cómo empieza y termina cada chat)
+
+**Una sesión = una unidad de trabajo** (una fase de Spec Kit de una feature, una tarea de Jira, un CD o un error). Para cada unidad nueva se abre un chat nuevo: el contexto queda limpio, el agente relee `docs/` y no arrastra decisiones viejas.
+
+### 6.1 Mensaje de arranque (copiar y rellenar)
+
+```text
+Proyecto Rosetta. Antes de nada lee CLAUDE.md y sigue docs/00-metodologia/07-delegacion-a-ia.md.
+Objetivo de esta sesión: <una sola unidad de trabajo, p. ej. "/speckit-specify de 002-autenticacion-oauth">
+Jira: <ROS-n de la historia/tarea>
+Spec/feature: <specs/NNN-slug o "aún no existe">
+Rama: <la que corresponda según 05-trazabilidad §3.1, o "créala tú">
+Límites: <lo que NO debe tocar>
+Al terminar: muéstrame el resumen de cierre (6.3) y propón el commit; no hagas commit sin mi OK.
+```
+
+### 6.2 Lo que el agente hace al empezar (y debe mostrar)
+
+1. Lee `CLAUDE.md`, la constitución, este documento y la spec/historia indicada.
+2. Ejecuta `git status` y `git branch --show-current` y **muestra** en qué rama está y si hay cambios sin commit (si los hay y no son de esta sesión, pregunta antes de seguir).
+3. Revisa `docs/07-registro/02-decisiones-pendientes.md` y `01-errores-conocidos.md` buscando entradas que afecten la unidad de trabajo, y las **lista**.
+4. Muestra un **plan corto** (pasos y archivos que tocará) antes de cambiar nada.
+
+### 6.3 Resumen de cierre que la persona siempre debe ver
+
+| Qué | Contenido |
+|---|---|
+| Hecho | Lista de lo realizado, con archivos tocados |
+| Evidencia | Salida real de pruebas, lint y tipos (o por qué no aplica) |
+| Sincronización | Docs cambiados (CD-NNN), specs, incidencias de Jira actualizadas o pendientes |
+| Pendiente | Lo que no se hizo y por qué; EC/DP nuevos propuestos |
+| Decisiones para la persona | Preguntas abiertas, con recomendación |
+| Commit propuesto | Mensaje en Conventional Commits con clave Jira, **sin** líneas de coautoría; se hace solo con el OK |
+
+### 6.4 Reglas de cierre
+
+- No se termina una sesión con trabajo a medias sin dejarlo escrito (en `tasks.md`, en Jira o en el resumen de cierre).
+- Si la sesión cambió comportamiento, el CD correspondiente debe quedar registrado en [03-registro-de-sincronizacion.md](../07-registro/03-registro-de-sincronizacion.md).

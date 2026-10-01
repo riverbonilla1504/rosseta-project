@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!frontend/.env.example
 
 # Python
 __pycache__/
@@ -35,3 +36,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Auth0 MCP
+.auth0-mcp-writes.log

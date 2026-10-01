@@ -66,6 +66,9 @@ services:
     profiles: ["app"]
     build: ./frontend
     command: pnpm dev --hostname 0.0.0.0
+    env_file:
+      - path: ./frontend/.env.local
+        required: false
     environment:
       BACKEND_INTERNAL_URL: http://backend:8000
     ports:

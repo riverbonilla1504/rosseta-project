@@ -96,12 +96,15 @@ feat(evidence): ROS-133 calcular puntaje ponderado por columna
 docs(specs): ROS-25 plan de la feature 005
 ```
 
+**Autoría (obligatorio):** los commits y PRs **nunca** incluyen `Co-Authored-By:` de una IA, "Generated with Claude Code" ni enlaces de sesión. El autor es la persona del repositorio. Configurado en `.claude/settings.json` (`attribution.commit = ""`, `attribution.pr = ""`, `sessionUrl = false`). Un commit con esas líneas se corrige antes del push.
+
 ### 3.3 Pull requests
 
 - Título: `ROS-<n> · <descripción>` (varias claves: `ROS-133, ROS-134 · …`).
 - Cuerpo: plantilla [plantillas/pull-request.md](../plantillas/pull-request.md) (trazabilidad, evidencia, checklist DoD).
 - Un PR implementa **una** feature de Spec Kit o parte de ella; nunca mezcla features.
 - Un PR que toca `backend/` o `frontend/` **debe** referenciar una spec y al menos una subtarea Jira.
+- Sin pie de atribución a IA (ver §3.2, *Autoría*).
 
 ## 4. Pruebas
 

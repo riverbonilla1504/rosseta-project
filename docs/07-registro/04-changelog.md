@@ -7,6 +7,12 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.4.0] — 2026-09-30 · CD-005
+
+### Añadido
+- Regla 13 (nunca coautoría de IA en commits/PRs) y 14 (sin commit/push/PR sin permiso) para agentes; configurado en `.claude/settings.json`.
+- Protocolo de sesión: mensaje de arranque, lo que el agente muestra al empezar y resumen de cierre ([07-delegacion-a-ia.md §6](../00-metodologia/07-delegacion-a-ia.md)).
+
 ## [1.3.0] — 2026-09-30 · CD-004
 
 ### Cambiado
