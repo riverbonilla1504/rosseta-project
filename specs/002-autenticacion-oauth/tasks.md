@@ -353,7 +353,7 @@ Las subtareas suman 56 h y el Sprint 1 está sobrecargado ([EC-009](../../docs/0
 ## Phase 10: Convergence
 
 - [ ] T095 Añadir `frontend/src/app/error.tsx` (y `global-error.tsx`) con el error genérico de `copy.ts` y "Volver a intentar", para que un 5xx del backend o el servicio de identidad sin respuesta al cargar una página privada nunca deje la página de error por defecto per FR-039 (partial)
-- [ ] T096 Añadir una prueba de contrato en `backend/tests/api/` que genere el esquema de drf-spectacular y compruebe `/api/me` (getMe) y `/api/me/onboarding/complete` (completeOnboarding), el esquema `Me` y `bearerAuth` contra `contracts/accounts-api.yaml` per plan: contrato OpenAPI (T038, RNF-34) (partial)
+- [X] T096 Añadir una prueba de contrato en `backend/tests/api/` que genere el esquema de drf-spectacular y compruebe `/api/me` (getMe) y `/api/me/onboarding/complete` (completeOnboarding), el esquema `Me` y `bearerAuth` contra `contracts/accounts-api.yaml` per plan: contrato OpenAPI (T038, RNF-34) (partial)
 - [ ] T097 Actualizar `contracts/auth-flow.md §9` y `research.md` (R-07, R-09) con el destino directo del callback (`/onboarding`, `/projects` o `/auth/denied` sin pasar por `/`, SC-007) per contracts/auth-flow.md §9 (contradicts)
 - [ ] T098 Proponer en DP-025, mediante un CD con el OK de la persona, el texto del control de cierre de sesión ("Cerrar sesión", hoy PROVISIONAL en `copy.ts`) per FR-025 (partial)
 - [ ] T099 Registrar, mediante un CD con el OK de la persona, un EC para el sistema de diseño: `--nx-text-secondary` (4,11:1) y `--nx-text-muted` (4,45:1) sobre `--nx-surface` no cumplen WCAG 2.1 AA (relacionado con EC-020); las pantallas de 002 usan `--nx-text` mientras tanto per Constitution VII (partial)
