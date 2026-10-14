@@ -22,15 +22,17 @@
   text-align: center;
 }
 
+/* --nx-text-secondary y --nx-text-muted no llegan a 4,5:1 sobre --nx-surface (axe, T086):
+   se usa --nx-text hasta que el sistema de diseño lo corrija (EC propuesto, ver EC-020). */
 .value {
   margin: 0;
-  color: var(--nx-text-secondary);
+  color: var(--nx-text);
   text-align: center;
 }
 
 .privacy {
   margin: 0;
-  color: var(--nx-text-muted);
+  color: var(--nx-text);
   font-size: var(--nx-text-caption);
   text-align: center;
 }

@@ -10,6 +10,6 @@
 }
 
 .logout {
-  color: var(--nx-text-secondary);
+  color: var(--nx-text); /* contraste AA sobre --nx-surface (ver login/page.module.css) */
   font-size: var(--nx-text-caption);
 }
