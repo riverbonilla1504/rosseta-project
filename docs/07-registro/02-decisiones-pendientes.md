@@ -30,6 +30,11 @@
 | [DP-019](#dp-019) | Dialectos SQL soportados en el MVP | **Sprint 2** | T-SQL (SQL Server) obligatorio; Oracle y PostgreSQL deseables | Abierta |
 | [DP-020](#dp-020) | Cobertura: ¿5 niveles en la barra? ¿cómo se cuentan las propagadas? | Sprint 5 | 5 niveles; confirmadas = directas + propagadas | **Decidida** |
 | [DP-021](#dp-021) | ¿Se usa Jev (TypeSafe AI) como fuente de evidencia en Fase 2? | Fase 2 | No en el MVP; piloto acotado en Fase 2 | **Decidida** |
+| [DP-022](#dp-022) | Duración de la sesión (14 días sin uso, 30 máximo) | Sprint 1 (ROS-187) | 14 / 30 días *(provisional)* | Abierta |
+| [DP-023](#dp-023) | ¿Qué hacer si el proveedor de acceso no entrega el nombre? | Sprint 1 (ROS-185) | — (ver recomendación) | Abierta |
+| [DP-024](#dp-024) | ¿Hace falta un acceso de administración interna en el MVP y cómo se protege? | Sprint 1 (ROS-180) | Consola administrativa no expuesta | Abierta |
+| [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | Abierta |
+| [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | Abierta |
 
 ---
 
@@ -116,6 +121,7 @@
 - **Recomendación:** solo Google + Microsoft; sin contraseña; sin vinculación automática (error claro), vinculación manual en ROS-98.
 - **Decisión (2026-09-30, CD-003, responsable del producto):** MVP con **Google + Microsoft**; sin Apple, sin correo/contraseña y sin vinculación automática (error claro si el correo ya existe con otro proveedor).
 - **Actualización (2026-09-30, CD-004):** el login usa **Auth0** ([ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)). Microsoft con cuentas personales = conexión social; con cuentas de trabajo (Entra ID) = conexión empresarial, que consume la única del plan gratis.
+- **Actualización (2026-10-01, CD-006, responsable del producto, durante `/speckit-clarify` de la spec 002):** Microsoft **solo con cuentas personales** en el MVP. Las cuentas de trabajo o institucionales llegan con el SSO empresarial (ROS-102, Fase 3). Si para una identidad ya conocida el proveedor informa un correo que ya pertenece a otra cuenta, se deja entrar, se conserva el correo anterior y se registra el evento sin datos personales.
 
 <a id="dp-015"></a>
 ### DP-015 · Infraestructura de producción
@@ -155,3 +161,50 @@
 - **Preguntas:** (1) ¿Se hace un piloto en Fase 2? (2) ¿Se acepta enviar metadatos de esquemas (no valores) a un tercero? (3) ¿Se pide acceso ya a la lista de espera?
 - **Recomendación:** no en el MVP; piloto en Fase 2 como evidencia opcional `MODEL_JUDGMENT` (peso ≤ 0,40, solo metadatos, *opt-in* por proyecto, respuesta almacenada) para emparejar documentación/etiquetas con columnas y verificar la redacción del LLM. Requiere ADR-0007.
 - **Decisión (2026-09-30, CD-003, responsable del producto):** **No en el MVP.** Piloto en Fase 2 como evidencia opcional (peso ≤ 0,40, solo metadatos, *opt-in* por proyecto); pedir acceso a la lista de espera desde ya. Requiere ADR-0007 antes del piloto.
+
+<a id="dp-022"></a>
+### DP-022 · Duración de la sesión
+- **Contexto:** [07-seguridad §3](../03-arquitectura/07-seguridad-y-autenticacion.md) y ROS-187 fijan 14 días de vigencia deslizante y 30 de máximo como *provisionales*, sin decisión asociada. La spec 002 los usa en FR-024.
+- **Preguntas:** (1) ¿Se confirman 14 días sin uso y 30 de máximo? (2) ¿Algún cliente del sector regulado exigirá un cierre por inactividad mucho más corto?
+- **Recomendación:** mantener 14 / 30 en el MVP y revisarlos con el primer cliente piloto; una inactividad corta configurable por organización va con la Fase 3 (E15).
+- **Afecta:** ROS-187, [RNF-08](../02-requisitos/05-requisitos-no-funcionales.md), spec 002 (FR-024).
+
+<a id="dp-023"></a>
+### DP-023 · Proveedor sin nombre
+- **Contexto:** el diccionario de datos exige `accounts_user.full_name` no nulo y ningún documento dice qué hacer si el proveedor no entrega el nombre. Se detectó al revisar la spec 002 (CHK035).
+- **Opciones:** A) usar la parte local del correo como nombre visible (editable en Fase 2, ROS-99). B) Rechazar el acceso con un error claro. C) Permitir nombre vacío (cambia el modelo).
+- **Recomendación:** **A**: no bloquea a nadie y el nombre no es un dato de seguridad. Google y Microsoft casi siempre lo entregan.
+- **Afecta:** ROS-185, [diccionario de datos](../04-datos/02-diccionario-de-datos.md) (`full_name`), spec 002.
+
+<a id="dp-024"></a>
+### DP-024 · Acceso de administración interna
+- **Contexto:** el diccionario de datos deja `[PENDIENTE]` "definir en 002" cómo se protege el acceso de administración (`is_staff`), pero ninguna historia ROS-89…93 lo cubre.
+- **Opciones:** A) No exponer ninguna consola administrativa en el MVP (`is_staff` queda en el modelo sin uso). B) Exponerla solo en red interna y con contraseña fuerte y segundo factor. C) Crear una historia nueva de soporte interno.
+- **Recomendación:** **A** para el MVP (Constitución V: menor superficie de ataque); si el piloto exige soporte, abrir una historia con **B**.
+- **Afecta:** ROS-180, [diccionario de datos](../04-datos/02-diccionario-de-datos.md), [07-seguridad](../03-arquitectura/07-seguridad-y-autenticacion.md).
+
+<a id="dp-025"></a>
+### DP-025 · Textos de acceso y onboarding
+- **Contexto:** la spec 002 y [03-pantallas §7](../05-diseno/03-pantallas.md) piden textos que [04-contenido-y-redaccion §5](../05-diseno/04-contenido-y-redaccion.md) no define. Ningún agente decide el texto de la interfaz.
+- **Pregunta:** ¿se aprueban estos textos, o cuáles cambian? Son **propuestas**, no decisiones; siguen las reglas de [04-contenido §1](../05-diseno/04-contenido-y-redaccion.md) (secos, breves, qué pasó y qué hacer, tuteo).
+
+| Situación | Texto propuesto |
+|---|---|
+| Frase de valor (acceso) | "Rosetta reconstruye el significado de tu base de datos heredada, a partir de evidencia verificable." (de [01-visión §1](../01-producto/01-vision.md)) |
+| Nota de privacidad (acceso) | "Usamos tu nombre, correo y foto de perfil solo para identificarte. No accedemos a nada más de tu cuenta de {proveedor}." |
+| Bienvenida (onboarding) | "Hola, {nombre}. Crea tu primer proyecto para empezar." |
+| Correo ya registrado con otro proveedor | "Ya existe una cuenta con ese correo, creada con otro proveedor. Entra con el proveedor que usaste al registrarte." (no nombra el proveedor, para no revelar datos de la cuenta) |
+| Correo no verificado | "{proveedor} no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo." |
+| Correo no entregado | "{proveedor} no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo." |
+| Cuenta desactivada | "Tu cuenta está desactivada." `[PENDIENTE: canal de contacto, no definido en el MVP]` |
+| Forma genérica de `{proveedor}` (cuando la pantalla de error no sabe con qué proveedor se intentó entrar) | "tu proveedor de acceso" (por ejemplo: "Cancelaste el inicio de sesión con tu proveedor de acceso.") |
+
+- **Recomendación:** aprobar con los ajustes que indique el responsable de contenido. Definir junto con los textos los códigos de error nuevos (hoy solo existen `oauth_denied`, `oauth_failed` y `account_exists_other_provider`).
+- **Afecta:** ROS-184, ROS-186, [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), [03-pantallas §7](../05-diseno/03-pantallas.md), spec 002 (FR-002, FR-019, FR-036…FR-038).
+
+<a id="dp-026"></a>
+### DP-026 · Versionado de la Acción post-login del tenant
+- **Contexto:** la Acción `rosetta-claims-post-login` vive solo dentro del tenant de Auth0 (se creó con el MCP y no hay copia en el repositorio). Ahora aporta un control de seguridad (denegar correos no verificados o ausentes) y los claims que el backend exige, incluido `email_verified` ([CD-008](03-registro-de-sincronizacion.md)). Sin una copia versionada, un cambio hecho en el panel no pasa por revisión de PR ni queda registrado, y el tenant de producción no se puede reproducir con certeza.
+- **Opciones:** A) Versionar el código de la Acción en el repositorio (por ejemplo `infra/auth0/actions/rosetta-claims-post-login.js`) y desplegarla a mano desde ahí, citando el archivo en el acta. B) Mantenerla solo en el tenant y exportar su código al acta de cada verificación. C) Versionarla y desplegarla desde CI (más piezas y un secreto de gestión nuevo).
+- **Recomendación:** **A**: da revisión y reproducibilidad sin añadir automatización ni secretos (Constitución V y VI).
+- **Afecta:** ROS-182, ROS-183, ROS-189, comprobación C11 de la lista de configuración de la feature 002 (`specs/002-autenticacion-oauth/quickstart.md`) y la estructura del repositorio ([08-infraestructura §1](../03-arquitectura/08-infraestructura-y-entornos.md)).

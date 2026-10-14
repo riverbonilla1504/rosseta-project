@@ -215,24 +215,24 @@ Backend · **8 h** · Sprint 1
 - [ ] Clase de autenticación DRF que valida el JWT de Auth0 (RS256, JWKS en caché, iss, aud, exp)
 - [ ] Aplicarla por defecto a toda la API salvo /api/health y /api/schema
 - [ ] Respuestas 401 / 403 con el formato de error estándar
-- [ ] Guarda de rutas en el frontend (middleware del SDK) con redirección a /auth/login
+- [ ] Guarda de rutas en el frontend (middleware del SDK) con redirección a /login?returnTo=
 - [ ] Pruebas: sin token, expirado, audiencia o emisor incorrectos, firma inválida, alg none, kid desconocido
 
 **Listo cuando:** ninguna ruta privada responde sin un access token válido emitido por el tenant de Rosetta.
 
 > Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
-### Historia [ROS-90](02-historias-de-usuario.md#ros-90) · Inicio de sesión con OAuth (Google, Microsoft, Apple)
+### Historia [ROS-90](02-historias-de-usuario.md#ros-90) · Inicio de sesión con OAuth (Google y Microsoft)
 Feature: `002-autenticacion-oauth` · 3 tarea(s) · 13 h
 
 <a id="ros-182"></a>
 #### ROS-182 · Configurar el tenant de Auth0 y los proveedores Google y Microsoft
 DevOps/Infra · **4 h** · Sprint 1
 
-- [ ] Aplicación Regular Web 'Rosetta Web' con URLs de callback, logout y orígenes permitidos (local y staging)
+- [ ] Aplicación Regular Web 'Rosetta Web' con URLs de callback, logout (/login y /auth/error) y orígenes permitidos, sin comodines (local y staging)
 - [ ] API 'Rosetta API' (audiencia) con vida de access token de 15 min y RS256
-- [ ] Conexiones Google y Microsoft habilitadas solo para Rosetta; desactivar la base de datos de contraseñas (DP-014)
-- [ ] Registrar apps propias en Google Cloud y Microsoft Entra ID para producción (las claves de desarrollo de Auth0 solo sirven en local)
+- [ ] Conexiones Google y Microsoft (esta última solo con cuentas personales) habilitadas solo para Rosetta; desactivar la base de datos de contraseñas (DP-014)
+- [ ] Registrar apps propias en Google Cloud y Microsoft Entra ID para producción, con audiencia de Microsoft solo para cuentas personales (las claves de desarrollo de Auth0 solo sirven en local)
 - [ ] Variables AUTH0_* en .env (nunca en el repo) y procedimiento documentado en el quickstart de 002
 
 **Listo cuando:** un usuario de prueba entra con Google en local y el tenant está descrito en el quickstart.
@@ -246,7 +246,7 @@ Frontend · **4 h** · Sprint 1
 - [ ] Instalar @auth0/nextjs-auth0 v4; cliente en src/lib/auth0.ts y middleware.ts
 - [ ] Rutas /auth/login, /auth/logout, /auth/callback montadas por el SDK (quitar el rewrite /auth hacia Django)
 - [ ] Pedir audiencia de Rosetta API y scopes openid profile email offline_access
-- [ ] Action post-login en Auth0 que añade email, nombre y avatar como claims del access token
+- [ ] Action post-login en Auth0 que añade email, nombre, avatar y email_verified como claims del access token
 
 **Listo cuando:** tras iniciar sesión, el servidor de Next obtiene un access token para Rosetta API con email y nombre.
 
@@ -259,6 +259,7 @@ Frontend · **5 h** · Sprint 1
 - [ ] Pantalla /login con Nocturne: 'Continuar con Google' y 'Continuar con Microsoft'
 - [ ] Cada botón va a /auth/login?connection=<conexión>&returnTo=<ruta>
 - [ ] Página /auth/error con mensajes por código (cancelado, proveedor caído, cuenta existente)
+- [ ] Ruta /auth/denied: guarda el código, cierra la sesión del SDK y lleva a /auth/error cuando el backend rechaza una cuenta (evita el bucle)
 - [ ] Nota de privacidad: qué datos se piden y para qué
 - [ ] Pruebas de componente y E2E con proveedor simulado
 
@@ -275,6 +276,7 @@ Backend · **5 h** · Sprint 1
 
 - [ ] Crear el usuario local la primera vez que llega un token válido (por auth0_sub) y actualizar email/nombre/avatar
 - [ ] Marcar el onboarding como pendiente en el alta
+- [ ] Exigir el claim email_verified verdadero (403 email_not_verified si falta o no lo es) como defensa en profundidad
 - [ ] GET /api/me y POST /api/me/onboarding/complete
 - [ ] Pruebas de primer acceso, segundo acceso y datos del perfil actualizados
 
@@ -287,12 +289,13 @@ Backend · **5 h** · Sprint 1
 Frontend · **8 h** · Sprint 1
 
 - [ ] Pantalla /onboarding con bienvenida por nombre
-- [ ] Paso 1: crear el primer proyecto (nombre, dialecto)
-- [ ] Paso 2: subir el DDL (o saltar)
+- [ ] Crear el primer proyecto (nombre, dialecto); el onboarding termina al crearlo
 - [ ] Redirección a /onboarding mientras esté pendiente; a /projects al completarlo
 - [ ] Pruebas del recorrido completo
 
 **Listo cuando:** un usuario nuevo termina el onboarding con un proyecto creado y no vuelve a verlo.
+
+> Ajustada en CD-006: se retira el paso "subir el DDL (o saltar)", que se añade cuando exista la ingesta de fuentes (feature 004). La estimación de 8 h no se recalcula; se revisa al planificar.
 
 > Reescrita en CD-004 (Auth0, [ADR-0007](../03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)).
 
@@ -319,7 +322,7 @@ Frontend · **6 h** · Sprint 1
 - [ ] Route handler /api/[...path] que obtiene el access token en el servidor y lo reenvía como Bearer a Django
 - [ ] El navegador nunca ve el access token
 - [ ] Rechazar mutaciones sin Origin propio (protección CSRF) y pasar /api/health sin token
-- [ ] Ante sesión vencida: 401 al cliente y redirección a /auth/login?returnTo=
+- [ ] Ante sesión vencida: 401 al cliente y redirección a /login?returnTo=
 - [ ] Pruebas unitarias del proxy
 
 **Listo cuando:** todas las llamadas del navegador a /api llegan a Django autenticadas y sin exponer tokens.

@@ -794,15 +794,15 @@ Funcionalidad · **P0** · Must · Fase 1 · M · Alto
 > Historia nacida en E11 y movida a E14 (ver [01-epicas.md](01-epicas.md)). En Notion sigue figurando bajo E11: [EC-017](../07-registro/01-errores-conocidos.md). En el MVP el único método de acceso es OAuth ([DP-014](../07-registro/02-decisiones-pendientes.md)).
 
 <a id="ros-90"></a>
-### ROS-90 · Inicio de sesión con OAuth (Google, Microsoft, Apple)
+### ROS-90 · Inicio de sesión con OAuth (Google y Microsoft)
 Funcionalidad · **P0** · Must · Fase 1 · M · Alto
 
-*Como* usuario, *quiero* iniciar sesión con mi cuenta de Google/Microsoft/Apple *para* entrar sin crear otra contraseña.
+*Como* usuario, *quiero* iniciar sesión con mi cuenta de Google/Microsoft *para* entrar sin crear otra contraseña.
 - Botones de inicio con al menos Google y Microsoft.
 - Crea la cuenta la primera vez y reconoce al usuario en las siguientes.
 - Trae nombre, correo y avatar del proveedor.
 
-> Apple queda fuera del MVP (requiere cuenta de desarrollador de pago y dominio verificado): [DP-014](../07-registro/02-decisiones-pendientes.md).
+> Apple queda fuera del MVP (requiere cuenta de desarrollador de pago y dominio verificado): [DP-014](../07-registro/02-decisiones-pendientes.md); si se retoma, será una historia nueva. Microsoft: solo cuentas personales en el MVP; las de trabajo o institucionales llegan con el SSO empresarial (ROS-102, Fase 3) — CD-006.
 
 <a id="ros-91"></a>
 ### ROS-91 · Registro y onboarding de cuenta nueva

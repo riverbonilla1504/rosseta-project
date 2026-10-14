@@ -108,9 +108,9 @@ Deben diseñarse con Nocturne en la feature correspondiente (la spec incluye un 
 
 | Pantalla | Ruta | Contenido mínimo | Feature |
 |---|---|---|---|
-| Login | `/login` | Marca, frase de valor, "Continuar con Google", "Continuar con Microsoft" (van a `/auth/login?connection=…` de Auth0), nota de privacidad | 002 |
-| Error de acceso | `/auth/error` | Mensaje según código (`oauth_denied`, `oauth_failed`, `account_exists_other_provider`) + "Volver a intentar" | 002 |
-| Onboarding | `/onboarding` | Bienvenida con el nombre; 1) crear primer proyecto (nombre, dialecto) 2) subir DDL; se puede saltar | 002, 003 |
+| Login | `/login` | Marca, frase de valor, "Continuar con Google", "Continuar con Microsoft" (van a `/auth/login?connection=…` de Auth0), nota de privacidad (textos: `[PENDIENTE: DP-025]`) | 002 |
+| Error de acceso | `/auth/error` | Mensaje según código (`oauth_denied`, `oauth_failed`, `account_exists_other_provider`) + "Volver a intentar"; códigos y textos de correo no verificado, correo no entregado y cuenta desactivada: `[PENDIENTE: DP-025]` | 002 |
+| Onboarding | `/onboarding` | Bienvenida con el nombre y un solo paso en el MVP: crear el primer proyecto (nombre, dialecto); el onboarding termina al crearlo. El paso "subir el DDL" se añade cuando exista la feature 004 (CD-006) | 002, 003 |
 | Proyectos | `/projects` | Lista (nombre, fecha, nº tablas/columnas, % confirmado), crear, renombrar, archivar, filtro archivados | 003 |
 | Fuentes | `/p/{id}/sources` | `FileDrop` para DDL y para muestras (elegir tabla), lista de fuentes con estado y cobertura, eliminar; sección Convenciones | 004 |
 | Convenciones | sección de Fuentes | Tabla de reglas (globales de solo lectura + del proyecto editables), aviso de conflictos entre reglas | 004 |

@@ -15,6 +15,7 @@ frontend/
 │   │   │   ├── login/page.tsx            # botones Google / Microsoft → /auth/login?connection=…
 │   │   │   └── auth/error/page.tsx       # error de OAuth legible
 │   │   ├── api/[...path]/route.ts        # proxy BFF: añade el access token de Auth0 y reenvía a Django
+│   │   ├── auth/denied/route.ts          # cuenta rechazada por el backend: cierra la sesión del SDK y va a /auth/error
 │   │   ├── (app)/                        # rutas protegidas (middleware.ts)
 │   │   │   ├── layout.tsx                # barra superior: marca, navegación, insignias
 │   │   │   ├── onboarding/page.tsx
@@ -34,7 +35,7 @@ frontend/
 │   │   ├── auth/ · projects/ · sources/ · review/ · catalog/ · panorama/ · conventions/
 │   ├── lib/
 │   │   ├── auth0.ts                      # new Auth0Client() (@auth0/nextjs-auth0)
-│   │   ├── api/client.ts                 # openapi-fetch contra /api (mismo origen); 401 → /auth/login
+│   │   ├── api/client.ts                 # openapi-fetch contra /api (mismo origen); 401 → /login?returnTo=
 │   │   ├── api/schema.d.ts               # GENERADO desde OpenAPI (no editar)
 │   │   ├── query-keys.ts                 # claves de TanStack Query centralizadas
 │   │   ├── identifiers.ts                # formato único de identificadores (RN-17, ROS-166)
@@ -93,7 +94,9 @@ export const qk = {
 
 - El navegador **solo habla con el origen de Next.js**. `/auth/*` lo atiende el SDK de Auth0; `/api/*` lo atiende el *route handler* `app/api/[...path]/route.ts`, que obtiene el access token con `auth0.getAccessToken()` y reenvía a Django (`BACKEND_INTERNAL_URL`) con `Authorization: Bearer`. El navegador nunca ve tokens y no hace falta CORS ([ADR-0007](adr/ADR-0007-autenticacion-auth0.md)).
 - Cliente tipado: `openapi-fetch` con los tipos de `schema.d.ts` generados por `pnpm api:types` (lee `/api/schema/`). CI falla si los tipos generados difieren de los versionados.
-- Ante `401` (sesión vencida o sin sesión), el cliente redirige a `/auth/login?returnTo=<ruta actual>`. La renovación del access token la hace el SDK en el servidor.
+- Ante `401` (sesión vencida o sin sesión), el cliente redirige a `/login?returnTo=<ruta actual>`, la pantalla de acceso de Rosetta (`/auth/login` sin `connection` abriría la pantalla alojada por Auth0). La renovación del access token la hace el SDK en el servidor.
+- Sin sesión, el middleware redirige a `/login?returnTo=<ruta pedida>`; los botones de `/login` reenvían `returnTo` a `/auth/login?connection=…&returnTo=…`.
+- Si el backend rechaza una cuenta ya autenticada (403 `account_disabled`, `account_exists_other_provider`, `email_missing` o `email_not_verified`), el cliente navega a `/auth/denied?code=…`, que cierra la sesión del SDK y muestra `/auth/error`; así no hay bucle entre `/login` y `/`. Detalle en `specs/002-autenticacion-oauth/contracts/auth-flow.md`.
 - Los componentes de servidor (RSC) se usan solo para el *shell* y páginas públicas; las pantallas de datos son componentes de cliente con TanStack Query (necesitan interactividad, teclado y caché compartida).
 
 ## 5. Atajos de teclado (ROS-47, ROS-160)

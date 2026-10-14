@@ -7,6 +7,45 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.7.0] — 2026-10-13 · CD-008
+
+### Cambiado
+- **El correo verificado se exige en dos capas** (FR-004 de la spec 002): la Acción post-login deniega y añade el claim `https://rosetta/email_verified`; el backend lo exige verdadero y responde `403 email_not_verified`. Afecta [05-api](../03-arquitectura/05-api.md) (§3.8, §3.9 y la fila `email_not_verified`, que pasa de "solo redirección" a "403 y redirección"), [07-seguridad §2](../03-arquitectura/07-seguridad-y-autenticacion.md), [04-frontend §4](../03-arquitectura/04-frontend.md) y las actividades de ROS-183 y ROS-185.
+
+### Añadido
+- [DP-026](02-decisiones-pendientes.md#dp-026): ¿se versiona el código de la Acción post-login del tenant? (por defecto, solo en el tenant).
+- Forma genérica de `{proveedor}` como propuesta en [DP-025](02-decisiones-pendientes.md#dp-025) y como fila `[PENDIENTE: DP-025]` en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+
+## [1.6.0] — 2026-10-01 · CD-007
+
+### Cambiado
+- **Redirección sin sesión:** a `/login?returnTo=` (pantalla de acceso de Rosetta), no a `/auth/login?returnTo=` (que abriría la pantalla alojada por Auth0). Afecta [04-frontend §4](../03-arquitectura/04-frontend.md), [07-seguridad §3](../03-arquitectura/07-seguridad-y-autenticacion.md) y las actividades de ROS-181 y ROS-188.
+- **CSP** de [07-seguridad §5](../03-arquitectura/07-seguridad-y-autenticacion.md): con nonce por petición y `script-src` explícito en Next.js; `default-src 'none'` en las respuestas JSON de Django.
+- **Contrato** ([05-api](../03-arquitectura/05-api.md)): nueva §3.9 (`/api/me` y `/api/me/onboarding/complete`, con `avatar_url`) y códigos de error `account_exists_other_provider` (ahora 403), `account_disabled`, `email_missing`, `email_not_verified`, `forbidden_origin`, `identity_unavailable` y `backend_unavailable` (los tres primeros nuevos, **provisionales hasta [DP-025](02-decisiones-pendientes.md#dp-025)**).
+- **Lista blanca de cierre de sesión** con `/login` y `/auth/error`, sin comodines ([08-infraestructura §3](../03-arquitectura/08-infraestructura-y-entornos.md), ROS-182).
+- [08-infraestructura §3](../03-arquitectura/08-infraestructura-y-entornos.md): el frontend ya no "reescribe `/api` y `/auth`" (texto de ADR-0006); sirve `/auth/*` con el SDK y `/api/*` con el proxy BFF.
+- [03-backend §6](../03-arquitectura/03-backend.md): un código propio de la excepción tiene prioridad sobre el código por defecto de su estado HTTP.
+
+### Añadido
+- Ruta `/auth/denied` (cuenta rechazada por el backend: cierra la sesión y lleva a `/auth/error`) en [04-frontend](../03-arquitectura/04-frontend.md) y como actividad de ROS-184.
+- Variables solo de pruebas `AUTH0_ISSUER`, `AUTH0_JWKS_URL` y `E2E_ALLOW_INSECURE_IDP` ([08-infraestructura §4](../03-arquitectura/08-infraestructura-y-entornos.md)).
+
+## [1.5.0] — 2026-10-01 · CD-006
+
+### Decidido
+- [DP-014](02-decisiones-pendientes.md#dp-014) (actualización): Microsoft solo con cuentas personales en el MVP; las de trabajo o institucionales son SSO empresarial (ROS-102, Fase 3). Si el correo que informa el proveedor choca con otra cuenta, se conserva el anterior y se registra el evento sin datos personales.
+- Onboarding de un solo paso en el MVP: crear el primer proyecto. El paso "subir el DDL" se añade con la feature 004.
+
+### Cambiado
+- ROS-90 pasa a titularse "Inicio de sesión con OAuth (Google y Microsoft)"; Apple ya estaba fuera del MVP.
+- ROS-186: se retira la actividad "subir el DDL (o saltar)"; ROS-182: Microsoft solo con cuentas personales.
+- [07-seguridad §2 y §3](../03-arquitectura/07-seguridad-y-autenticacion.md), [diccionario de datos](../04-datos/02-diccionario-de-datos.md), [03-pantallas §7](../05-diseno/03-pantallas.md), NO-14 y la matriz de trazabilidad.
+
+### Añadido
+- [DP-022](02-decisiones-pendientes.md#dp-022) (duración de la sesión), [DP-023](02-decisiones-pendientes.md#dp-023) (proveedor sin nombre), [DP-024](02-decisiones-pendientes.md#dp-024) (acceso de administración interna), [DP-025](02-decisiones-pendientes.md#dp-025) (textos de acceso y onboarding, con propuestas).
+- [EC-022](01-errores-conocidos.md#ec-022) (voseo en ROS-174) y [EC-023](01-errores-conocidos.md#ec-023) (`check-prerequisites.sh` exige `plan.md`).
+- Filas `[PENDIENTE: DP-025]` en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+
 ## [1.4.0] — 2026-09-30 · CD-005
 
 ### Añadido

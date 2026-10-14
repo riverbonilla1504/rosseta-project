@@ -39,6 +39,8 @@
 | [EC-019](#ec-019) | ROS-135 (MVP) incluye recalcular al cambiar el umbral, que es Fase 2 | producto | S4 | Abierto | ROS-135 |
 | [EC-020](#ec-020) | Contraste insuficiente probable en etiquetas de sección | diseño | S3 | Abierto | ROS-168, RNF-24 |
 | [EC-021](#ec-021) | PostgreSQL local del equipo de desarrollo ocupa el puerto 5432 | herramienta | S4 | Mitigado | — |
+| [EC-022](#ec-022) | Voseo en el estado vacío de proyectos de ROS-174 | diseño | S4 | Abierto | Feature 003 (UI) |
+| [EC-023](#ec-023) | `check-prerequisites.sh --template` exige `plan.md` antes de que exista | herramienta | S4 | Mitigado | — |
 
 ---
 
@@ -174,6 +176,20 @@
 - **Tipo / Sev.:** herramienta · S4 — **Detectado:** 2026-09-30 — **Estado:** Mitigado
 - **Descripción:** en la máquina de desarrollo hay un PostgreSQL nativo escuchando en `0.0.0.0:5432`; las conexiones a `localhost:5432` llegaban a él y no al contenedor (error de autenticación).
 - **Mitigación:** el contenedor `db` publica en el puerto **5433** del host (`docker-compose.yml`, `.env.example`, [08-infraestructura §3](../03-arquitectura/08-infraestructura-y-entornos.md)). Dentro de Docker y en CI se sigue usando 5432.
+
+<a id="ec-022"></a>
+### EC-022 · Voseo en el estado vacío de proyectos de ROS-174
+- **Tipo / Sev.:** diseño · S4 — **Detectado:** 2026-10-01 (al preparar la spec 002)
+- **Descripción:** [03-tareas-mvp.md](../02-requisitos/03-tareas-mvp.md) (ROS-174) pide el estado vacío "aún no tenés proyectos", en voseo. [DP-009](02-decisiones-pendientes.md#dp-009) decidió tuteo neutro en toda la interfaz ([EC-008](#ec-008)).
+- **Impacto:** si se implementa tal cual, el texto contradice [04-contenido §2](../05-diseno/04-contenido-y-redaccion.md). El mismo texto está en la incidencia ROS-174 de Jira.
+- **Resolución propuesta:** CD que cambie el texto a "aún no tienes proyectos" en `03-tareas-mvp.md` y en Jira, antes de implementar la feature 003.
+
+<a id="ec-023"></a>
+### EC-023 · `check-prerequisites.sh --template` exige `plan.md` antes de que exista
+- **Tipo / Sev.:** herramienta · S4 — **Detectado:** 2026-10-01 — **Estado:** Mitigado
+- **Descripción:** el skill `/speckit-checklist` ejecuta `check-prerequisites.sh --json --template checklist-template`, que falla con "plan.md not found" en una feature sin plan. [02-spec-kit.md §3.2](../00-metodologia/02-spec-kit.md) ordena `checklist` (paso 3) **antes** de `plan` (paso 4).
+- **Mitigación:** usar `check-prerequisites.sh --json --paths-only` y leer `.specify/templates/checklist-template.md` directamente. No se modificó el script.
+- **Resolución propuesta:** CD de proceso para decidir si se ajusta el script (que omita la comprobación de `plan.md` con ese flag) o se reordena el flujo; Spec Kit solo se modifica por CD ([02-spec-kit.md §1](../00-metodologia/02-spec-kit.md)).
 
 ---
 

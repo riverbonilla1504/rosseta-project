@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Rosetta API — cuentas (feature 002)
+  version: 0.1.0
+  description: |
+    Parte del contrato de la API que implementa la feature 002. La fuente de verdad del contrato
+    completo es docs/03-arquitectura/05-api.md; este fragmento lo detalla y NO lo reemplaza.
+    Si este fragmento difiere de ese documento, gana el documento y se abre un CD
+    (ver "Desviaciones" en plan.md).
+
+    Convenciones (docs/03-arquitectura/05-api.md §1): JSON UTF-8, snake_case, fechas ISO 8601 UTC,
+    errores con la forma { "error": { "code", "message", "details" } }.
+
+    Rutas públicas de toda la API (FR-012): GET /api/health y GET /api/schema/.
+    Todas las demás exigen una credencial de acceso válida.
+servers:
+  - url: /
+    description: Mismo origen que el frontend; el navegador nunca llama al backend directamente (proxy BFF).
+security:
+  - bearerAuth: []
+paths:
+  /api/me:
+    get:
+      operationId: getMe
+      summary: Usuario actual y estado de onboarding
+      description: |
+        Devuelve la cuenta de la persona autenticada. El primer acceso válido de una identidad nueva
+        crea la cuenta con onboarding pendiente (FR-005, FR-017); los siguientes la reconocen
+        sin duplicarla y actualizan nombre y avatar (FR-007).
+        Historias: ROS-89, ROS-91 · Tarea: ROS-185.
+      tags: [cuentas]
+      responses:
+        "200":
+          description: Cuenta de la persona autenticada.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Me"
+        "401":
+          $ref: "#/components/responses/SessionExpired"
+        "403":
+          $ref: "#/components/responses/AccountRejected"
+  /api/me/onboarding/complete:
+    post:
+      operationId: completeOnboarding
+      summary: Marca el onboarding como completado
+      description: |
+        Idempotente: repetir la llamada no cambia la fecha de finalización (FR-021). No comprueba
+        que exista un proyecto: la interfaz la invoca tras crear el primer proyecto con éxito
+        (research R-09). No tiene cuerpo.
+        Historia: ROS-91 · Tarea: ROS-185.
+      tags: [cuentas]
+      responses:
+        "200":
+          description: Cuenta con el onboarding completado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Me"
+        "401":
+          $ref: "#/components/responses/SessionExpired"
+        "403":
+          $ref: "#/components/responses/AccountRejected"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Credencial de acceso emitida por el tenant de identidad de Rosetta para la audiencia
+        de Rosetta API. La obtiene y la añade el proxy del servidor de Next.js; el navegador
+        nunca la ve (ADR-0007). Se rechazan: ausente, vencida, de otra audiencia o emisor,
+        con firma alterada, sin firma o con clave desconocida (FR-029).
+  schemas:
+    Me:
+      type: object
+      required: [id, email, full_name, avatar_url, onboarding_completed]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          maxLength: 254
+        full_name:
+          type: string
+          maxLength: 200
+        avatar_url:
+          type: string
+          format: uri
+          maxLength: 500
+          nullable: true
+        onboarding_completed:
+          type: boolean
+          description: "false mientras el onboarding esté pendiente (FR-018)."
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, details]
+          properties:
+            code:
+              type: string
+              description: Código estable; ver contracts/auth-flow.md §5.
+            message:
+              type: string
+              description: Texto para la persona, en español. Los textos definitivos dependen de DP-025.
+            details:
+              type: object
+              additionalProperties: true
+  responses:
+    SessionExpired:
+      description: Credencial ausente, inválida, vencida o no renovable (FR-013).
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+            example: Bearer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: session_expired
+              message: Tu sesión terminó. Vuelve a iniciar sesión para continuar.
+              details: {}
+    AccountRejected:
+      description: |
+        La credencial es válida pero Rosetta no admite esta cuenta. El proxy convierte estos
+        códigos en una redirección a la pantalla de error de acceso (contracts/auth-flow.md §5).
+        Códigos PROVISIONALES hasta DP-025: account_disabled (FR-011),
+        account_exists_other_provider (FR-009), email_missing y email_not_verified (FR-004: la
+        credencial no afirma que el correo está verificado).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            cuenta_desactivada:
+              value:
+                error:
+                  code: account_disabled
+                  message: "[PENDIENTE: DP-025]"
+                  details: {}
+            correo_en_otra_cuenta:
+              value:
+                error:
+                  code: account_exists_other_provider
+                  message: "[PENDIENTE: DP-025]"
+                  details: {}
