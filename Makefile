@@ -1,6 +1,6 @@
 # Comandos estándar — docs/03-arquitectura/08-infraestructura-y-entornos.md §3
 # En Windows: usar desde Git Bash (make vía choco/scoop) o copiar el comando equivalente.
-.PHONY: up down services migrate test lint api-types dev-backend dev-frontend
+.PHONY: up down services migrate test lint e2e api-types dev-backend dev-frontend
 
 services:      ## Solo PostgreSQL (puerto 5433) y Redis
 	docker compose up -d db redis
@@ -23,6 +23,9 @@ dev-frontend:
 test:
 	cd backend && uv run pytest --cov
 	cd frontend && pnpm test:coverage
+
+e2e:           ## Playwright + axe contra el proveedor simulado (feature 002)
+	cd frontend && pnpm exec playwright test
 
 lint:
 	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy .
