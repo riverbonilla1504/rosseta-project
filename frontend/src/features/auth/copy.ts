@@ -19,6 +19,8 @@ export const copy = {
     "Usamos tu nombre, correo y foto de perfil solo para identificarte. No accedemos a nada más de tu cuenta de tu proveedor de acceso.",
   // PROVISIONAL (DP-025): forma genérica de {proveedor} cuando no se conoce.
   genericProvider: "tu proveedor de acceso",
+  // PROVISIONAL: texto no definido en 04-contenido; propuesto para DP-025.
+  logout: "Cerrar sesión",
   // 04-contenido §5
   sessionExpired: "Tu sesión terminó. Vuelve a iniciar sesión para continuar.",
 } as const;

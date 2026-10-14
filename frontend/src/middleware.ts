@@ -46,6 +46,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("content-security-policy", csp);
+  // Ruta actual para el layout del área privada (la sobrescribe siempre: no se fía del cliente).
+  requestHeaders.set("x-rosetta-pathname", pathname);
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   authResponse.headers.forEach((value, key) => {
     if (key.startsWith("x-middleware-") || key === "set-cookie") return;

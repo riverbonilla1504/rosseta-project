@@ -90,5 +90,7 @@ describe("middleware: reglas de acceso (D1)", () => {
 
     expect(response.headers.get("location")).toBeNull();
     expect(response.headers.get("content-security-policy")).toBeTruthy();
+    // El layout del área privada lee la ruta de esta cabecera interna (T054).
+    expect(response.headers.get("x-middleware-request-x-rosetta-pathname")).toBe("/projects");
   });
 });
