@@ -93,4 +93,18 @@ describe("pantalla de acceso /login", () => {
       expect(link.getAttribute("tabindex")).not.toBe("-1");
     }
   });
+
+  it("[ROS-92][002:FR-026] con notice=session_expired muestra el aviso de sesión vencida", async () => {
+    await renderLogin({ notice: "session_expired", returnTo: "/projects" });
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Tu sesión terminó. Vuelve a iniciar sesión para continuar.",
+    );
+  });
+
+  it("[ROS-92][002:FR-026] sin notice (o con uno desconocido) no muestra aviso", async () => {
+    await renderLogin({ notice: "otro" });
+
+    expect(screen.queryByRole("status")).toBeNull();
+  });
 });
