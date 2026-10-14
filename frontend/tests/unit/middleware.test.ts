@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const sdkMiddleware = vi.fn();
-vi.mock("@/lib/auth0", () => ({ auth0: { middleware: sdkMiddleware } }));
+const getSession = vi.fn();
+const getAccessToken = vi.fn();
+vi.mock("@/lib/auth0", () => ({
+  auth0: { middleware: sdkMiddleware, getSession, getAccessToken },
+}));
 
 const { middleware, config } = await import("@/middleware");
 
@@ -30,6 +34,8 @@ function directives(csp: string) {
 describe("middleware: SDK de Auth0 y CSP con nonce", () => {
   beforeEach(() => {
     sdkMiddleware.mockReset();
+    getSession.mockReset().mockResolvedValue(null);
+    getAccessToken.mockReset();
     vi.unstubAllEnvs();
   });
 
@@ -133,5 +139,54 @@ describe("middleware: SDK de Auth0 y CSP con nonce", () => {
     expect(matcher.test("/favicon.ico")).toBe(false);
     expect(matcher.test("/login")).toBe(true);
     expect(matcher.test("/auth/callback")).toBe(true);
+  });
+
+  describe("renovación de la credencial en el middleware (FR-022)", () => {
+    const refreshed = async (_req: NextRequest, res: NextResponse) => {
+      res.cookies.set("__session", "refreshed", { httpOnly: true });
+      return { token: "new-access-token" };
+    };
+
+    it("[ROS-92][002:FR-022] con sesión renueva la credencial, la guarda en la respuesta y la pasa a la petición", async () => {
+      sdkMiddleware.mockResolvedValue(passThrough());
+      getSession.mockResolvedValue({ user: { sub: "google-oauth2|1" } });
+      getAccessToken.mockImplementation(refreshed);
+
+      const response = await middleware(request("/onboarding"));
+
+      expect(getAccessToken).toHaveBeenCalledTimes(1);
+      expect(response.headers.get("set-cookie")).toContain("__session=refreshed");
+      expect(response.headers.get("x-middleware-request-cookie")).toContain("__session=refreshed");
+    });
+
+    it("[ROS-92][002:FR-022] también antes del proxy /api, para que el route handler no renueve otra vez", async () => {
+      sdkMiddleware.mockResolvedValue(passThrough());
+      getSession.mockResolvedValue({ user: { sub: "google-oauth2|1" } });
+      getAccessToken.mockImplementation(refreshed);
+
+      await middleware(request("/api/me"));
+
+      expect(getAccessToken).toHaveBeenCalledTimes(1);
+    });
+
+    it("[ROS-92][002:FR-022] no renueva en las rutas del SDK ni sin sesión", async () => {
+      sdkMiddleware.mockImplementation(async () => passThrough());
+
+      await middleware(request("/auth/callback"));
+      getSession.mockResolvedValue(null);
+      await middleware(request("/projects"));
+
+      expect(getAccessToken).not.toHaveBeenCalled();
+    });
+
+    it("[ROS-92][002:FR-026] si la renovación falla no rompe la petición (la ruta decide 401 o 503)", async () => {
+      sdkMiddleware.mockResolvedValue(passThrough());
+      getSession.mockResolvedValue({ user: { sub: "google-oauth2|1" } });
+      getAccessToken.mockRejectedValue(new Error("failed_to_refresh_token"));
+
+      const response = await middleware(request("/projects"));
+
+      expect(response.headers.get("x-middleware-next")).toBe("1");
+    });
   });
 });
