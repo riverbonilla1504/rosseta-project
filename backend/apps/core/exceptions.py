@@ -30,12 +30,15 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
         detail = response.data.get("detail", "") if isinstance(response.data, dict) else ""
         message, details = str(detail), {}
 
+    # Un código propio de la excepción (atributo error_code) tiene prioridad sobre el mapeo
+    # por estado HTTP: si no, 403 account_disabled saldría como "forbidden" (FR-011, FR-013).
+    own_code = getattr(exc, "error_code", None)
     code = None
     if not isinstance(exc, exceptions.ValidationError):
         code = getattr(exc, "default_code", None)
     response.data = {
         "error": {
-            "code": _DEFAULT_CODES.get(response.status_code, code or "error"),
+            "code": own_code or _DEFAULT_CODES.get(response.status_code, code or "error"),
             "message": message,
             "details": details,
         }
