@@ -7,6 +7,13 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.10.0] — 2026-10-14 · CD-011
+
+### Añadido
+- [DP-025](02-decisiones-pendientes.md#dp-025): propuesta del texto del control de cierre de sesión ("Cerrar sesión") y observación sobre la nota de privacidad de `/login` con la forma genérica de `{proveedor}`; fila `[PENDIENTE: DP-025]` en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+- [EC-024](01-errores-conocidos.md#ec-024): contraste insuficiente de `--nx-text-secondary` y `--nx-text-muted` sobre `--nx-surface` (medido con axe; mitigado en las pantallas de 002).
+- [EC-025](01-errores-conocidos.md#ec-025): `HealthView` hace fallar la generación del esquema OpenAPI.
+
 ## [1.9.0] — 2026-10-14 · CD-010
 
 ### Cambiado

@@ -41,6 +41,8 @@
 | [EC-021](#ec-021) | PostgreSQL local del equipo de desarrollo ocupa el puerto 5432 | herramienta | S4 | Mitigado | — |
 | [EC-022](#ec-022) | Voseo en el estado vacío de proyectos de ROS-174 | diseño | S4 | Abierto | Feature 003 (UI) |
 | [EC-023](#ec-023) | `check-prerequisites.sh --template` exige `plan.md` antes de que exista | herramienta | S4 | Mitigado | — |
+| [EC-024](#ec-024) | `--nx-text-secondary` y `--nx-text-muted` no cumplen 4,5:1 sobre `--nx-surface` | diseño | S3 | Mitigado | ROS-168, RNF-24 |
+| [EC-025](#ec-025) | `HealthView` hace fallar la generación del esquema OpenAPI | herramienta | S4 | Abierto | RNF-34 |
 
 ---
 
@@ -190,6 +192,21 @@
 - **Descripción:** el skill `/speckit-checklist` ejecuta `check-prerequisites.sh --json --template checklist-template`, que falla con "plan.md not found" en una feature sin plan. [02-spec-kit.md §3.2](../00-metodologia/02-spec-kit.md) ordena `checklist` (paso 3) **antes** de `plan` (paso 4).
 - **Mitigación:** usar `check-prerequisites.sh --json --paths-only` y leer `.specify/templates/checklist-template.md` directamente. No se modificó el script.
 - **Resolución propuesta:** CD de proceso para decidir si se ajusta el script (que omita la comprobación de `plan.md` con ese flag) o se reordena el flujo; Spec Kit solo se modifica por CD ([02-spec-kit.md §1](../00-metodologia/02-spec-kit.md)).
+
+<a id="ec-024"></a>
+### EC-024 · `--nx-text-secondary` y `--nx-text-muted` no cumplen 4,5:1 sobre `--nx-surface`
+- **Tipo / Sev.:** diseño · S3 — **Detectado:** 2026-10-14 (axe en la E2E de accesibilidad de la spec 002, T086) — **Estado:** Mitigado
+- **Descripción:** medido por axe en `/login`: `--nx-text-secondary` (#848490) sobre `--nx-surface` (#232532) da 4,11:1 y `--nx-text-muted` (#8a8a96) da 4,45:1, por debajo de 4,5:1 (WCAG 2.1 AA, texto de 14 px y 12 px). Confirma con valores reales lo que [EC-020](#ec-020) anticipaba para el gris secundario.
+- **Impacto:** cualquier texto secundario sobre una superficie incumple RNF-24 y la Constitución VII.
+- **Mitigación:** las pantallas de la feature 002 usan `--nx-text` sobre `--nx-surface` (comentado en sus CSS). No se cambiaron los tokens.
+- **Resolución propuesta:** CD de diseño que ajuste los dos tokens (o defina unos secundarios válidos sobre superficie) en [01-sistema-de-diseno-nocturne](../05-diseno/01-sistema-de-diseno-nocturne.md) junto con ROS-168 (feature 001), y que luego las pantallas de 002 vuelvan a la jerarquía secundaria.
+
+<a id="ec-025"></a>
+### EC-025 · `HealthView` hace fallar la generación del esquema OpenAPI
+- **Tipo / Sev.:** herramienta · S4 — **Detectado:** 2026-10-14 (al implementar T038 de la spec 002)
+- **Descripción:** `manage.py spectacular` informa "unable to guess serializer" para `apps.core.views.HealthView` (esqueleto de la fase 0.5): es un `APIView` sin `serializer_class` ni `extend_schema`, y el esquema sale sin la respuesta de `/api/health`.
+- **Impacto:** RNF-34 (contrato documentado y coincidente con [05-api](../03-arquitectura/05-api.md)); hoy no rompe nada porque la prueba de contrato de 002 solo cubre `/api/me`.
+- **Resolución propuesta:** tarea técnica que documente la respuesta de `/api/health` con `extend_schema` (sin cambiar su comportamiento).
 
 ---
 
