@@ -69,14 +69,16 @@
 | OAuth cancelado | "Cancelaste el inicio de sesión con {proveedor}. Puedes intentarlo de nuevo cuando quieras." |
 | Proveedor caído | "{proveedor} no respondió. Intenta en unos minutos o usa otro proveedor." |
 | Error genérico | "Algo salió mal y no se guardó ningún cambio. Intenta de nuevo." |
-| Frase de valor (acceso) | `[PENDIENTE: DP-025]` |
-| Nota de privacidad (acceso) | `[PENDIENTE: DP-025]` |
-| Bienvenida (onboarding) | `[PENDIENTE: DP-025]` |
-| Correo ya registrado con otro proveedor | `[PENDIENTE: DP-025]` |
-| Correo no verificado o no entregado | `[PENDIENTE: DP-025]` |
-| Cuenta desactivada | `[PENDIENTE: DP-025]` |
-| Forma genérica de {proveedor} (cuando no se conoce) | `[PENDIENTE: DP-025]` |
-| Control de cierre de sesión | `[PENDIENTE: DP-025]` (propuesta: "Cerrar sesión") |
+| Frase de valor (acceso) | "Rosetta reconstruye el significado de tu base de datos heredada, a partir de evidencia verificable." (DP-025) |
+| Nota de privacidad (acceso, `/login`) | "Usamos tu nombre, correo y foto de perfil solo para identificarte. No accedemos a nada más de tu cuenta de Google o Microsoft." (DP-025) |
+| Bienvenida (onboarding) | "Hola, {nombre}. Crea tu primer proyecto para empezar." (DP-025) |
+| Correo ya registrado con otro proveedor | "Ya existe una cuenta con ese correo, creada con otro proveedor. Entra con el proveedor que usaste al registrarte." No nombra el proveedor, para no revelar datos de la cuenta (DP-025) |
+| Correo no verificado | "{proveedor} no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo." (DP-025) |
+| Correo no entregado | "{proveedor} no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo." (DP-025) |
+| Cuenta desactivada | "Tu cuenta está desactivada." Sin canal de contacto en el MVP (DP-025, DP-024) |
+| Forma genérica de {proveedor} (cuando no se conoce) | "tu proveedor de acceso" (p. ej. "Cancelaste el inicio de sesión con tu proveedor de acceso.") (DP-025) |
+| Control de cierre de sesión | "Cerrar sesión" (DP-025) |
+| Dialectos (selector del formulario de proyecto) | "SQL Server", "Oracle", "PostgreSQL"; en la insignia del proyecto se muestra el valor interno `tsql`, `oracle` o `postgres` (DP-019) |
 | Insignia de solo lectura | "solo lectura" (title: "Rosetta nunca escribe en tu base de datos.") |
 | Modo de redacción (MVP) | "redacción por reglas" (title: "Descripciones generadas con plantillas deterministas, sin LLM.") |
 

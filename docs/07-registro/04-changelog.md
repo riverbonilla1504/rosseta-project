@@ -7,6 +7,23 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.11.0] — 2026-10-14 · CD-012
+
+### Cambiado
+- **Decisiones del responsable del producto para el Sprint 1** ([02-decisiones-pendientes](02-decisiones-pendientes.md)):
+  - [DP-023](02-decisiones-pendientes.md#dp-023): sin nombre del proveedor, el nombre visible es la parte local del correo ([diccionario](../04-datos/02-diccionario-de-datos.md), `full_name`).
+  - [DP-025](02-decisiones-pendientes.md#dp-025): textos de acceso y onboarding aprobados en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) (nota de privacidad de `/login` con "Google o Microsoft"; cuenta desactivada sin canal de contacto); los códigos `account_exists_other_provider`, `account_disabled`, `email_missing` y `email_not_verified` dejan de ser provisionales ([05-api](../03-arquitectura/05-api.md)); [03-pantallas §7](../05-diseno/03-pantallas.md) sin `[PENDIENTE]`.
+  - [DP-022](02-decisiones-pendientes.md#dp-022): sesión de 14 días sin uso y 30 de máximo, confirmada ([07-seguridad §3](../03-arquitectura/07-seguridad-y-autenticacion.md), ROS-187).
+  - [DP-024](02-decisiones-pendientes.md#dp-024): sin consola administrativa en el MVP; `is_staff` sin uso ([07-seguridad §4](../03-arquitectura/07-seguridad-y-autenticacion.md), diccionario).
+  - [DP-019](02-decisiones-pendientes.md#dp-019): dialectos del MVP T-SQL, Oracle y PostgreSQL (MySQL fuera); dialecto obligatorio al crear el proyecto (`source_dialect` no nulo) y el DDL se interpreta con él (sin parámetro `dialect` ni `auto` en la subida); etiquetas "SQL Server", "Oracle", "PostgreSQL". Afecta [diccionario](../04-datos/02-diccionario-de-datos.md), [05-api](../03-arquitectura/05-api.md) (`POST /api/projects`, §3.1), [03-pantallas](../05-diseno/03-pantallas.md), [04-frontend](../03-arquitectura/04-frontend.md) y ROS-120, ROS-172, ROS-186.
+  - [DP-017](02-decisiones-pendientes.md#dp-017): Hallazgos y Generador ocultos en el MVP; Fuentes 4.ª pestaña; Convenciones es sección de Fuentes, sin ruta propia ([04-frontend §1–2](../03-arquitectura/04-frontend.md), [03-pantallas](../05-diseno/03-pantallas.md)).
+  - [DP-026](02-decisiones-pendientes.md#dp-026): la Acción post-login se versiona en `infra/auth0/actions/` y se despliega a mano ([08-infraestructura §1](../03-arquitectura/08-infraestructura-y-entornos.md), [07-seguridad §2](../03-arquitectura/07-seguridad-y-autenticacion.md), ROS-183).
+  - [DP-027](02-decisiones-pendientes.md#dp-027): retención por defecto del plan de Auth0 y borrado manual en el panel ante una petición ([07-seguridad §7](../03-arquitectura/07-seguridad-y-autenticacion.md)).
+- DP-015 y DP-013 revisadas: siguen abiertas (antes del Sprint 5 y en la feature 004).
+
+### Corregido
+- [EC-022](01-errores-conocidos.md#ec-022): estado vacío de ROS-174 en tuteo ("aún no tienes proyectos").
+
 ## [1.10.0] — 2026-10-14 · CD-011
 
 ### Añadido

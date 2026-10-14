@@ -13,6 +13,7 @@ DB_MVP/                       # raíz del repositorio git
 ├── backend/                  # Django (ver 03-backend.md)
 ├── frontend/                 # Next.js (ver 04-frontend.md)
 ├── tools/                    # scripts del proyecto (sync_audit.py, trazabilidad)
+├── infra/auth0/actions/      # código versionado de las Acciones del tenant (DP-026)
 ├── docker-compose.yml        # entorno de desarrollo
 ├── .github/workflows/        # CI
 ├── .pre-commit-config.yaml
@@ -85,7 +86,7 @@ Auth0 en local: en la aplicación del tenant de desarrollo, callback `http://loc
 
 Dos archivos de entorno en local: **`.env`** en la raíz (Django, Celery, compose; plantilla `.env.example`) y **`frontend/.env.local`** (Next.js lee el `.env` de su propia carpeta; plantilla `frontend/.env.example`). Ambos ignorados por git y versionados solo como ejemplo **sin** secretos.
 
-**Tenant de desarrollo (creado el 2026-09-30 con el MCP de Auth0):** dominio `dev-n0wktad3z8s2owdd.us.auth0.com` (región US) · aplicación *Rosetta Web* (Regular Web, refresh con rotación, 30 días máx./14 días inactivo) · API *Rosetta API* `https://api.rosetta.local` (RS256, access token 15 min) · Action `rosetta-claims-post-login` (claims `https://rosetta/email`, `name`, `picture`).
+**Tenant de desarrollo (creado el 2026-09-30 con el MCP de Auth0):** dominio `dev-n0wktad3z8s2owdd.us.auth0.com` (región US) · aplicación *Rosetta Web* (Regular Web, refresh con rotación, 30 días máx./14 días inactivo) · API *Rosetta API* `https://api.rosetta.local` (RS256, access token 15 min) · Action `rosetta-claims-post-login` (claims `https://rosetta/email`, `name`, `picture`, `email_verified`; código versionado en `infra/auth0/actions/`, DP-026).
 
 ## 5. Integración continua (GitHub Actions)
 

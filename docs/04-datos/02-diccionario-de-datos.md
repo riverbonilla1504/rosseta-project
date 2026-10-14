@@ -18,15 +18,15 @@ Usuario de Rosetta. Modelo propio (`AUTH_USER_MODEL = "accounts.User"`) basado e
 | id | uuid | No | PK |
 | auth0_sub | varchar(255) | No | Claim `sub` del access token (`google-oauth2\|1234…`, `windowslive\|…`). Único |
 | email | varchar(254) | No | Correo verificado (claim de la Action post-login). Único sin distinguir mayúsculas (`lower(email)`). Si para un `auth0_sub` ya conocido el proveedor informa un correo que ya pertenece a otro usuario, se conserva el anterior (CD-006) |
-| full_name | varchar(200) | No | Nombre del proveedor; editable en Fase 2 (ROS-99). Si el proveedor no lo entrega: `[PENDIENTE: DP-023]` |
+| full_name | varchar(200) | No | Nombre del proveedor; editable en Fase 2 (ROS-99). Si el proveedor no lo entrega, la parte local del correo ([DP-023](../07-registro/02-decisiones-pendientes.md#dp-023)) |
 | avatar_url | varchar(500) | Sí | URL de avatar del proveedor |
 | is_active | boolean | No | `false` = desactivado (no se borran usuarios con acciones auditadas) |
-| is_staff | boolean | No | Acceso al admin de Django (soporte interno) |
+| is_staff | boolean | No | Sin uso en el MVP: no se expone ninguna consola administrativa ([DP-024](../07-registro/02-decisiones-pendientes.md#dp-024)) |
 | onboarding_completed_at | timestamptz | Sí | `null` = onboarding pendiente (ROS-91, 185) |
 | last_login_at | timestamptz | Sí | Último request autenticado del día (se actualiza como máximo una vez por hora) |
 | created_at, updated_at | timestamptz | No | |
 
-Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google o Microsoft ([DP-014](../07-registro/02-decisiones-pendientes.md#dp-014)). El admin de Django se protege aparte (usuario staff con contraseña fuerte, solo en red interna) `[PENDIENTE: DP-024]` decidir si hace falta en el MVP y cómo se protege.
+Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google o Microsoft ([DP-014](../07-registro/02-decisiones-pendientes.md#dp-014)). El MVP no expone el admin de Django ni ninguna otra consola administrativa ([DP-024](../07-registro/02-decisiones-pendientes.md#dp-024)); si el piloto exige soporte interno, se abre una historia nueva.
 
 ---
 
@@ -38,7 +38,7 @@ Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google
 | organization_id | uuid | Sí | Reservado para multi-tenant (ADR-0004). Siempre `null` en el MVP |
 | name | varchar(120) | No | Nombre visible (p. ej. `CORE_PRD`) |
 | description | text | No | Puede ser vacío |
-| source_dialect | varchar(20) | Sí | `tsql` \| `oracle` \| `postgres` \| `mysql`; se rellena con el primer DDL |
+| source_dialect | varchar(20) | No | `tsql` \| `oracle` \| `postgres`; obligatorio al crear el proyecto; el DDL se interpreta con este dialecto ([DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)) |
 | archived_at | timestamptz | Sí | `null` = activo |
 | created_at, updated_at | timestamptz | No | |
 
@@ -57,7 +57,7 @@ Archivo cargado como fuente de evidencia.
 | storage_path | varchar(500) | Sí | Ruta en el almacenamiento (nombre aleatorio). `null` si ya se purgó según retención |
 | size_bytes | bigint | No | |
 | sha256 | char(64) | No | Idempotencia: único por `(project_id, kind, sha256)` |
-| dialect | varchar(20) | Sí | Solo DDL |
+| dialect | varchar(20) | Sí | Solo DDL: el `source_dialect` del proyecto al importar (DP-019) |
 | target_table_id | uuid FK → catalog_table | Sí | Solo `DATA_SAMPLE`: tabla a la que pertenece la muestra |
 | encoding, delimiter | varchar(20), varchar(4) | Sí | Solo CSV; detectados o indicados |
 | stats | jsonb | No | Resumen: `{tables, columns, rows, warnings[]}` |
