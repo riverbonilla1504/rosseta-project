@@ -63,6 +63,8 @@ describe("middleware: SDK de Auth0 y CSP con nonce", () => {
 
   it("[ROS-93][002:FR-034] en el paso normal conserva la cookie renovada del SDK", async () => {
     sdkMiddleware.mockResolvedValue(passThrough());
+    getSession.mockResolvedValue({ user: { sub: "google-oauth2|1" } }); // con sesión: pasa (T047)
+    getAccessToken.mockResolvedValue({ token: "t" });
 
     const response = await middleware(request("/"));
 

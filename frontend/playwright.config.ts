@@ -17,6 +17,8 @@ const UV = process.env.E2E_UV ?? "uv run";
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
+  // El proveedor simulado tiene un estado global (identidad, próximo /authorize): un solo worker.
+  workers: 1,
   // La primera compilación de cada ruta en next dev puede pasar de 30 s.
   timeout: 60_000,
   forbidOnly: !!process.env.CI,
