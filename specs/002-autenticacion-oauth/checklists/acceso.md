@@ -106,8 +106,8 @@
 
 - [x] CHK039 ¿Están documentados el orden de entrega y las dependencias con las features 001 (Nocturne), 003 (crear proyecto, dialectos) y 004 dentro del Sprint 1, dado el riesgo de capacidad de EC-009? [Dependency, Assumption, Spec Assumptions]
   - *Revisión 2026-10-14:* Assumptions (dependencias con 001 y 003; 004 en FR-020) y la sección Capacidad de tasks.md con la mitigación de EC-009.
-- [ ] CHK040 ¿Se ha validado la suposición de que Google y Microsoft (cuentas personales) declaran siempre el correo como verificado, de la que depende FR-004? [Assumption, Spec FR-004]
-  - **Abierto a propósito (2026-10-14):** no se puede validar sin las cuentas personales reales de T002. Por decisión de la persona no bloquea empezar: si Microsoft no entrega `email_verified`, la Acción (versión 2, desplegada el 2026-10-14) y el backend fallan cerrado (CD-008), y T002 lo registra.
+- [x] CHK040 ¿Se ha validado la suposición de que Google y Microsoft (cuentas personales) declaran siempre el correo como verificado, de la que depende FR-004? [Assumption, Spec FR-004]
+  - *Revisión 2026-10-14:* validado con cuentas personales reales de Google y Microsoft (T002, V1 y V2, informado por la persona). Antes: **Abierto a propósito (2026-10-14):** no se puede validar sin las cuentas personales reales de T002. Por decisión de la persona no bloquea empezar: si Microsoft no entrega `email_verified`, la Acción (versión 2, desplegada el 2026-10-14) y el backend fallan cerrado (CD-008), y T002 lo registra.
 
 ## Notes
 

@@ -28,8 +28,16 @@ Sin `make` en Windows: se ejecutan los comandos equivalentes de `Makefile` (`lin
 
 | # | Escenario | Resultado | Fecha | Revisó | Notas |
 |---|---|---|---|---|---|
-| V1 | Primer acceso con Google (cuenta personal de prueba) | pendiente | | | T042 |
-| V2 | Acceso con Microsoft personal (otro correo) | pendiente | | | T042. Si Microsoft no entrega `email_verified`, la Acción v2 deniega el acceso (CHK040) |
-| V6 | Renovación silenciosa (más de 15 min de trabajo) | pendiente | | | T062 |
-| V7 | Sesión vencida: aviso y regreso | pendiente | | | T062 |
-| V8 | Cierre de sesión | pendiente | | | T062 |
+| V1 | Primer acceso con Google (cuenta personal de prueba) | ✅ | 2026-10-14 | River Florez | Ejecutado por la persona con su cuenta personal; resultado informado en el chat. |
+| V2 | Acceso con Microsoft personal (otro correo) | ✅ | 2026-10-14 | River Florez | Ejecutado por la persona con su cuenta personal; resultado informado en el chat. |
+| V6 | Renovación silenciosa (más de 15 min de trabajo) | ✅ | 2026-10-14 | River Florez | Ejecutado por la persona con su cuenta personal; resultado informado en el chat. |
+| V7 | Sesión vencida: aviso y regreso | ✅ | 2026-10-14 | River Florez | Ejecutado por la persona con su cuenta personal; resultado informado en el chat. |
+| V8 | Cierre de sesión | ✅ | 2026-10-14 | River Florez | Ejecutado por la persona con su cuenta personal; resultado informado en el chat. |
+| V3 | Reingreso sin duplicar | ✅ | 2026-10-14 | River Florez | Ejecutado por la persona; resultado informado en el chat |
+| V5 | Ruta privada sin sesión | ✅ | 2026-10-14 | River Florez | Ídem |
+| V9 | Fallos de acceso (cancelar el consentimiento) | ✅ | 2026-10-14 | River Florez | Ídem |
+| V4 | Onboarding de un paso | pendiente | | | Bloqueado por la feature 003 (T055) |
+| V10 | Flujo con PKCE y `state` | ✅ | 2026-10-14 | River Florez | URL de /authorize con `code_challenge_method=S256`, `state`, `audience` (también `security.spec.ts`) |
+| S7 | Cookie `__session` HttpOnly y SameSite=Lax | ✅ | 2026-10-14 | River Florez | Ídem |
+| S8 | Ninguna credencial en el navegador | ✅ | 2026-10-14 | River Florez | Ídem (también `security.spec.ts`) |
+| S1–S6, S9–S11 | Comprobaciones automáticas | ✅ | 2026-10-14 | River Florez | Cubiertas por las suites (`security.spec.ts`, `protected-routes.spec.ts`, `tests/security/`) y revisadas por la persona |
