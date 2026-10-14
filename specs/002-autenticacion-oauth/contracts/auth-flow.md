@@ -23,7 +23,7 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 |---|---|
 | `/auth/login` | Inicia el acceso (PKCE `S256` y `state` los pone el SDK, FR-027) |
 | `/auth/callback` | Recibe el código, valida, crea la sesión cifrada y redirige. Aquí actúa `onCallback` |
-| `/auth/logout` | Cierra la sesión de Rosetta y la del servicio de identidad (FR-025); no cierra la de Google ni la de Microsoft. **Siempre se invoca como `/auth/logout?returnTo=/login`**: sin `returnTo` el SDK usa la raíz, que no está en la lista blanca de cierre de sesión (§5), y el servicio de identidad rechazaría el cierre |
+| `/auth/logout` | Cierra la sesión de Rosetta y la del servicio de identidad (FR-025); no cierra la de Google ni la de Microsoft. **Siempre se invoca con `returnTo` = la URL absoluta de `/login`** (`/auth/logout?returnTo={APP_BASE_URL}/login`): sin `returnTo` el SDK usa la raíz, que no está en la lista blanca de cierre de sesión (§5), y el SDK reenvía `returnTo` **tal cual** como `post_logout_redirect_uri`, así que una ruta relativa no coincidiría con la lista blanca, que tiene URLs absolutas (observado en T032) |
 
 ## 3. Reglas del middleware
 
@@ -68,7 +68,7 @@ Cuando el backend rechaza una cuenta, el SDK ya tiene una sesión válida. Sin c
 
 1. Valida `code` contra la lista de §5; cualquier otro valor se trata como `oauth_failed`.
 2. Guarda el código en la cookie efímera `rosetta_auth_error`.
-3. Redirige a `/auth/logout?returnTo=/auth/error`.
+3. Redirige a `/auth/logout?returnTo={APP_BASE_URL}/auth/error` (URL absoluta, ver §2).
 4. `/auth/error` toma el código de la cookie (y la borra) o, si no hay cookie, de la cadena de consulta.
 
 La lista blanca de cierre de sesión del tenant queda con **exactamente** dos destinos: `{APP_BASE_URL}/login` y `{APP_BASE_URL}/auth/error`.
@@ -150,7 +150,7 @@ sequenceDiagram
     F->>D: GET /api/me (Bearer)
     D-->>F: 403 account_exists_other_provider
     F-->>U: 302 /auth/denied?code=account_exists_other_provider
-    F-->>U: cookie rosetta_auth_error · 302 /auth/logout?returnTo=/auth/error
+    F-->>U: cookie rosetta_auth_error · 302 /auth/logout?returnTo={APP_BASE_URL}/auth/error
     F-->>U: sesión cerrada · 302 /auth/error
     U->>F: GET /auth/error (lee y borra la cookie)
     F-->>U: mensaje + "Volver a intentar"

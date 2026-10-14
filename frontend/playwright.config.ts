@@ -29,7 +29,11 @@ export default defineConfig({
     {
       command: "node tests/e2e/support/mock-idp-server.mjs",
       url: `${MOCK_IDP_URL}/.well-known/openid-configuration`,
-      env: { MOCK_IDP_PORT: String(MOCK_IDP_PORT) },
+      env: {
+        MOCK_IDP_PORT: String(MOCK_IDP_PORT),
+        MOCK_IDP_AUDIENCE: AUDIENCE,
+        MOCK_IDP_APP_BASE_URL: APP_BASE_URL,
+      },
       reuseExistingServer: !process.env.CI,
     },
     {
@@ -43,7 +47,7 @@ export default defineConfig({
           process.env.DATABASE_URL ?? "postgres://rosetta:rosetta_dev_only@localhost:5433/rosetta",
         AUTH0_DOMAIN: `localhost:${MOCK_IDP_PORT}`,
         AUTH0_AUDIENCE: AUDIENCE,
-        AUTH0_ISSUER: MOCK_IDP_URL, // oauth2-mock-server emite iss sin barra final
+        AUTH0_ISSUER: `${MOCK_IDP_URL}/`, // el SDK y el mock usan el emisor con barra final, como Auth0
         AUTH0_JWKS_URL: `${MOCK_IDP_URL}/jwks`,
       },
       reuseExistingServer: !process.env.CI,
