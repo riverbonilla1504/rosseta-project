@@ -1,30 +1,39 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { backendRewrites } from "../../next.config";
+import nextConfig from "../../next.config";
 
-describe("proxy /api y /auth al backend (ADR-0006)", () => {
-  it("reenvía /api y /auth al backend configurado", () => {
-    expect(backendRewrites("http://backend:8000")).toEqual([
-      { source: "/api/:path*", destination: "http://backend:8000/api/:path*" },
-      { source: "/auth/:path*", destination: "http://backend:8000/auth/:path*" },
-    ]);
+async function headersFor(nodeEnv: string) {
+  vi.stubEnv("NODE_ENV", nodeEnv);
+  const rules = (await nextConfig.headers?.()) ?? [];
+  const all = rules.find((rule) => rule.source === "/:path*");
+  return Object.fromEntries((all?.headers ?? []).map((h) => [h.key.toLowerCase(), h.value]));
+}
+
+describe("configuración de Next.js (D6 y cabeceras de seguridad)", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
-  it("tolera una barra final en la URL del backend", () => {
-    expect(backendRewrites("http://backend:8000/")[0].destination).toBe(
-      "http://backend:8000/api/:path*",
-    );
+  it("[ROS-93][002:FR-034] no reescribe /api ni /auth hacia el backend (D6: lo hace el proxy BFF y el SDK)", () => {
+    expect(nextConfig.rewrites).toBeUndefined();
   });
-});
 
-describe("configuración de Next.js", () => {
-  it("usa BACKEND_INTERNAL_URL y aplica los rewrites", async () => {
-    process.env.BACKEND_INTERNAL_URL = "http://api.interno:8000";
-    const { default: nextConfig } = await import("../../next.config");
-
-    const rewrites = await nextConfig.rewrites?.();
-
-    expect(rewrites).toEqual(backendRewrites("http://api.interno:8000"));
+  it("[ROS-93][002:FR-034] no anuncia la tecnología del servidor", () => {
     expect(nextConfig.poweredByHeader).toBe(false);
+  });
+
+  it("[ROS-93][002:FR-034] toda respuesta lleva X-Frame-Options, nosniff y Referrer-Policy", async () => {
+    const headers = await headersFor("development");
+
+    expect(headers["x-frame-options"]).toBe("DENY");
+    expect(headers["x-content-type-options"]).toBe("nosniff");
+    expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+  });
+
+  it("[ROS-93][002:FR-034] Strict-Transport-Security solo en producción", async () => {
+    expect((await headersFor("development"))["strict-transport-security"]).toBeUndefined();
+    expect((await headersFor("production"))["strict-transport-security"]).toBe(
+      "max-age=31536000; includeSubDomains",
+    );
   });
 });
