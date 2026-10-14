@@ -79,6 +79,18 @@ jobs:
         run: pnpm test:coverage
       - name: Build
         run: pnpm build
+      - name: Ningún secreto en el código del navegador (S10, FR-032)
+        run: |
+          if grep -rEl "AUTH0_(CLIENT_)?SECRET" .next/static; then
+            echo "Un secreto de Auth0 llegó al código del navegador" && exit 1
+          fi
+      - name: Archivos locales con secretos ignorados por git (S10)
+        working-directory: .
+        run: |
+          git check-ignore -q frontend/.env.local
+          git check-ignore -q .env
+          git check-ignore -q frontend/.auth0-mcp-state.json
+          git check-ignore -q .auth0-mcp-writes.log
 
   e2e:
     # Playwright + axe contra el proveedor simulado (specs/002-autenticacion-oauth, T009).
