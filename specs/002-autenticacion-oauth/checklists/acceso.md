@@ -10,66 +10,108 @@
 
 ## Completitud de los requisitos de seguridad
 
-- [ ] CHK001 ¿Cada amenaza del modelo de amenazas de `07-seguridad-y-autenticacion.md §1` que afecta al acceso (robo de sesión por XSS, falsificación de solicitudes, robo de la credencial de renovación, interceptación del código, redirección abierta, credencial falsificada, configuración del servicio de identidad, filtración de secretos) tiene al menos un FR que la cubra? [Completeness, Traceability, Spec FR-027…FR-035]
-- [ ] CHK002 ¿Está especificado el control de acceso al panel de administración del servicio de identidad (con segundo factor), que el modelo de amenazas lista y que ningún FR recoge? [Gap, docs/07 §1]
-- [ ] CHK003 ¿Existe un requisito para registrar, sin datos personales, los intentos de acceso denegados o anómalos, además de la prohibición de registrar datos sensibles? [Gap, Spec FR-033, docs/07 §4]
-- [ ] CHK004 ¿Se define qué protección hay frente a intentos repetidos o abusivos de acceso (límite, bloqueo temporal), o se declara explícitamente que corresponde al proveedor? [Gap, Exception Flow]
-- [ ] CHK005 ¿Se define cuánto tiempo es válida una solicitud de acceso ya iniciada (ventana entre salir hacia el proveedor y volver)? [Gap, Spec FR-027]
-- [ ] CHK006 ¿Los mensajes de FR-009 y FR-038 evitan revelar si un correo concreto está registrado (enumeración de cuentas), o se acepta explícitamente ese riesgo? [Ambiguity, Spec FR-009, FR-038]
-- [ ] CHK007 ¿Está especificado que un tercero no puede provocar el cierre de sesión de otra persona desde otro sitio, o que el cierre queda cubierto por la protección de FR-031? [Gap, Spec FR-025, FR-031]
-- [ ] CHK008 ¿Está definido el comportamiento de las sesiones simultáneas de una misma persona (varios navegadores o dispositivos permitidos, o un límite)? [Gap, Spec FR-022…FR-025]
+- [x] CHK001 ¿Cada amenaza del modelo de amenazas de `07-seguridad-y-autenticacion.md §1` que afecta al acceso (robo de sesión por XSS, falsificación de solicitudes, robo de la credencial de renovación, interceptación del código, redirección abierta, credencial falsificada, configuración del servicio de identidad, filtración de secretos) tiene al menos un FR que la cubra? [Completeness, Traceability, Spec FR-027…FR-035]
+  - *Revisión 2026-10-14:* XSS → FR-030; CSRF → FR-027 y FR-031; robo del refresh → FR-023 y FR-030; interceptación del código → FR-027; redirección abierta → FR-015 y FR-028; credencial falsificada → FR-029; configuración del servicio de identidad → FR-035; secretos → FR-032 y FR-033.
+- [x] CHK002 ¿Está especificado el control de acceso al panel de administración del servicio de identidad (con segundo factor), que el modelo de amenazas lista y que ningún FR recoge? [Gap, docs/07 §1]
+  - *Revisión 2026-10-14:* FR-035 exige la lista C1…C16 y C14 es el MFA de los administradores del panel (quickstart §3).
+- [x] CHK003 ¿Existe un requisito para registrar, sin datos personales, los intentos de acceso denegados o anómalos, además de la prohibición de registrar datos sensibles? [Gap, Spec FR-033, docs/07 §4]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14 en FR-033: los rechazos por cuenta y el choque de FR-010 se registran como eventos con campos cerrados y sin datos personales (07-seguridad §4); T015 (m) lo prueba.
+- [x] CHK004 ¿Se define qué protección hay frente a intentos repetidos o abusivos de acceso (límite, bloqueo temporal), o se declara explícitamente que corresponde al proveedor? [Gap, Exception Flow]
+  - *Revisión 2026-10-14:* Declarado en Assumptions (2026-10-14): corresponde al servicio de identidad (Attack Protection), con su estado en C15 (research R-12).
+- [x] CHK005 ¿Se define cuánto tiempo es válida una solicitud de acceso ya iniciada (ventana entre salir hacia el proveedor y volver)? [Gap, Spec FR-027]
+  - *Revisión 2026-10-14:* La solicitud de acceso iniciada vale 600 s (`transactionCookie.maxAge`, auth-flow.md §4, research R-05; probado en T021).
+- [x] CHK006 ¿Los mensajes de FR-009 y FR-038 evitan revelar si un correo concreto está registrado (enumeración de cuentas), o se acepta explícitamente ese riesgo? [Ambiguity, Spec FR-009, FR-038]
+  - *Revisión 2026-10-14:* Riesgo tratado en research R-12: el mensaje no nombra el proveedor y solo se ve tras autenticarse con ese correo verificado.
+- [x] CHK007 ¿Está especificado que un tercero no puede provocar el cierre de sesión de otra persona desde otro sitio, o que el cierre queda cubierto por la protección de FR-031? [Gap, Spec FR-025, FR-031]
+  - *Revisión 2026-10-14:* Riesgo aceptado explícitamente para el MVP en research R-12 (cerrar sesión por GET solo obliga a volver a entrar; no modifica datos).
+- [x] CHK008 ¿Está definido el comportamiento de las sesiones simultáneas de una misma persona (varios navegadores o dispositivos permitidos, o un límite)? [Gap, Spec FR-022…FR-025]
+  - *Revisión 2026-10-14:* Declarado en Assumptions (2026-10-14): sesiones simultáneas permitidas sin límite; cerrar en todos los dispositivos es ROS-103 (Fase 3).
 
 ## Claridad de los requisitos
 
-- [ ] CHK009 ¿Está definido con criterios observables qué significa "mensaje claro" en FR-004, FR-009, FR-011 y FR-038 (contenido mínimo: qué pasó y qué hacer), dado que esos textos aún no existen en `04-contenido-y-redaccion.md`? [Clarity, Ambiguity, Spec FR-004, FR-009, FR-011, FR-038]
-- [ ] CHK010 ¿Están definidos con atributos observables el "destino por defecto" y el "espacio personal (sin proyectos)", o son términos sin definición en Key Entities? [Clarity, Spec FR-015, FR-017]
-- [ ] CHK011 ¿Precisa FR-011 en qué plazo pierde el acceso una cuenta desactivada con sesión abierta, en lugar de "en su siguiente acción"? [Clarity, Spec FR-011, Edge Cases]
-- [ ] CHK012 ¿Enumera FR-012 de forma cerrada las excepciones públicas, o delega en la documentación una lista (incluida la descripción pública del contrato) que la spec no nombra? [Clarity, Spec FR-012, ROS-181]
-- [ ] CHK013 ¿Distingue FR-013 cuándo corresponde "no autenticado" y cuándo "no autorizado" (por ejemplo, una cuenta desactivada con sesión abierta), dado que ROS-181 exige respuestas para ambos casos? [Clarity, Conflict, Spec FR-011, FR-013]
-- [ ] CHK014 ¿Declara la spec que una misma persona que entra con Google y con Microsoft usando correos distintos obtiene dos cuentas independientes, y que ese es el comportamiento esperado? [Clarity, Edge Case, Spec FR-005, FR-009]
+- [x] CHK009 ¿Está definido con criterios observables qué significa "mensaje claro" en FR-004, FR-009, FR-011 y FR-038 (contenido mínimo: qué pasó y qué hacer), dado que esos textos aún no existen en `04-contenido-y-redaccion.md`? [Clarity, Ambiguity, Spec FR-004, FR-009, FR-011, FR-038]
+  - *Revisión 2026-10-14:* FR-038 fija el contenido mínimo (qué pasó y qué hacer) y FR-039 la salida; los textos concretos esperan DP-025 (T085 ⛔).
+- [x] CHK010 ¿Están definidos con atributos observables el "destino por defecto" y el "espacio personal (sin proyectos)", o son términos sin definición en Key Entities? [Clarity, Spec FR-015, FR-017]
+  - *Revisión 2026-10-14:* Destino por defecto definido en FR-015 (onboarding si está pendiente, lista de proyectos si no); espacio personal = cuenta sin proyectos (FR-017).
+- [x] CHK011 ¿Precisa FR-011 en qué plazo pierde el acceso una cuenta desactivada con sesión abierta, en lugar de "en su siguiente acción"? [Clarity, Spec FR-011, Edge Cases]
+  - *Revisión 2026-10-14:* "Siguiente acción" es la siguiente petición: la comprobación se hace en cada petición, sin caché (research R-03; T015 (g) y T019).
+- [x] CHK012 ¿Enumera FR-012 de forma cerrada las excepciones públicas, o delega en la documentación una lista (incluida la descripción pública del contrato) que la spec no nombra? [Clarity, Spec FR-012, ROS-181]
+  - *Revisión 2026-10-14:* FR-012 nombra las excepciones (acceso, error de acceso, estado del servicio, descripción del contrato); la lista exacta vive en `PUBLIC_ROUTES` (T043).
+- [x] CHK013 ¿Distingue FR-013 cuándo corresponde "no autenticado" y cuándo "no autorizado" (por ejemplo, una cuenta desactivada con sesión abierta), dado que ROS-181 exige respuestas para ambos casos? [Clarity, Conflict, Spec FR-011, FR-013]
+  - *Revisión 2026-10-14:* FR-013 cubre "no autenticado" (401) y FR-011 la cuenta desactivada (403 `account_disabled`, contracts/auth-flow.md §5 y 05-api).
+- [x] CHK014 ¿Declara la spec que una misma persona que entra con Google y con Microsoft usando correos distintos obtiene dos cuentas independientes, y que ese es el comportamiento esperado? [Clarity, Edge Case, Spec FR-005, FR-009]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14 en Edge Cases: dos cuentas independientes, comportamiento esperado (DP-014, ROS-98).
 
 ## Consistencia spec ↔ docs
 
-- [ ] CHK015 ¿Se ha reconciliado FR-020 (onboarding sin paso de carga de DDL) con ROS-186, `03-tareas-mvp.md` y `03-pantallas.md §7`, que aún piden ese paso, mediante un cambio de documentación? [Conflict, Spec FR-019, FR-020]
-- [ ] CHK016 ¿Está registrada en DP-014 y en `07-seguridad-y-autenticacion.md §2` la decisión de admitir solo cuentas personales de Microsoft (FR-001), o `docs/` puede leerse como que incluye cuentas de trabajo? [Conflict, Spec FR-001, DP-014]
-- [ ] CHK017 ¿Está recogida en `docs/` la regla de FR-010 (conservar el correo anterior cuando el nuevo choca con otra cuenta), o la spec la introduce sin fuente en la documentación? [Gap, Spec FR-010, docs/07 §2]
-- [ ] CHK018 ¿Coinciden los valores de FR-024 (14 días sin uso, 30 días máximo) con `07-seguridad-y-autenticacion.md §3` y tienen una decisión pendiente asociada, dado que `docs/` los llama "provisionales"? [Consistency, Assumption, Spec FR-024]
-- [ ] CHK019 ¿Está alineado el título de ROS-90, que aún nombra a Apple, con el alcance de FR-001 y con DP-014? [Conflict, Spec FR-001, ROS-90]
-- [ ] CHK020 ¿Coinciden literalmente los textos de FR-026, FR-036, FR-037 y FR-038 con `04-contenido-y-redaccion.md §5`? [Consistency, Spec FR-026, FR-036, FR-037, FR-038]
-- [ ] CHK021 ¿Coinciden las tres pantallas nuevas de la spec (acceso, error de acceso, onboarding) y sus bocetos con la tabla de `03-pantallas.md §7`, incluido el contenido mínimo de cada una? [Consistency, Spec Bocetos de pantallas]
-- [ ] CHK022 ¿Coincide la tabla "Trazabilidad ROS → FR" con las claves ROS de cada FR y con las asignaciones de la matriz de trazabilidad (RNF-03 para ROS-89, RNF-08 para ROS-92, RNF-05…07 y 09 para ROS-93)? [Traceability, Consistency, Spec Trazabilidad ROS → FR]
-- [ ] CHK023 ¿Están representadas o explícitamente excluidas las actividades de ROS-180…190 que no tienen FR propio (p. ej. registrar apps propias en Google y Microsoft para producción y separar los entornos del servicio de identidad, ROS-182)? [Traceability, Gap, ROS-182]
-- [ ] CHK024 ¿Tiene una decisión asociada el `[PENDIENTE]` "definir en 002" del diccionario de datos (acceso de administración interna) que la spec declara fuera de alcance? [Gap, Spec Fuera de alcance, docs/04 accounts_user]
+- [x] CHK015 ¿Se ha reconciliado FR-020 (onboarding sin paso de carga de DDL) con ROS-186, `03-tareas-mvp.md` y `03-pantallas.md §7`, que aún piden ese paso, mediante un cambio de documentación? [Conflict, Spec FR-019, FR-020]
+  - *Revisión 2026-10-14:* CD-006 alineó 03-tareas-mvp, 03-pantallas §7 y ROS-186 (Jira sincronizado el 2026-10-13, T001).
+- [x] CHK016 ¿Está registrada en DP-014 y en `07-seguridad-y-autenticacion.md §2` la decisión de admitir solo cuentas personales de Microsoft (FR-001), o `docs/` puede leerse como que incluye cuentas de trabajo? [Conflict, Spec FR-001, DP-014]
+  - *Revisión 2026-10-14:* DP-014 (actualización CD-006) y 07-seguridad §2 dicen "solo con cuentas personales".
+- [x] CHK017 ¿Está recogida en `docs/` la regla de FR-010 (conservar el correo anterior cuando el nuevo choca con otra cuenta), o la spec la introduce sin fuente en la documentación? [Gap, Spec FR-010, docs/07 §2]
+  - *Revisión 2026-10-14:* 07-seguridad §2 recoge la regla de conservar el correo anterior (CD-006).
+- [x] CHK018 ¿Coinciden los valores de FR-024 (14 días sin uso, 30 días máximo) con `07-seguridad-y-autenticacion.md §3` y tienen una decisión pendiente asociada, dado que `docs/` los llama "provisionales"? [Consistency, Assumption, Spec FR-024]
+  - *Revisión 2026-10-14:* FR-024 coincide con 07-seguridad §3 (14/30, provisional) y tiene DP-022.
+- [x] CHK019 ¿Está alineado el título de ROS-90, que aún nombra a Apple, con el alcance de FR-001 y con DP-014? [Conflict, Spec FR-001, ROS-90]
+  - *Revisión 2026-10-14:* ROS-90 retitulada "Inicio de sesión con OAuth (Google y Microsoft)" en Jira el 2026-10-13 (T001); Assumptions actualizado.
+- [x] CHK020 ¿Coinciden literalmente los textos de FR-026, FR-036, FR-037 y FR-038 con `04-contenido-y-redaccion.md §5`? [Consistency, Spec FR-026, FR-036, FR-037, FR-038]
+  - *Revisión 2026-10-14:* Coinciden literalmente con 04-contenido §5: sesión vencida, OAuth cancelado, proveedor caído y error genérico.
+- [x] CHK021 ¿Coinciden las tres pantallas nuevas de la spec (acceso, error de acceso, onboarding) y sus bocetos con la tabla de `03-pantallas.md §7`, incluido el contenido mínimo de cada una? [Consistency, Spec Bocetos de pantallas]
+  - *Revisión 2026-10-14:* Las tres pantallas y su contenido mínimo coinciden con 03-pantallas §7 (textos pendientes de DP-025 en ambos).
+- [x] CHK022 ¿Coincide la tabla "Trazabilidad ROS → FR" con las claves ROS de cada FR y con las asignaciones de la matriz de trazabilidad (RNF-03 para ROS-89, RNF-08 para ROS-92, RNF-05…07 y 09 para ROS-93)? [Traceability, Consistency, Spec Trazabilidad ROS → FR]
+  - *Revisión 2026-10-14:* Tabla de la spec coincide con las claves de cada FR; la matriz asigna RNF-03 a ROS-89, RNF-08 a ROS-92 y RNF-05…07, 09 a ROS-93, citados en los FR correspondientes.
+- [x] CHK023 ¿Están representadas o explícitamente excluidas las actividades de ROS-180…190 que no tienen FR propio (p. ej. registrar apps propias en Google y Microsoft para producción y separar los entornos del servicio de identidad, ROS-182)? [Traceability, Gap, ROS-182]
+  - *Revisión 2026-10-14:* Assumptions declara fuera de la spec el registro de apps propias y la separación de entornos de ROS-182 (cubiertos en quickstart §2 y T089 ⛔).
+- [x] CHK024 ¿Tiene una decisión asociada el `[PENDIENTE]` "definir en 002" del diccionario de datos (acceso de administración interna) que la spec declara fuera de alcance? [Gap, Spec Fuera de alcance, docs/04 accounts_user]
+  - *Revisión 2026-10-14:* Registrado en DP-024 (Fuera de alcance de la spec).
 
 ## Calidad de los criterios de aceptación
 
-- [ ] CHK025 ¿Tiene cada FR al menos un escenario de aceptación, caso límite o criterio de éxito que lo cubra, y esa correspondencia es explícita (hoy los escenarios no citan identificadores de FR)? [Acceptance Criteria, Traceability, Spec User Scenarios]
-- [ ] CHK026 ¿Están cuantificados "varios accesos" (SC-002) y "varios vencimientos" (SC-006) con un número mínimo? [Measurability, Ambiguity, Spec SC-002, SC-006]
-- [ ] CHK027 ¿Define SC-003 qué conjunto de operaciones privadas se considera "enumerado" y quién lo mantiene, para que el 100 % sea comprobable? [Measurability, Spec SC-003]
-- [ ] CHK028 ¿Indican SC-005 y SC-008 cómo se observa "cero apariciones" (qué se inspecciona y con qué alcance) para que sean verificables de forma objetiva? [Measurability, Spec SC-005, SC-008]
-- [ ] CHK029 ¿Existe un criterio medible para "sin pantalla en blanco ni bucle de redirecciones" (por ejemplo, un máximo de redirecciones consecutivas)? [Measurability, Ambiguity, Spec FR-039, SC-007]
-- [ ] CHK030 ¿Cubren los escenarios de aceptación la cuenta de Microsoft de trabajo no admitida con un resultado observable, o solo figura como caso límite? [Coverage, Spec FR-001, Edge Cases]
-- [ ] CHK031 ¿Está justificada y trazada a DP-018 la ausencia de metas de tiempo para el acceso y el onboarding? [Assumption, Spec Assumptions, DP-018]
+- [x] CHK025 ¿Tiene cada FR al menos un escenario de aceptación, caso límite o criterio de éxito que lo cubra, y esa correspondencia es explícita (hoy los escenarios no citan identificadores de FR)? [Acceptance Criteria, Traceability, Spec User Scenarios]
+  - *Revisión 2026-10-14:* La correspondencia FR → escenario se revisó en checklists/requirements.md y se hace explícita con los marcadores `002:FR-###` de cada prueba en tasks.md y la tabla de T092 (`evidence/fr-coverage.md`).
+- [x] CHK026 ¿Están cuantificados "varios accesos" (SC-002) y "varios vencimientos" (SC-006) con un número mínimo? [Measurability, Ambiguity, Spec SC-002, SC-006]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14: SC-002 = al menos un reingreso y dos accesos simultáneos; SC-006 = al menos tres vencimientos (alineado con T036 y T058).
+- [x] CHK027 ¿Define SC-003 qué conjunto de operaciones privadas se considera "enumerado" y quién lo mantiene, para que el 100 % sea comprobable? [Measurability, Spec SC-003]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14 en SC-003: todas las rutas salvo la lista pública de FR-012, mantenida junto a la prueba de inventario (T043).
+- [x] CHK028 ¿Indican SC-005 y SC-008 cómo se observa "cero apariciones" (qué se inspecciona y con qué alcance) para que sean verificables de forma objetiva? [Measurability, Spec SC-005, SC-008]
+  - *Revisión 2026-10-14:* SC-005 nombra lo que se inspecciona (almacenamiento, respuestas, direcciones) y SC-008 los registros de un acceso completo; procedimiento en quickstart S8, S9 y S10 y pruebas T063 y T066.
+- [x] CHK029 ¿Existe un criterio medible para "sin pantalla en blanco ni bucle de redirecciones" (por ejemplo, un máximo de redirecciones consecutivas)? [Measurability, Ambiguity, Spec FR-039, SC-007]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14 (decisión de la persona): SC-007 = ninguna cadena de redirecciones automáticas supera 6 saltos; T079 lo prueba.
+- [x] CHK030 ¿Cubren los escenarios de aceptación la cuenta de Microsoft de trabajo no admitida con un resultado observable, o solo figura como caso límite? [Coverage, Spec FR-001, Edge Cases]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14: escenario 11 de la historia 1 con resultado observable.
+- [x] CHK031 ¿Está justificada y trazada a DP-018 la ausencia de metas de tiempo para el acceso y el onboarding? [Assumption, Spec Assumptions, DP-018]
+  - *Revisión 2026-10-14:* Assumptions "Sin metas de tiempo" traza a DP-018.
 
 ## Cobertura de escenarios y casos límite
 
-- [ ] CHK032 ¿Hay requisitos para el escenario de recuperación en que el servicio de identidad falla durante una renovación silenciosa (más allá del caso límite), incluido qué ve la persona y si conserva su trabajo? [Coverage, Recovery, Gap, Spec Edge Cases, FR-022]
-- [ ] CHK033 ¿Está definido qué ocurre con el destino de regreso (la pantalla que la persona pidió) cuando el acceso falla y ella reintenta o elige otro proveedor? [Coverage, Exception Flow, Gap, Spec FR-014, FR-039]
-- [ ] CHK034 ¿Se define qué pasa con una persona que completó el onboarding y luego no tiene proyectos (por ejemplo, los archivó), para evitar que vuelva al onboarding? [Coverage, Edge Case, Spec FR-018, FR-021]
-- [ ] CHK035 ¿Está definido el comportamiento cuando el proveedor no entrega nombre (campo obligatorio según el diccionario de datos), o se declara fuera de la spec con una decisión asociada? [Gap, Edge Case, docs/04 accounts_user]
+- [x] CHK032 ¿Hay requisitos para el escenario de recuperación en que el servicio de identidad falla durante una renovación silenciosa (más allá del caso límite), incluido qué ve la persona y si conserva su trabajo? [Coverage, Recovery, Gap, Spec Edge Cases, FR-022]
+  - *Revisión 2026-10-14:* Edge Cases (renovación sin respuesta) más el contrato del proxy: 503 `identity_unavailable` sin tocar la sesión (bff-proxy.md, research R-08; T030 y T057).
+- [x] CHK033 ¿Está definido qué ocurre con el destino de regreso (la pantalla que la persona pidió) cuando el acceso falla y ella reintenta o elige otro proveedor? [Coverage, Exception Flow, Gap, Spec FR-014, FR-039]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14 en FR-039: "Volver a intentar" conserva el destino de regreso solo si es interno (research R-07; T075).
+- [x] CHK034 ¿Se define qué pasa con una persona que completó el onboarding y luego no tiene proyectos (por ejemplo, los archivó), para evitar que vuelva al onboarding? [Coverage, Edge Case, Spec FR-018, FR-021]
+  - *Revisión 2026-10-14:* FR-018 y FR-021: el onboarding completado se guarda en la cuenta y no depende de tener proyectos (research R-09; T049 "nunca vuelve a pendiente").
+- [x] CHK035 ¿Está definido el comportamiento cuando el proveedor no entrega nombre (campo obligatorio según el diccionario de datos), o se declara fuera de la spec con una decisión asociada? [Gap, Edge Case, docs/04 accounts_user]
+  - *Revisión 2026-10-14:* Edge Cases lo declara pendiente de DP-023 (T037 ⛔).
 
 ## Requisitos no funcionales
 
-- [ ] CHK036 ¿Están definidos los requisitos de accesibilidad de las tres pantallas más allá de la mención a WCAG 2.1 AA (orden del foco, anuncio de los errores a lectores de pantalla, foco al llegar a la pantalla de error)? [Coverage, Non-Functional, Spec FR-040]
-- [ ] CHK037 ¿Hay requisitos de disponibilidad o de degradación ante la caída del servicio de identidad (dependencia de un tercero), o se declaran fuera de alcance? [Gap, Dependency, Non-Functional]
-- [ ] CHK038 ¿Está definida la retención y la región de los datos personales (nombre, correo, avatar) que guarda el servicio de identidad? [Gap, Assumption, DP-015, Spec Assumptions]
+- [x] CHK036 ¿Están definidos los requisitos de accesibilidad de las tres pantallas más allá de la mención a WCAG 2.1 AA (orden del foco, anuncio de los errores a lectores de pantalla, foco al llegar a la pantalla de error)? [Coverage, Non-Functional, Spec FR-040]
+  - *Revisión 2026-10-14:* Aclarado el 2026-10-14 (decisión de la persona) en FR-040: orden del foco (2.4.3), errores anunciados (4.1.3) y foco en el mensaje de error; T086 lo prueba.
+- [x] CHK037 ¿Hay requisitos de disponibilidad o de degradación ante la caída del servicio de identidad (dependencia de un tercero), o se declaran fuera de alcance? [Gap, Dependency, Non-Functional]
+  - *Revisión 2026-10-14:* Declarado en Assumptions (2026-10-14): disponibilidad del tercero sin metas (DP-018); Rosetta garantiza el mensaje de FR-037 y no perder trabajo guardado.
+- [x] CHK038 ¿Está definida la retención y la región de los datos personales (nombre, correo, avatar) que guarda el servicio de identidad? [Gap, Assumption, DP-015, Spec Assumptions]
+  - *Revisión 2026-10-14:* Declarado en Assumptions (2026-10-14): región en DP-015 y retención registrada como DP-027 (CD-010).
 
 ## Dependencias y suposiciones
 
-- [ ] CHK039 ¿Están documentados el orden de entrega y las dependencias con las features 001 (Nocturne), 003 (crear proyecto, dialectos) y 004 dentro del Sprint 1, dado el riesgo de capacidad de EC-009? [Dependency, Assumption, Spec Assumptions]
+- [x] CHK039 ¿Están documentados el orden de entrega y las dependencias con las features 001 (Nocturne), 003 (crear proyecto, dialectos) y 004 dentro del Sprint 1, dado el riesgo de capacidad de EC-009? [Dependency, Assumption, Spec Assumptions]
+  - *Revisión 2026-10-14:* Assumptions (dependencias con 001 y 003; 004 en FR-020) y la sección Capacidad de tasks.md con la mitigación de EC-009.
 - [ ] CHK040 ¿Se ha validado la suposición de que Google y Microsoft (cuentas personales) declaran siempre el correo como verificado, de la que depende FR-004? [Assumption, Spec FR-004]
+  - **Abierto a propósito (2026-10-14):** no se puede validar sin las cuentas personales reales de T002. Por decisión de la persona no bloquea empezar: si Microsoft no entrega `email_verified`, la Acción (versión 2, desplegada el 2026-10-14) y el backend fallan cerrado (CD-008), y T002 lo registra.
 
 ## Notes
+
+- **Revisión del 2026-10-14** (agente implementador, a pedido de la persona): 39 de 40 satisfechos con la evidencia indicada en cada ítem; las aclaraciones necesarias se escribieron en `spec.md` (Clarifications, Session 2026-10-14) y `tasks.md`, y CD-010 registra DP-027. CHK040 queda abierto hasta T002.
 
 - Mark items `[x]` only after review confirms the requirement-quality criterion is satisfied
 - Leave items unchecked when they still require clarification, correction, or reviewer evaluation

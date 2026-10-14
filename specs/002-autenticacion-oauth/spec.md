@@ -20,6 +20,12 @@
 - Q: Si una persona con cuenta entra y su proveedor informa un correo nuevo que ya pertenece a otra cuenta de Rosetta, ¿qué debe hacer el sistema? → A: Dejarla entrar, conservar el correo anterior sin actualizarlo y registrar el evento sin datos personales.
 - Q: ¿Qué debe pasar con el segundo paso del onboarding ("subir el DDL") cuando se entregue esta feature, si la carga de DDL todavía no existe? → A: Omitirlo hasta que exista la feature 004; el onboarding es de un solo paso y termina al crear el primer proyecto.
 
+### Session 2026-10-14 (revisión de `checklists/acceso.md`)
+
+- Q: ¿Cuál es el criterio medible de "sin bucle de redirecciones" (CHK029)? → A: ninguna cadena de redirecciones automáticas supera 6 saltos (SC-007).
+- Q: ¿Qué exige WCAG 2.1 AA en las tres pantallas más allá de lo ya listado (CHK036)? → A: orden del foco igual al orden visual (2.4.3), mensajes de error anunciados a lectores de pantalla (4.1.3) y foco en el mensaje al llegar a la pantalla de error (FR-040).
+- Q: ¿Retención de los datos personales que guarda el servicio de identidad (CHK038)? → A: no se decide aquí: la región sigue en DP-015 y la retención se registra como DP-027.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -47,6 +53,7 @@
 8. **Dado** un acceso con cualquiera de los dos proveedores, **cuando** se revisan los datos que Rosetta solicita, **entonces** son solo el nombre, el correo y el avatar, y ningún otro dato de la cuenta del proveedor.
 9. **Dado** las pantallas de acceso, de error de acceso y de onboarding, **cuando** se auditan, **entonces** usan el sistema de diseño Nocturne, están en español con tuteo neutro y cumplen WCAG 2.1 AA (teclado, foco visible, contraste, estados no dependientes solo del color).
 10. **Dado** una persona con cuenta cuyo proveedor ahora informa un correo que ya pertenece a otra cuenta de Rosetta, **cuando** entra, **entonces** accede a su propia cuenta, su correo anterior se conserva sin cambios, no se vinculan cuentas y el evento queda registrado sin datos personales.
+11. **Dado** una persona con una cuenta de Microsoft de trabajo o institucional, **cuando** intenta entrar con "Continuar con Microsoft", **entonces** no se crea cuenta ni sesión en Rosetta y, si el proveedor la devuelve a Rosetta, ve la pantalla de error de acceso con una salida (FR-001, FR-038, FR-039).
 
 ---
 
@@ -149,6 +156,7 @@
 - **Abandono en el proveedor:** la persona cierra la ventana del proveedor o vuelve atrás durante el acceso. No se crea sesión ni cuenta parcial; puede reintentar desde la pantalla de acceso.
 - **Primer acceso simultáneo:** la misma identidad entra por primera vez desde dos navegadores a la vez. Resulta una sola cuenta (FR-005).
 - **Correo con otra capitalización:** `Ana@x.com` y `ana@x.com` son el mismo correo (FR-008, FR-009).
+- **Misma persona con Google y con Microsoft usando correos distintos:** obtiene dos cuentas independientes. Es el comportamiento esperado: no hay vinculación automática (DP-014) y la vinculación manual es ROS-98 (Fase 3).
 - **Cuenta de Microsoft de trabajo o institucional:** no se admite en el MVP (FR-001). No se crea cuenta ni sesión en Rosetta.
 - **Cambio de correo en el proveedor que choca con otra cuenta:** ver FR-010.
 - **Datos incompletos del proveedor:** el avatar es opcional. Un proveedor que no entrega correo no permite crear la cuenta y se trata como un fallo de acceso (FR-038). El comportamiento ante un nombre ausente está pendiente de [DP-023](../../docs/07-registro/02-decisiones-pendientes.md#dp-023) y no se resuelve aquí.
@@ -214,7 +222,7 @@
 - **FR-030** [ROS-93, ROS-92]: Ninguna credencial de acceso ni de renovación DEBE ser accesible al código que se ejecuta en la página de la persona. La sesión del navegador DEBE ser inaccesible para scripts de la página, viajar solo por conexión cifrada y no enviarse en peticiones iniciadas desde otros sitios (RNF-08).
 - **FR-031** [ROS-93]: El sistema DEBE rechazar toda acción que modifique datos si no proviene del propio origen de Rosetta.
 - **FR-032** [ROS-93]: Los secretos DEBEN existir solo en la configuración del entorno de ejecución: nunca en el repositorio ni en el código que llega al navegador. Los secretos de Google y Microsoft se guardan en el servicio de identidad, no en Rosetta. El escáner de secretos NO DEBE reportar hallazgos (RNF-05).
-- **FR-033** [ROS-93]: El sistema NO DEBE registrar credenciales, códigos de autorización, correos ni nombres en ningún registro (RNF-06), tampoco en los del intermediario entre el navegador y el servicio.
+- **FR-033** [ROS-93]: El sistema NO DEBE registrar credenciales, códigos de autorización, correos ni nombres en ningún registro (RNF-06), tampoco en los del intermediario entre el navegador y el servicio. Los accesos rechazados por la cuenta (correo ya registrado con otro proveedor, correo no verificado o ausente, cuenta desactivada) y el choque de correo de FR-010 DEBEN registrarse como eventos de seguridad con campos cerrados (evento, motivo, cuenta si existe, ruta) y sin datos personales ([07-seguridad §4](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md)).
 - **FR-034** [ROS-93]: Las respuestas del producto DEBEN incluir las protecciones de navegador exigidas por RNF-09.
 - **FR-035** [ROS-93]: La configuración del servicio de identidad (destinos de regreso y de cierre, orígenes, audiencia, vida de las credenciales, proveedores habilitados, con solo cuentas personales en Microsoft, y acceso por contraseña desactivado) DEBE revisarse contra una lista de comprobación (C1 a C16 del quickstart) con el resultado, la fecha y la persona que revisó cada comprobación y sin ningún elemento fallido, que se anexa al acta de verificación de esta feature (ADR-0007). Que la lista exista, esté completa y no tenga fallos se comprueba de forma automática; que cada resultado sea correcto lo decide la revisión humana.
 
@@ -223,11 +231,11 @@
 - **FR-036** [ROS-90]: Si la persona cancela el consentimiento, el sistema DEBE llevarla a una pantalla de error de acceso (en los textos de esta feature, {proveedor} es el proveedor con el que intentó entrar, Google o Microsoft; si no se conoce, se usa una forma genérica sujeta a DP-025) con el texto "Cancelaste el inicio de sesión con {proveedor}. Puedes intentarlo de nuevo cuando quieras." y una acción para reintentar.
 - **FR-037** [ROS-90]: Si el proveedor no responde, el sistema DEBE mostrar "{proveedor} no respondió. Intenta en unos minutos o usa otro proveedor.".
 - **FR-038** [ROS-90]: Ante un correo ya registrado con otro proveedor, un correo no verificado, un correo ausente, una cuenta desactivada o un fallo inesperado, el sistema DEBE mostrar un mensaje que explique qué pasó y qué hacer ahora; el fallo inesperado usa "Algo salió mal y no se guardó ningún cambio. Intenta de nuevo.".
-- **FR-039** [ROS-90]: Ningún fallo del acceso DEBE dejar una pantalla en blanco ni producir un bucle de redirecciones: toda pantalla de error ofrece una salida ("Volver a intentar" o elegir otro proveedor).
+- **FR-039** [ROS-90]: Ningún fallo del acceso DEBE dejar una pantalla en blanco ni producir un bucle de redirecciones: toda pantalla de error ofrece una salida ("Volver a intentar" o elegir otro proveedor). "Volver a intentar" lleva a la pantalla de acceso conservando el destino de regreso solo si es interno (FR-015).
 
 **Interfaz**
 
-- **FR-040** [ROS-90, ROS-91]: Las pantallas nuevas (acceso, error de acceso y onboarding) DEBEN usar el sistema de diseño Nocturne, estar en español con tuteo neutro (DP-009) y cumplir WCAG 2.1 AA: navegación por teclado, foco visible, contraste suficiente y estados que no dependan solo del color (RNF-24, RNF-26, RNF-27; Constitución VII).
+- **FR-040** [ROS-90, ROS-91]: Las pantallas nuevas (acceso, error de acceso y onboarding) DEBEN usar el sistema de diseño Nocturne, estar en español con tuteo neutro (DP-009) y cumplir WCAG 2.1 AA: navegación por teclado con un orden del foco igual al orden visual (2.4.3), foco visible, contraste suficiente, estados que no dependan solo del color y mensajes de error anunciados a los lectores de pantalla (4.1.3); al llegar a la pantalla de error, el foco se coloca en el mensaje (RNF-24, RNF-26, RNF-27; Constitución VII).
 
 ### Key Entities *(include if feature involves data)*
 
@@ -293,23 +301,24 @@ Las tres pantallas no existen en el prototipo y deben diseñarse con Nocturne ([
 ### Measurable Outcomes
 
 - **SC-001**: Con cada uno de los dos proveedores, una persona de prueba nueva completa el recorrido acceso → onboarding → primer proyecto → lista de proyectos sin errores en el 100 % de las ejecuciones (E2E-01).
-- **SC-002**: Tras varios accesos de la misma persona, incluidos accesos simultáneos desde dos navegadores, existe exactamente una cuenta: cero cuentas duplicadas (FR-005, FR-008).
-- **SC-003**: El 100 % de las operaciones privadas enumeradas rechazan una petición sin identidad válida; ninguna responde con datos (criterio "listo cuando" de ROS-181).
+- **SC-002**: Tras al menos un reingreso de la misma persona y dos accesos simultáneos desde dos navegadores, existe exactamente una cuenta: cero cuentas duplicadas (FR-005, FR-008).
+- **SC-003**: El 100 % de las operaciones privadas enumeradas rechazan una petición sin identidad válida; ninguna responde con datos (criterio "listo cuando" de ROS-181). Las operaciones privadas son todas las rutas del servicio salvo la lista de rutas públicas de FR-012, que se mantiene junto a la prueba de inventario de rutas; una ruta nueva queda incluida sin tocar la lista.
 - **SC-004**: El 100 % de los casos maliciosos definidos se rechaza: credencial de otra audiencia o de otro emisor, vencida, sin firma, con firma alterada, con clave desconocida, destino de regreso fuera de la lista blanca, respuesta sin correspondencia con un acceso iniciado y acción de modificación originada en otro sitio (ROS-189).
 - **SC-005**: En un acceso completo no se observa ninguna credencial de acceso ni de renovación en el navegador: cero apariciones en almacenamiento, respuestas y direcciones.
-- **SC-006**: Una sesión de trabajo continua que cruce varios vencimientos de la credencial de acceso (cada 15 minutos o menos) no muestra ninguna pantalla de acceso intermedia; tras cerrar sesión, cero peticiones de ese navegador acceden a datos (E2E-08).
-- **SC-007**: El 100 % de los fallos de acceso definidos (cancelado, proveedor sin respuesta, correo ya registrado con otro proveedor, correo no verificado, correo ausente, cuenta desactivada, error inesperado) muestra un mensaje con una salida; cero pantallas en blanco y cero bucles de redirección.
+- **SC-006**: Una sesión de trabajo continua que cruce al menos tres vencimientos de la credencial de acceso (cada 15 minutos o menos) no muestra ninguna pantalla de acceso intermedia; tras cerrar sesión, cero peticiones de ese navegador acceden a datos (E2E-08).
+- **SC-007**: El 100 % de los fallos de acceso definidos (cancelado, proveedor sin respuesta, correo ya registrado con otro proveedor, correo no verificado, correo ausente, cuenta desactivada, error inesperado) muestra un mensaje con una salida; cero pantallas en blanco y cero bucles de redirección (ninguna cadena de redirecciones automáticas supera 6 saltos).
 - **SC-008**: El escáner de secretos reporta cero hallazgos y los registros capturados durante un acceso completo contienen cero credenciales, correos o nombres (RNF-05, RNF-06).
 - **SC-009**: Las tres pantallas nuevas pasan la auditoría automática de accesibilidad sin violaciones serias o críticas y se recorren completas solo con teclado (RNF-24, RNF-27; E2E-10).
 - **SC-010**: La lista de comprobación de la configuración del servicio de identidad está completa, sin elementos fallidos, y anexada al acta de verificación de la feature.
 
 ## Assumptions
 
-- **Alcance de acceso (DP-014):** solo Google y Microsoft (esta última, únicamente con cuentas personales). Sin Apple, sin correo y contraseña, sin vinculación automática de cuentas. El título de ROS-90 aún nombra a Apple; está fuera del MVP.
+- **Alcance de acceso (DP-014):** solo Google y Microsoft (esta última, únicamente con cuentas personales). Sin Apple, sin correo y contraseña, sin vinculación automática de cuentas. El título de ROS-90 ya no nombra a Apple (sincronizado por CD-006 el 2026-10-13).
 - **Un solo rol (NO-13):** la persona autenticada es propietaria de sus proyectos; no hay roles, permisos ni proyectos compartidos. Tampoco hay MFA, verificación de correo, recuperación de contraseña ni SSO empresarial (NO-14), ni dominios permitidos ni organizaciones (NO-15).
 - **Dependencias entre features del Sprint 1:** el primer paso del onboarding usa la capacidad de crear proyectos de la feature 003 (ROS-78); las pantallas usan Nocturne de la feature 001. La lista de dialectos SQL del formulario la define el producto (DP-019: T-SQL obligatorio) y no se fija aquí.
 - **Onboarding de un solo paso (clarificación 2026-10-01):** ROS-186 menciona un segundo paso para subir el DDL; se omite hasta la feature 004. Esa actividad de ROS-186 ya está reformulada en `docs/` (CD-006).
 - **Servicio de identidad externo:** el acceso lo respalda un servicio de identidad de un tercero (decisión [ADR-0007](../../docs/03-arquitectura/adr/ADR-0007-autenticacion-auth0.md)). El nombre, el correo y el avatar de las personas se guardan en él; los esquemas y las muestras de los clientes no pasan por él (Constitución V). La región donde opera está pendiente de DP-015.
+- **Lo que garantiza el servicio de identidad, no Rosetta:** la protección frente a intentos repetidos o automatizados de acceso es la del servicio de identidad (sin contraseñas propias no hay nada que limitar en Rosetta; su estado se registra en la lista de comprobación, C15). Las sesiones simultáneas de una persona en varios navegadores o dispositivos están permitidas y sin límite; cerrar sesión en todos los dispositivos es ROS-103 (Fase 3). La disponibilidad del servicio de identidad depende del tercero: Rosetta no fija metas de disponibilidad (DP-018) y solo garantiza el mensaje de FR-037 y que no se pierde trabajo guardado (Edge Cases). La región donde opera sigue en DP-015 y la retención de nombre, correo y avatar en el servicio está pendiente de [DP-027](../../docs/07-registro/02-decisiones-pendientes.md#dp-027).
 - **Duración de la sesión:** 14 días sin uso y 30 días como máximo son valores provisionales de [07-seguridad-y-autenticacion.md §3](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) con la decisión pendiente [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022) abierta.
 - **Sin metas de tiempo:** `docs/` no define objetivos de tiempo para el acceso o el onboarding (DP-018). Esta spec no inventa umbrales; los criterios de éxito son invariantes verificables (100 %, cero).
 - **Textos:** se usan los textos ya definidos en `04-contenido-y-redaccion.md`. Faltan los de la frase de valor, la nota de privacidad, la bienvenida y los errores de correo ya registrado con otro proveedor, correo no verificado y cuenta desactivada; están propuestos en [DP-025](../../docs/07-registro/02-decisiones-pendientes.md#dp-025) y se aprobarán en `docs/` antes de implementar, no en el código.

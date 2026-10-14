@@ -4,7 +4,7 @@
 
 Esta guía es el procedimiento del tenant de identidad, la lista de comprobación de configuración que se anexa al acta de verificación (FR-035, ROS-189) y los escenarios que demuestran que la feature funciona. No contiene código de la implementación. Los comandos que dependen de lo que aún no existe (`pnpm e2e`, la pantalla `/login`) se marcan *(disponible al terminar ROS-xxx)*.
 
-> **Seguridad.** Nunca pegues secretos aquí ni en el repositorio. Los valores van en `.env` y `frontend/.env.local` (ambos ignorados por git). El servidor MCP de Auth0 se usa **solo contra el tenant de desarrollo**; al terminar: `npx @auth0/auth0-mcp-server logout`.
+> **Seguridad.** Nunca pegues secretos aquí ni en el repositorio. Los valores van en `.env` y `frontend/.env.local` (ambos ignorados por git). El servidor MCP de Auth0 se usa **solo contra el tenant de desarrollo**, con su propia aplicación *Machine to Machine* y permisos mínimos; queda conectado de forma permanente según [07-seguridad §6](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) (CD-010).
 
 ## 1. Prerrequisitos
 
@@ -107,5 +107,5 @@ Esperado: recorrido acceso → onboarding con la creación de proyecto simulada;
 ## 7. Cierre
 
 1. Rellena la lista de la sección 3 para cada entorno y anéxala al acta de verificación.
-2. Si usaste el MCP de Auth0: `npx @auth0/auth0-mcp-server logout`.
+2. Si el secreto de la aplicación M2M del MCP se expuso (por ejemplo, pegado en un chat), rótalo en el panel y actualiza la variable de entorno del usuario (CD-010).
 3. No dejes sesiones de prueba abiertas en proveedores reales.
