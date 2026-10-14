@@ -232,7 +232,7 @@ def test_l_first_access_without_name_fails_closed_while_dp023_is_open():
 @pytest.mark.story("ROS-93")
 @pytest.mark.fr("002:FR-033")
 def test_m_each_rejection_emits_a_closed_security_event_without_personal_data(caplog):
-    from apps.accounts import exceptions
+    from rest_framework import exceptions
 
     UserFactory(auth0_sub="google-oauth2|1", email="ana@example.test")
     UserFactory(auth0_sub="google-oauth2|2", email="off@example.test", is_active=False)
@@ -256,5 +256,7 @@ def test_m_each_rejection_emits_a_closed_security_event_without_personal_data(ca
         assert record.path == "/api/me"
         assert "example.test" not in record.getMessage()
         assert "Ana" not in record.getMessage()
-        extra = set(record.__dict__) - set(logging.makeLogRecord({}).__dict__) - {"message"}
+        extra = (
+            set(record.__dict__) - set(logging.makeLogRecord({}).__dict__) - {"message", "asctime"}
+        )
         assert extra <= {"event", "reason", "user_id", "path"}
