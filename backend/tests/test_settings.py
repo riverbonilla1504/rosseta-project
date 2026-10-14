@@ -33,8 +33,9 @@ def _load_prod(monkeypatch, **env):
 
 
 @pytest.fixture
-def restore_settings_modules():
+def restore_settings_modules(monkeypatch):
     yield
+    monkeypatch.undo()  # primero el entorno original; si no, prod volvería a fallar al recargar
     importlib.reload(importlib.import_module("config.settings.base"))
     importlib.reload(importlib.import_module("config.settings.prod"))
 
