@@ -179,14 +179,14 @@ Aplicación web, estructura de [plan.md](plan.md): `backend/` (Django) y `fronte
 
 ### Pruebas (rojas primero)
 
-- [ ] T057 [P] [US4] [ROS-188] **Prueba roja** `frontend/tests/unit/api-client.test.ts`: ante 401 `session_expired` muestra exactamente "Tu sesión terminó. Vuelve a iniciar sesión para continuar." (mediante el parámetro `notice=session_expired` de `/login`) y navega a `/login?returnTo=<ruta actual>`; 503 `identity_unavailable` **no** cierra la sesión y permite reintentar; una operación interrumpida no se aplica a medias. Marcadores: ROS-92 · FR-026.
+- [X] T057 [P] [US4] [ROS-188] **Prueba roja** `frontend/tests/unit/api-client.test.ts`: ante 401 `session_expired` muestra exactamente "Tu sesión terminó. Vuelve a iniciar sesión para continuar." (mediante el parámetro `notice=session_expired` de `/login`) y navega a `/login?returnTo=<ruta actual>`; 503 `identity_unavailable` **no** cierra la sesión y permite reintentar; una operación interrumpida no se aplica a medias. Marcadores: ROS-92 · FR-026.
 - [ ] T058 [P] [US4] [ROS-187] **Prueba roja E2E** `frontend/tests/e2e/session.spec.ts`: con el mock emitiendo access tokens de vida corta, una sesión de trabajo continua cruza **al menos tres** vencimientos sin pantalla de acceso (SC-006, FR-022, FR-023); borrar `__session` → mensaje de sesión vencida y, tras entrar, regreso a la pantalla anterior (FR-026); cerrar sesión → `/login`, con la petición de cierre llevando `returnTo` = la URL absoluta de `/login` y aceptada por la lista blanca del proveedor simulado; abrir una ruta privada → `/login`, `GET /api/me` → 401 (E2E-08, FR-025); la sesión del proveedor simulado **sigue abierta** tras el cierre (FR-025: no cierra la de Google ni la de Microsoft); cerrar sesión en una pestaña hace que la otra, en su siguiente acción, vaya al acceso. Marcadores: ROS-92 · FR-022, FR-023, FR-025, FR-026.
 - [ ] T059 [P] [US4] [ROS-187] **Verificación del tenant** (manual, evidencia en `evidence/tenant-config-dev.md`): C5 (rotación y detección de reutilización del refresh token, 30 días máximo y 14 de inactividad) y C6 (access token de 900 s). La reutilización de un refresh token la hace cumplir el proveedor y no se automatiza; se deja constancia de la configuración. Marcadores de la evidencia: FR-023, FR-024.
 
 ### Implementación
 
-- [ ] T060 [US4] [ROS-188] Implementar `frontend/src/lib/api/client.ts` (`apiFetch` mínimo: 401 → `/login?returnTo=<ruta actual>&notice=session_expired`; 503 → error recuperable). T057 pasa.
-- [ ] T061 [US4] [ROS-187] Mostrar el aviso de sesión vencida en `frontend/src/app/(public)/login/page.tsx` cuando `notice=session_expired`, con el texto de `copy.ts` ya definido en `04-contenido §5` (el parámetro `notice` está en [auth-flow.md §1](contracts/auth-flow.md)). Tras T040.
+- [X] T060 [US4] [ROS-188] Implementar `frontend/src/lib/api/client.ts` (`apiFetch` mínimo: 401 → `/login?returnTo=<ruta actual>&notice=session_expired`; 503 → error recuperable). T057 pasa.
+- [X] T061 [US4] [ROS-187] Mostrar el aviso de sesión vencida en `frontend/src/app/(public)/login/page.tsx` cuando `notice=session_expired`, con el texto de `copy.ts` ya definido en `04-contenido §5` (el parámetro `notice` está en [auth-flow.md §1](contracts/auth-flow.md)). Tras T040.
 - [ ] T062 [US4] [ROS-187] Poner en verde `frontend/tests/e2e/session.spec.ts` (T058) y ejecutar a mano **V6 a V8 de [quickstart.md](quickstart.md)**; registrar en `evidence/quickstart-run.md`.
 
 **Punto de control**: las historias 1 a 4 funcionan de forma independiente.

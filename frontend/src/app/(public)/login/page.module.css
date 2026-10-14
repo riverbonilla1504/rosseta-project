@@ -34,3 +34,12 @@
   font-size: var(--nx-text-caption);
   text-align: center;
 }
+
+.notice {
+  margin: 0;
+  padding: var(--nx-space-3);
+  border-radius: var(--nx-radius-md);
+  background: var(--nx-surface-raised);
+  color: var(--nx-warning);
+  text-align: center;
+}
