@@ -48,7 +48,7 @@ test("[ROS-92][002:FR-022] una sesión continua cruza al menos tres vencimientos
   }
 });
 
-test("[ROS-92][002:FR-026] si el proveedor rechaza la renovación, la siguiente operación da 401 session_expired", async ({
+test("[ROS-92][002:FR-023] si el proveedor rechaza la renovación (refresh token revocado o reutilizado), la sesión se cierra: la siguiente operación da 401", async ({
   page,
 }) => {
   await mockIdp.setAccessTokenTtl(4);
