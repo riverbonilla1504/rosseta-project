@@ -49,15 +49,15 @@ Las decisiones estructurales (Auth0, patrón BFF, JWT validado en Django, un sol
 ### R-04 · Modelo de usuario
 
 - **Decisión:** `accounts.User` sobre `AbstractBaseUser` (como fija el [diccionario de datos](../../docs/04-datos/02-diccionario-de-datos.md)), con `USERNAME_FIELD = "auth0_sub"`, `last_login = None` (se descarta el campo heredado: la fecha propia es `last_login_at`), contraseña siempre inutilizable y un manager sin `create_superuser`. `AUTH_USER_MODEL = "accounts.User"` se define **antes de la primera migración de `accounts`**.
-- **Decisión sobre aplicaciones de Django:** **no** se añaden `django.contrib.auth`, `admin`, `sessions` ni `messages`. Con ADR-0007 no hay sesiones de servidor ni contraseñas, y [DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024) deja por defecto la consola administrativa sin exponer. Se mantiene `UNAUTHENTICATED_USER: None`; `IsAuthenticated` tolera `request.user = None`. El comentario de `config/settings/base.py` que dice lo contrario es anterior a ADR-0007 y se corrige en la implementación.
-- **Si [DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024) se decide por la opción B** (consola interna), se reabre este punto: harían falta `auth`, `admin`, `sessions` y `messages`.
+- **Decisión sobre aplicaciones de Django:** **no** se añaden `django.contrib.auth`, `admin`, `sessions` ni `messages`. Con ADR-0007 no hay sesiones de servidor ni contraseñas, y [DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024) decidió (CD-012) no exponer ninguna consola administrativa. Se mantiene `UNAUTHENTICATED_USER: None`; `IsAuthenticated` tolera `request.user = None`. El comentario de `config/settings/base.py` que dice lo contrario es anterior a ADR-0007 y se corrige en la implementación.
+- DP-024 se decidió por la opción A (CD-012), así que este punto no se reabre. Si el piloto exige soporte interno, la historia nueva tendría que añadir `auth`, `admin`, `sessions` y `messages`.
 - **Riesgo:** `AbstractBaseUser` sin `django.contrib.auth` instalado debe comprobarse en la primera prueba roja (migración limpia y creación de un usuario). Si fallara, se instala solo `django.contrib.auth` sin `admin`.
 
 ### R-05 · Configuración del SDK de Auth0 en Next.js
 
 - **Decisión:** un único `Auth0Client` en `src/lib/auth0.ts` con:
   - `authorizationParameters`: `audience` = `AUTH0_AUDIENCE`, `scope` = `openid profile email offline_access` (RNF-36).
-  - `session`: `rolling: true`, `inactivityDuration` = 1 209 600 s (14 días), `absoluteDuration` = 2 592 000 s (30 días) (FR-024, **provisional por [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022)**), `cookie`: `sameSite: "lax"`, `secure` activo salvo en desarrollo local (V1; `httpOnly` ya es siempre cierto).
+  - `session`: `rolling: true`, `inactivityDuration` = 1 209 600 s (14 días), `absoluteDuration` = 2 592 000 s (30 días) (FR-024, confirmados en [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022)), `cookie`: `sameSite: "lax"`, `secure` activo salvo en desarrollo local (V1; `httpOnly` ya es siempre cierto).
   - `transactionCookie.maxAge` = 600 s: una solicitud de acceso iniciada caduca a los 10 minutos (el valor por defecto es 1 h; respuesta a CHK005).
   - `signInReturnToPath: "/"`; `routes` sin personalizar (`/auth/login`, `/auth/logout`, `/auth/callback`).
   - `onCallback`: ver R-07.

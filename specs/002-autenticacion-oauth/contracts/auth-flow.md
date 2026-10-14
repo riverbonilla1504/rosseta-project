@@ -41,8 +41,8 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 | Elemento | Valor |
 |---|---|
 | Cookie de sesión | `__session`, cifrada con `AUTH0_SECRET`; `HttpOnly` siempre; `SameSite=Lax`; `Secure` activo salvo en desarrollo local (FR-030) |
-| Vigencia deslizante | 14 días sin uso — **provisional (DP-022)** |
-| Vigencia máxima | 30 días desde el inicio — **provisional (DP-022)** |
+| Vigencia deslizante | 14 días sin uso (DP-022) |
+| Vigencia máxima | 30 días desde el inicio (DP-022) |
 | Credencial de acceso | 15 minutos como máximo; solo existe en el servidor de Next.js (FR-023) |
 | Renovación | Silenciosa, la hace el SDK al pedir la credencial; el refresh token rota con detección de reutilización en el tenant (FR-023) |
 | Cookie de transacción de acceso | `__txn_<state>`; caduca a los 600 s (una solicitud de acceso iniciada vale 10 minutos) |
@@ -51,16 +51,16 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 
 ## 5. Códigos de error de acceso
 
-Códigos que entiende `/auth/error`. `{proveedor}` sale de la cookie `rosetta_login_provider` (§4). Los textos viven en `features/auth/copy.ts`; los definitivos dependen de [DP-025](../../../docs/07-registro/02-decisiones-pendientes.md#dp-025).
+Códigos que entiende `/auth/error`. `{proveedor}` sale de la cookie `rosetta_login_provider` (§4). Los textos viven en `features/auth/copy.ts` y son los de [04-contenido §5](../../../docs/05-diseno/04-contenido-y-redaccion.md), aprobados en [DP-025](../../../docs/07-registro/02-decisiones-pendientes.md#dp-025) (CD-012).
 
 | Código | Origen | Cuándo | Camino | Texto |
 |---|---|---|---|---|
 | `oauth_denied` | Proveedor | La persona cancela el consentimiento | `onCallback` → `/auth/error` (FR-036) | "Cancelaste el inicio de sesión con {proveedor}…" (ya definido en `04-contenido`) |
 | `oauth_failed` | Proveedor o SDK | El proveedor no responde o la respuesta es inválida; cualquier fallo no clasificado | `onCallback` → `/auth/error` (FR-037) | "{proveedor} no respondió…" (ya definido); el fallo inesperado usa el error genérico (FR-038) |
-| `email_not_verified` | Acción post-login **o backend (403)** | El proveedor no declara verificado el correo, o la credencial no afirma que lo está (FR-004) | `onCallback` → `/auth/error`; si lo rechaza el backend, `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
-| `email_missing` | Acción post-login o backend | No hay correo en la identidad | `onCallback` o `/auth/denied` | `[PENDIENTE: DP-025]` · **código provisional** |
-| `account_exists_other_provider` | Backend (403) | El correo ya pertenece a una cuenta de otro proveedor (FR-009) | `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` |
-| `account_disabled` | Backend (403) | La cuenta está desactivada (FR-011) | `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
+| `email_not_verified` | Acción post-login **o backend (403)** | El proveedor no declara verificado el correo, o la credencial no afirma que lo está (FR-004) | `onCallback` → `/auth/error`; si lo rechaza el backend, `/auth/denied` → cierre de sesión → `/auth/error` | "{proveedor} no confirma que tu correo esté verificado…" (DP-025) |
+| `email_missing` | Acción post-login o backend | No hay correo en la identidad | `onCallback` o `/auth/denied` | "{proveedor} no compartió tu correo…" (DP-025) |
+| `account_exists_other_provider` | Backend (403) | El correo ya pertenece a una cuenta de otro proveedor (FR-009) | `/auth/denied` → cierre de sesión → `/auth/error` | "Ya existe una cuenta con ese correo…" (DP-025) |
+| `account_disabled` | Backend (403) | La cuenta está desactivada (FR-011) | `/auth/denied` → cierre de sesión → `/auth/error` | "Tu cuenta está desactivada." (DP-025) |
 
 ### Por qué existe `/auth/denied`
 
@@ -84,7 +84,7 @@ El token lo emite el tenant para la audiencia de Rosetta API; la Acción post-lo
 | `exp`, `iat` | Sí | Vigencia; tolerancia de reloj de 10 s |
 | `sub` | Sí | Identidad: `auth0_sub` |
 | `https://rosetta/email` | Para crear la cuenta | Correo verificado. Sin él, 403 `email_missing` en un alta |
-| `https://rosetta/name` | Para crear la cuenta | Nombre. Si falta: **`[PENDIENTE: DP-023]`** |
+| `https://rosetta/name` | No | Nombre. Si falta, el backend usa la parte local del correo (DP-023, FR-005) |
 | `https://rosetta/picture` | No | Avatar |
 | `https://rosetta/email_verified` | Sí | Debe ser exactamente `true`. Si falta o no lo es, 403 `email_not_verified` en cualquier petición (FR-004): defensa en profundidad, la Acción post-login no es el único control |
 

@@ -27,7 +27,7 @@ El tenant de desarrollo ya existe (creado el 2026-09-30, [08-infraestructura §4
    - *Allowed Callback URLs*: `{APP_BASE_URL}/auth/callback`
    - *Allowed Logout URLs*: `{APP_BASE_URL}/login` y `{APP_BASE_URL}/auth/error`
    - *Allowed Web Origins* y *Allowed Origins (CORS)*: `{APP_BASE_URL}`
-3. **Refresh token** de la aplicación: rotación activada, detección de reutilización activada, vigencia absoluta de 30 días y de inactividad de 14 (provisional, [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022)).
+3. **Refresh token** de la aplicación: rotación activada, detección de reutilización activada, vigencia absoluta de 30 días y de inactividad de 14 ([DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022)).
 4. **API "Rosetta API"**: identificador = valor de `AUTH0_AUDIENCE`, firma `RS256`, vida del access token de **900 s**, "Allow Offline Access" activado.
 5. **Conexiones**: habilitar `google-oauth2` y la conexión social de Microsoft **solo para "Rosetta Web"**; deshabilitar la base de datos de usuario y contraseña ([DP-014](../../docs/07-registro/02-decisiones-pendientes.md#dp-014)). Microsoft solo con cuentas personales.
 6. **Acción post-login** `rosetta-claims-post-login`: desplegada y añadida al flujo de inicio de sesión. Contrato en [auth-flow.md §7](contracts/auth-flow.md).
