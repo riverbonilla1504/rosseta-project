@@ -130,3 +130,15 @@ def _update(user: User, email: Any, name: str | None, avatar: str | None, path: 
         changed.append("last_login_at")
     if changed:
         user.save(update_fields=[*changed, "updated_at"])
+
+
+def complete_onboarding(user: User) -> User:
+    """Marca el onboarding como completado una sola vez (FR-017, FR-021; ROS-91).
+
+    Idempotente: solo escribe la fecha si es nula. No comprueba que exista un proyecto para no
+    hacer depender accounts de projects (research R-09); la interfaz lo llama tras crearlo.
+    """
+    if user.onboarding_completed_at is None:
+        user.onboarding_completed_at = timezone.now()
+        user.save(update_fields=["onboarding_completed_at", "updated_at"])
+    return user
