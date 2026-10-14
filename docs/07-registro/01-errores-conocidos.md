@@ -185,7 +185,7 @@
 - **Descripción:** [03-tareas-mvp.md](../02-requisitos/03-tareas-mvp.md) (ROS-174) pide el estado vacío "aún no tenés proyectos", en voseo. [DP-009](02-decisiones-pendientes.md#dp-009) decidió tuteo neutro en toda la interfaz ([EC-008](#ec-008)).
 - **Impacto:** si se implementa tal cual, el texto contradice [04-contenido §2](../05-diseno/04-contenido-y-redaccion.md). El mismo texto está en la incidencia ROS-174 de Jira.
 - **Resolución propuesta:** CD que cambie el texto a "aún no tienes proyectos" en `03-tareas-mvp.md` y en Jira, antes de implementar la feature 003.
-- **Resolución (2026-10-14, CD-012):** texto corregido en `03-tareas-mvp.md` (ROS-174). Falta actualizar la incidencia ROS-174 de Jira.
+- **Resolución (2026-10-14, CD-012):** texto corregido en `03-tareas-mvp.md` (ROS-174) y en la incidencia ROS-174 de Jira (2026-10-14).
 
 <a id="ec-023"></a>
 ### EC-023 · `check-prerequisites.sh --template` exige `plan.md` antes de que exista
