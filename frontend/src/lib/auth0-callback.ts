@@ -33,3 +33,37 @@ export function callbackRedirect(
   if (returnTo !== DEFAULT_RETURN_TO) target.searchParams.set("returnTo", returnTo);
   return target.toString();
 }
+
+type MeResult =
+  | { status: "ok"; user: { onboarding_completed: boolean } }
+  | { status: "unauthenticated" }
+  | { status: "denied"; code: string };
+
+/**
+ * Como callbackRedirect, pero con éxito y sin returnTo propio resuelve aquí el destino con la
+ * credencial recién obtenida: /onboarding, /projects o /auth/denied, sin pasar por la raíz.
+ * Ahorra un salto: la cadena de una cuenta rechazada queda en 6 (SC-007).
+ */
+export async function callbackDestination(
+  error: Error | null,
+  ctx: { returnTo?: string },
+  accessToken: string | undefined,
+  deps: { appBaseUrl: string; fetchMe: (token: string) => Promise<MeResult> },
+): Promise<string> {
+  if (error || !accessToken || safeReturnTo(ctx.returnTo) !== DEFAULT_RETURN_TO) {
+    return callbackRedirect(error, ctx, deps.appBaseUrl);
+  }
+  try {
+    const result = await deps.fetchMe(accessToken);
+    if (result.status === "denied") {
+      return new URL(`/auth/denied?code=${result.code}`, deps.appBaseUrl).toString();
+    }
+    if (result.status === "ok") {
+      const path = result.user.onboarding_completed ? "/projects" : "/onboarding";
+      return new URL(path, deps.appBaseUrl).toString();
+    }
+  } catch {
+    // Sin respuesta del backend: la raíz resuelve el destino en la siguiente petición.
+  }
+  return callbackRedirect(null, ctx, deps.appBaseUrl);
+}
