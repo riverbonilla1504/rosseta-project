@@ -130,13 +130,13 @@ Aplicación web, estructura de [plan.md](plan.md): `backend/` (Django) y `fronte
 
 ### Pruebas (rojas primero)
 
-- [ ] T043 [P] [US2] [ROS-181] **Prueba roja** `backend/tests/security/test_route_inventory.py`: recorre el `URLconf`; **toda** ruta que no esté en la lista `PUBLIC_ROUTES` (`/api/health`, `/api/schema/` y, solo con `DEBUG`, `/api/docs/`) rechaza la petición anónima con 401 y formato estándar; incluye una vista de prueba **sin** permisos explícitos, que debe quedar protegida por defecto (roja mientras el permiso por defecto sea `AllowAny`). La lista `PUBLIC_ROUTES` queda definida y mantenida en ese archivo (SC-003). Marcadores: ROS-89 · FR-012.
+- [X] T043 [P] [US2] [ROS-181] **Prueba roja** `backend/tests/security/test_route_inventory.py`: recorre el `URLconf`; **toda** ruta que no esté en la lista `PUBLIC_ROUTES` (`/api/health`, `/api/schema/` y, solo con `DEBUG`, `/api/docs/`) rechaza la petición anónima con 401 y formato estándar; incluye una vista de prueba **sin** permisos explícitos, que debe quedar protegida por defecto (roja mientras el permiso por defecto sea `AllowAny`). La lista `PUBLIC_ROUTES` queda definida y mantenida en ese archivo (SC-003). Marcadores: ROS-89 · FR-012.
 - [ ] T044 [P] [US2] [ROS-181] **Prueba roja** `frontend/tests/unit/middleware-guard.test.ts`: sin sesión a una ruta privada → 302 a `/login?returnTo=<ruta pedida>`; con sesión a `/login` → `/`; `/login`, `/auth/*`, `/api/*` y estáticos pasan (las rutas `/api/*` aplican la regla del proxy, no redirigen); `returnTo` inseguro se descarta. Marcadores: ROS-89 · FR-012, FR-014; ROS-93 · FR-015.
 - [ ] T045 [P] [US2] [ROS-181] **Prueba roja E2E** `frontend/tests/e2e/protected-routes.spec.ts`: enlace directo a una pantalla privada sin sesión → `/login?returnTo=…` y, tras entrar, regreso a esa pantalla (FR-014); `returnTo` externo ignorado → destino por defecto (FR-015); `GET /api/me` sin sesión → 401 (S2); `POST /api/me/onboarding/complete` con `Origin` ajeno → 403 (S4); `/api/health` sin sesión → responde (S3). Marcadores: ROS-89 · FR-012, FR-014; ROS-93 · FR-015, FR-031.
 
 ### Implementación
 
-- [ ] T046 [US2] [ROS-181] En `backend/config/settings/base.py` fijar `DEFAULT_PERMISSION_CLASSES = ["rest_framework.permissions.IsAuthenticated"]` (denegar por defecto) y en `backend/config/urls.py` declarar `/api/schema/` público de forma **explícita** (`AllowAny`, sin autenticación); `HealthView` ya es público. T043 pasa.
+- [X] T046 [US2] [ROS-181] En `backend/config/settings/base.py` fijar `DEFAULT_PERMISSION_CLASSES = ["rest_framework.permissions.IsAuthenticated"]` (denegar por defecto) y en `backend/config/urls.py` declarar `/api/schema/` público de forma **explícita** (`AllowAny`, sin autenticación); `HealthView` ya es público. T043 pasa.
 - [ ] T047 [US2] [ROS-181] Añadir las reglas de acceso a `frontend/src/middleware.ts` (después de T027): redirección a `/login?returnTo=` sin sesión, `/login` → `/` con sesión, lista de rutas públicas (D1). T044 pasa.
 - [ ] T048 [US2] [ROS-181] Poner en verde `frontend/tests/e2e/protected-routes.spec.ts` (T045).
 

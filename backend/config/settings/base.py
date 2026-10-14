@@ -86,7 +86,8 @@ CACHES = {
 REST_FRAMEWORK = {
     # Access token de Auth0 que añade el proxy BFF de Next.js (ADR-0007, feature 002).
     "DEFAULT_AUTHENTICATION_CLASSES": ["apps.accounts.authentication.Auth0JWTAuthentication"],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    # Denegar por defecto (FR-012): las únicas rutas públicas lo declaran de forma explícita.
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "UNAUTHENTICATED_USER": None,
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": [
