@@ -15,7 +15,7 @@ test("[ROS-93][002:FR-027] inicio, callback con PKCE, cookie __session y cierre 
   context,
 }) => {
   await page.goto("/auth/login?connection=google-oauth2&returnTo=/");
-  await page.waitForURL((url) => url.pathname === "/");
+  await page.waitForURL((url) => url.pathname === "/onboarding"); // / resuelve el destino (T041)
 
   const authorize = (await mockIdp.state()).authorizeRequests.at(-1);
   expect(authorize?.code_challenge_method).toBe("S256");
@@ -46,7 +46,7 @@ test("[ROS-93][002:FR-028] el proveedor simulado rechaza un cierre de sesión fu
   page,
 }) => {
   await page.goto("/auth/login?connection=google-oauth2&returnTo=/");
-  await page.waitForURL((url) => url.pathname === "/");
+  await page.waitForURL((url) => url.pathname === "/onboarding"); // / resuelve el destino (T041)
 
   await page.goto("/auth/logout");
 

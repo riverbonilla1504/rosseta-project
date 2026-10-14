@@ -17,6 +17,8 @@ const UV = process.env.E2E_UV ?? "uv run";
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
+  // La primera compilación de cada ruta en next dev puede pasar de 30 s.
+  timeout: 60_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
