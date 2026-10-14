@@ -193,7 +193,7 @@
 **Alta y onboarding**
 
 - **FR-017** [ROS-91]: En el primer acceso el sistema DEBE crear la cuenta y su espacio personal (sin proyectos) y marcar el onboarding como pendiente.
-- **FR-018** [ROS-91]: Mientras el onboarding esté pendiente, toda persona autenticada que intente entrar al área de trabajo DEBE ser llevada al onboarding. Al completarlo DEBE llegar a su lista de proyectos y no volver a ver el onboarding.
+- **FR-018** [ROS-91]: Mientras el onboarding esté pendiente, toda persona autenticada que abra o recargue una pantalla del área de trabajo DEBE ser llevada al onboarding. Al completarlo DEBE llegar a su lista de proyectos y no volver a ver el onboarding.
 - **FR-019** [ROS-91]: El onboarding DEBE dar la bienvenida por el nombre de la persona y guiarla en un único paso: crear su primer proyecto (nombre y dialecto SQL). Crear ese proyecto completa el onboarding.
 - **FR-020** [ROS-91]: El onboarding NO DEBE incluir en esta feature un paso de carga de DDL: ese paso pertenece a la ingesta de fuentes (feature 004) y se añadirá cuando esta exista. Hasta entonces el onboarding termina al crear el primer proyecto.
 - **FR-021** [ROS-91]: El estado del onboarding (pendiente o completado) DEBE guardarse en la cuenta, no en el dispositivo: quien lo abandona a medias lo retoma al volver, también desde otro navegador, y quien lo completó no lo ve de nuevo.

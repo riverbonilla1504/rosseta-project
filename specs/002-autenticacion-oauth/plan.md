@@ -100,6 +100,7 @@ specs/002-autenticacion-oauth/
 │   ├── bff-proxy.md        # Contrato del proxy /api/*
 │   └── auth-flow.md        # Rutas, sesión, códigos de error y claims
 ├── checklists/          # requirements.md (hecho) y acceso.md (hecho)
+├── evidence/            # Evidencia de verificación: tenant-config-dev.md y -prod.md, quickstart-run.md, fr-coverage.md
 └── tasks.md             # /speckit-tasks (NO lo crea este comando)
 ```
 
@@ -119,7 +120,7 @@ backend/
 │   │   ├── models.py · services.py         +  User y manager · get_or_create_from_claims, complete_onboarding
 │   │   ├── authentication.py · jwks.py     +  Auth0JWTAuthentication · cliente JWKS con límite de recarga
 │   │   ├── serializers.py · views.py       +
-│   │   ├── urls.py · messages.py           +
+│   │   ├── urls.py · messages.py · exceptions.py   +
 │   │   ├── logging.py                      +  RedactFilter
 │   │   └── migrations/0001_initial.py      +
 │   └── core/
