@@ -1,15 +1,16 @@
-import styles from "./page.module.css";
+import { redirect } from "next/navigation";
 
-/** Página provisional del esqueleto. Las pantallas reales llegan con las features 001–009. */
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <h1 className={styles.brand}>
-        Rosetta <span className={styles.tagline}>MOTOR DE EVIDENCIA</span>
-      </h1>
-      <p className={styles.note}>
-        Esqueleto del proyecto. Las pantallas se construyen desde las specs.
-      </p>
-    </main>
-  );
+import { getCurrentUser } from "@/features/auth/currentUser";
+
+/**
+ * Resolutor de destino tras el acceso (research R-09): onboarding pendiente → /onboarding;
+ * completado → /projects; cuenta rechazada → /auth/denied; sin sesión → /login.
+ * FR-014, FR-018 (ROS-89, ROS-91); FR-009, FR-011 (ROS-90).
+ */
+export default async function Landing(): Promise<never> {
+  const result = await getCurrentUser();
+
+  if (result.status === "unauthenticated") redirect(`/login?returnTo=${encodeURIComponent("/")}`);
+  if (result.status === "denied") redirect(`/auth/denied?code=${result.code}`);
+  redirect(result.user.onboarding_completed ? "/projects" : "/onboarding");
 }

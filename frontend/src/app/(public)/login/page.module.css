@@ -1,0 +1,36 @@
+.page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--nx-space-6);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-space-5);
+  width: 100%;
+  max-width: calc(var(--nx-space-8) * 8);
+  padding: var(--nx-space-7);
+  border-radius: var(--nx-radius-lg);
+  background: var(--nx-surface);
+}
+
+.brand {
+  margin: 0;
+  font-size: var(--nx-text-display);
+  text-align: center;
+}
+
+.value {
+  margin: 0;
+  color: var(--nx-text-secondary);
+  text-align: center;
+}
+
+.privacy {
+  margin: 0;
+  color: var(--nx-text-muted);
+  font-size: var(--nx-text-caption);
+  text-align: center;
+}
