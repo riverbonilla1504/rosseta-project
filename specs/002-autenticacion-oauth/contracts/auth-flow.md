@@ -11,7 +11,7 @@ Los valores marcados **provisional** dependen de una decisión pendiente (DP) y 
 | `/login` | Sí | Pantalla de acceso: "Continuar con Google", "Continuar con Microsoft" y nota de privacidad. Con sesión abierta redirige a `/`. Si llega `notice=session_expired`, muestra encima el aviso de sesión vencida (FR-026). Al pulsar un botón guarda la cookie `rosetta_login_provider` (§4) | FR-001, FR-002, FR-026, FR-040 |
 | `/auth/error?code=<código>` | Sí | Pantalla de error de acceso: mensaje por código y "Volver a intentar" (a `/login`, conservando `returnTo` si es un destino interno) | FR-036…FR-039 |
 | `/auth/denied?code=<código>` | Sí | Sin pantalla: guarda el código en una cookie efímera, cierra la sesión del SDK y redirige a `/auth/error` (§5) | FR-009, FR-011, FR-039 |
-| `/` | No | Resuelve el destino: onboarding pendiente → `/onboarding`; si no → `/projects` | FR-014, FR-018 |
+| `/` | No | Resuelve el destino: onboarding pendiente → `/onboarding`; si no → `/projects`. Tras el acceso, `onCallback` ya resuelve el destino sin pasar por aquí cuando no hay `returnTo` propio (cadena de 6 saltos como máximo, SC-007); `/` queda para la entrada directa y como respaldo | FR-014, FR-018 |
 | `/onboarding` | No | Bienvenida con el nombre y el paso único: crear el primer proyecto | FR-017…FR-021 |
 | `/projects` | No | Lista de proyectos (feature 003) | — |
 
@@ -132,10 +132,8 @@ sequenceDiagram
     A-->>U: 302 /auth/callback?code&state
     U->>F: GET /auth/callback
     F->>A: canje del código (code_verifier)
-    F-->>U: sesión cifrada (cookie) · 302 /
-    U->>F: GET /
-    F->>D: GET /api/me (Bearer) — crea la cuenta, onboarding pendiente
-    F-->>U: 302 /onboarding
+    F->>D: onCallback: GET /api/me (Bearer recién obtenido) — crea la cuenta, onboarding pendiente
+    F-->>U: sesión cifrada (cookie) · 302 /onboarding (sin pasar por /; T079/T084, SC-007)
 ```
 
 ### Cuenta rechazada después de autenticarse
@@ -146,7 +144,7 @@ sequenceDiagram
     actor U as Persona
     participant F as Next.js
     participant D as Backend
-    U->>F: GET /
+    U->>F: GET /auth/callback (o cualquier página privada después)
     F->>D: GET /api/me (Bearer)
     D-->>F: 403 account_exists_other_provider
     F-->>U: 302 /auth/denied?code=account_exists_other_provider
