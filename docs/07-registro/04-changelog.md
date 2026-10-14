@@ -7,6 +7,14 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.9.0] — 2026-10-14 · CD-010
+
+### Cambiado
+- **MCP de Auth0 permanente y acotado** ([07-seguridad §1 y §6](../03-arquitectura/07-seguridad-y-autenticacion.md)): deja de cerrarse al terminar cada uso. Usa una aplicación *Machine to Machine* propia con 7 permisos de la Management API y un lanzador local que pide un token nuevo en cada arranque; el secreto solo en variables de entorno del usuario. Sigue siendo solo para el tenant de desarrollo.
+
+### Añadido
+- [DP-027](02-decisiones-pendientes.md#dp-027): retención de nombre, correo y avatar en el servicio de identidad (CHK038 de la spec 002).
+
 ## [1.8.0] — 2026-10-13 · CD-009
 
 ### Cambiado
