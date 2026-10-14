@@ -18,16 +18,19 @@ ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
 
-# django.contrib.auth / admin / sessions se añaden en la feature 002 junto con el
-# modelo de usuario propio (AUTH_USER_MODEL = "accounts.User"), antes de la primera
-# migración de datos de usuario. Ver specs/002-autenticacion-oauth.
+# Sin django.contrib.auth, admin, sessions ni messages: con Auth0 (ADR-0007) no hay
+# sesiones de servidor ni contraseñas, y la consola administrativa no se expone (DP-024,
+# opción A). Ver specs/002-autenticacion-oauth/research.md R-04.
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
     "apps.core",
+    "apps.accounts",
 ]
+
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

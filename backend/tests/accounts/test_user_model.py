@@ -27,14 +27,14 @@ def _field(name):
 
 @pytest.mark.fr("002:FR-005")
 def test_user_is_created_by_auth0_sub_with_unusable_password():
-    User = _user_model()
+    user_model = _user_model()
 
-    user = User.objects.create_user(
+    user = user_model.objects.create_user(
         auth0_sub="google-oauth2|1001", email="ana@example.test", full_name="Ana Prueba"
     )
 
     assert user.auth0_sub == "google-oauth2|1001"
-    assert User.USERNAME_FIELD == "auth0_sub"
+    assert user_model.USERNAME_FIELD == "auth0_sub"
     assert user.has_usable_password() is False
     assert isinstance(user.id, uuid.UUID)
     assert user.is_active is True
@@ -46,30 +46,36 @@ def test_user_is_created_by_auth0_sub_with_unusable_password():
 
 @pytest.mark.fr("002:FR-006")
 def test_auth0_sub_is_unique():
-    User = _user_model()
-    User.objects.create_user(auth0_sub="google-oauth2|1", email="a@example.test", full_name="A")
+    user_model = _user_model()
+    user_model.objects.create_user(
+        auth0_sub="google-oauth2|1", email="a@example.test", full_name="A"
+    )
 
     with pytest.raises(IntegrityError), transaction.atomic():
-        User.objects.create_user(auth0_sub="google-oauth2|1", email="b@example.test", full_name="B")
+        user_model.objects.create_user(
+            auth0_sub="google-oauth2|1", email="b@example.test", full_name="B"
+        )
 
 
 @pytest.mark.fr("002:FR-008")
 def test_email_is_unique_ignoring_case():
-    User = _user_model()
-    User.objects.create_user(auth0_sub="google-oauth2|1", email="Ana@x.test", full_name="Ana")
+    user_model = _user_model()
+    user_model.objects.create_user(auth0_sub="google-oauth2|1", email="Ana@x.test", full_name="Ana")
 
     with pytest.raises(IntegrityError), transaction.atomic():
-        User.objects.create_user(auth0_sub="windowslive|2", email="ana@x.test", full_name="Ana")
+        user_model.objects.create_user(
+            auth0_sub="windowslive|2", email="ana@x.test", full_name="Ana"
+        )
 
 
 @pytest.mark.fr("002:FR-005")
 def test_auth0_sub_and_email_cannot_be_empty():
-    User = _user_model()
+    user_model = _user_model()
 
     with pytest.raises(IntegrityError), transaction.atomic():
-        User.objects.create(auth0_sub="", email="c@example.test", full_name="C")
+        user_model.objects.create(auth0_sub="", email="c@example.test", full_name="C")
     with pytest.raises(IntegrityError), transaction.atomic():
-        User.objects.create(auth0_sub="google-oauth2|3", email="", full_name="C")
+        user_model.objects.create(auth0_sub="google-oauth2|3", email="", full_name="C")
 
 
 @pytest.mark.fr("002:FR-005")
