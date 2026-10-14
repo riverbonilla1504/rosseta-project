@@ -23,4 +23,25 @@ export const copy = {
   logout: "Cerrar sesión",
   // 04-contenido §5
   sessionExpired: "Tu sesión terminó. Vuelve a iniciar sesión para continuar.",
+  retry: "Volver a intentar", // 03-pantallas §7
+  errors: {
+    // 04-contenido §5
+    oauth_denied:
+      "Cancelaste el inicio de sesión con {proveedor}. Puedes intentarlo de nuevo cuando quieras.",
+    // 04-contenido §5
+    oauth_failed: "{proveedor} no respondió. Intenta en unos minutos o usa otro proveedor.",
+    // PROVISIONAL (DP-025)
+    email_not_verified:
+      "{proveedor} no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo.",
+    // PROVISIONAL (DP-025)
+    email_missing:
+      "{proveedor} no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo.",
+    // PROVISIONAL (DP-025): no nombra el proveedor para no revelar datos de la cuenta.
+    account_exists_other_provider:
+      "Ya existe una cuenta con ese correo, creada con otro proveedor. Entra con el proveedor que usaste al registrarte.",
+    // PROVISIONAL (DP-025): falta el canal de contacto, no definido en el MVP.
+    account_disabled: "Tu cuenta está desactivada.",
+    // 04-contenido §5
+    generic: "Algo salió mal y no se guardó ningún cambio. Intenta de nuevo.",
+  },
 } as const;

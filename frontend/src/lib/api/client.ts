@@ -17,6 +17,13 @@ export class ApiError extends Error {
 
 type Options = { navigate?: (url: string) => void };
 
+const ACCOUNT_REJECTION_CODES = [
+  "account_disabled",
+  "account_exists_other_provider",
+  "email_missing",
+  "email_not_verified",
+] as const;
+
 function currentPath(): string {
   return `${window.location.pathname}${window.location.search}`;
 }
@@ -41,6 +48,11 @@ export async function apiFetch<T = unknown>(
     const params = new URLSearchParams({ returnTo: currentPath(), notice: "session_expired" });
     navigate(`/login?${params.toString()}`);
     throw new ApiError(401, code, false);
+  }
+  if (response.status === 403 && (ACCOUNT_REJECTION_CODES as readonly string[]).includes(code)) {
+    // Cuenta rechazada: /auth/denied cierra la sesión y lleva a /auth/error, sin bucle (FR-039).
+    navigate(`/auth/denied?code=${code}`);
+    throw new ApiError(403, code, false);
   }
   throw new ApiError(response.status, code, response.status === 503);
 }

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { normalizeErrorCode } from "@/features/auth/errorCodes";
 import { safeReturnTo } from "@/features/auth/safeReturnTo";
 import { auth0 } from "@/lib/auth0";
 import { buildCsp, createNonce } from "@/lib/security/csp";
@@ -14,6 +15,7 @@ import { buildCsp, createNonce } from "@/lib/security/csp";
  *    nonce viaja también en las cabeceras de la petición para que Next lo aplique.
  */
 const REDIRECT_STATUS = 302;
+const AUTH_ERROR_COOKIE = "rosetta_auth_error";
 
 function isPublicPath(pathname: string): boolean {
   return pathname === "/login" || pathname.startsWith("/auth/") || pathname.startsWith("/api/");
@@ -48,7 +50,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   requestHeaders.set("content-security-policy", csp);
   // Ruta actual para el layout del área privada (la sobrescribe siempre: no se fía del cliente).
   requestHeaders.set("x-rosetta-pathname", pathname);
+  // Código de /auth/denied (cookie efímera): solo lo pone el middleware y se borra al leerlo.
+  requestHeaders.delete("x-rosetta-auth-error");
+  const authError = pathname === "/auth/error" ? request.cookies.get(AUTH_ERROR_COOKIE) : undefined;
+  if (authError) requestHeaders.set("x-rosetta-auth-error", normalizeErrorCode(authError.value));
   const response = NextResponse.next({ request: { headers: requestHeaders } });
+  if (authError) response.cookies.delete(AUTH_ERROR_COOKIE);
   authResponse.headers.forEach((value, key) => {
     if (key.startsWith("x-middleware-") || key === "set-cookie") return;
     response.headers.set(key, value);

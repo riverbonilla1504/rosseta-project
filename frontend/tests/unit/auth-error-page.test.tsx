@@ -70,7 +70,7 @@ describe("pantalla de error de acceso /auth/error", () => {
     expect(message()).toHaveTextContent("Google no respondió.");
   });
 
-  it.each([{}, { rosetta_login_provider: "facebook" }])(
+  it.each<Record<string, string>>([{}, { rosetta_login_provider: "facebook" }])(
     "[ROS-90][002:FR-036] sin cookie de proveedor válida usa la forma genérica (%j)",
     async (cookies) => {
       cookieValues = cookies;
