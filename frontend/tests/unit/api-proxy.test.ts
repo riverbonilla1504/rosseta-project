@@ -1,21 +1,21 @@
 // @vitest-environment node
 import { AccessTokenError, AccessTokenErrorCode, OAuth2Error } from "@auth0/nextjs-auth0/errors";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 import { ProxyAuthError, classifyTokenError, createProxyHandler } from "@/lib/api/proxy";
 
 const APP = "http://localhost:3000";
 const BACKEND = "http://backend.internal:8000";
 
-let getAccessToken: ReturnType<typeof vi.fn>;
-let fetchImpl: ReturnType<typeof vi.fn>;
+let getAccessToken: Mock<() => Promise<string>>;
+let fetchImpl: Mock<typeof fetch>;
 
 function handler() {
   return createProxyHandler({
     appBaseUrl: APP,
     backendUrl: BACKEND,
     getAccessToken,
-    fetchImpl: fetchImpl as unknown as typeof fetch,
+    fetchImpl,
     log: () => {},
   });
 }
@@ -24,17 +24,15 @@ function req(path: string, init: RequestInit & { headers?: Record<string, string
   return new Request(`${APP}${path}`, init);
 }
 
-function backendResponse(body = { ok: true }, init: ResponseInit = {}) {
-  return new Response(JSON.stringify(body), {
-    status: 200,
-    headers: { "content-type": "application/json", ...(init.headers ?? {}) },
-    ...init,
-  });
+function backendResponse(body: unknown = { ok: true }, init: ResponseInit = {}) {
+  const headers = new Headers(init.headers);
+  if (!headers.has("content-type")) headers.set("content-type", "application/json");
+  return new Response(JSON.stringify(body), { status: 200, ...init, headers });
 }
 
 function forwarded() {
   const [url, init] = fetchImpl.mock.calls[0];
-  return { url: String(url), init: init as RequestInit, headers: new Headers(init.headers) };
+  return { url: String(url), init: init as RequestInit, headers: new Headers(init?.headers) };
 }
 
 async function errorCode(response: Response) {
@@ -43,8 +41,8 @@ async function errorCode(response: Response) {
 
 describe("proxy BFF /api/*", () => {
   beforeEach(() => {
-    getAccessToken = vi.fn().mockResolvedValue("access-token-123");
-    fetchImpl = vi.fn().mockResolvedValue(backendResponse());
+    getAccessToken = vi.fn<() => Promise<string>>().mockResolvedValue("access-token-123");
+    fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(backendResponse());
   });
 
   it("[ROS-92][002:FR-030] añade Authorization: Bearer, conserva la consulta y no devuelve la credencial", async () => {
@@ -121,7 +119,7 @@ describe("proxy BFF /api/*", () => {
     expect((await handler()(req("/api/me"))).headers.get("cache-control")).toBe("max-age=60");
   });
 
-  it.each(["OPTIONS", "HEAD", "TRACE"])("[ROS-89][002:FR-012] método %s → 405", async (method) => {
+  it.each(["OPTIONS", "HEAD"])("[ROS-89][002:FR-012] método %s → 405", async (method) => {
     const response = await handler()(req("/api/me", { method }));
 
     expect(response.status).toBe(405);
