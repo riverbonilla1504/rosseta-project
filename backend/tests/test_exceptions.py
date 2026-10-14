@@ -1,5 +1,6 @@
 """Formato único de error — docs/03-arquitectura/03-backend.md §6."""
 
+import pytest
 from rest_framework import exceptions
 
 from apps.core.exceptions import api_exception_handler
@@ -29,3 +30,37 @@ def test_not_found_is_wrapped_without_details():
 
 def test_non_api_exceptions_are_left_to_django():
     assert api_exception_handler(ValueError("boom"), {}) is None
+
+
+class _AccountDisabled(exceptions.APIException):
+    status_code = 403
+    error_code = "account_disabled"
+    default_detail = "Cuenta desactivada."
+
+
+@pytest.mark.story("ROS-89")
+@pytest.mark.fr("002:FR-013")
+def test_exception_with_own_code_keeps_it_instead_of_the_status_mapping():
+    response = api_exception_handler(_AccountDisabled(), {})
+
+    assert response is not None
+    assert response.status_code == 403
+    assert response.data["error"]["code"] == "account_disabled"
+    assert response.data["error"]["message"] == "Cuenta desactivada."
+
+
+@pytest.mark.story("ROS-89")
+@pytest.mark.fr("002:FR-013")
+@pytest.mark.parametrize(
+    ("exc", "code"),
+    [
+        (exceptions.NotAuthenticated(), "session_expired"),
+        (exceptions.AuthenticationFailed(), "session_expired"),
+        (exceptions.PermissionDenied(), "forbidden"),
+    ],
+)
+def test_exceptions_without_own_code_use_the_status_mapping(exc, code):
+    response = api_exception_handler(exc, {})
+
+    assert response is not None
+    assert response.data["error"]["code"] == code
