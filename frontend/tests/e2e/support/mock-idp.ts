@@ -31,6 +31,9 @@ export const mockIdp = {
   /** Cancelación del consentimiento: error=access_denied sin descripción de la Acción. */
   cancelNextAuthorize: () =>
     control("next-authorize", { error: "access_denied", description: "User cancelled" }),
+  /** Fallo del proveedor en /authorize (server_error): la pantalla muestra oauth_failed. */
+  failNextAuthorize: () =>
+    control("next-authorize", { error: "server_error", description: "Provider unavailable" }),
   /** Denegación de la Acción post-login (api.access.deny(motivo)). */
   denyNextAuthorize: (reason: "email_not_verified" | "email_missing") =>
     control("next-authorize", { error: "access_denied", description: reason }),
