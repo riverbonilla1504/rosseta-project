@@ -17,3 +17,6 @@ EMAIL_MISSING = (
 )
 # PROVISIONAL (DP-025)
 EMAIL_NOT_VERIFIED = "Tu proveedor de acceso no confirma que tu correo esté verificado."
+
+# Texto ya definido en docs/05-diseno/04-contenido-y-redaccion.md §5 (sesión vencida).
+SESSION_EXPIRED = "Tu sesión terminó. Vuelve a iniciar sesión para continuar."

@@ -122,7 +122,7 @@ def call(authorization=None):
 def assert_rejected_without_internal_data(response):
     assert response.status_code == 401
     assert response["WWW-Authenticate"].startswith("Bearer")
-    body = response.json()
+    body = json.loads(response.content)
     assert set(body) == {"error"}
     assert body["error"]["code"] == "session_expired"
     assert body["error"]["details"] == {}
@@ -137,7 +137,7 @@ def test_valid_token_is_accepted_and_creates_the_local_user():
     response = call(f"Bearer {token()}")
 
     assert response.status_code == 200
-    assert response.json()["user"]
+    assert json.loads(response.content)["user"]
 
 
 @pytest.mark.story("ROS-89")
@@ -180,7 +180,7 @@ def test_token_without_email_verified_true_is_403(verified):
     response = call(f"Bearer {token(claims(**{f'{NS}email_verified': verified}))}")
 
     assert response.status_code == 403
-    assert response.json()["error"]["code"] == "email_not_verified"
+    assert json.loads(response.content)["error"]["code"] == "email_not_verified"
 
 
 @pytest.mark.story("ROS-89")
@@ -195,4 +195,4 @@ def test_disabled_account_with_valid_token_is_403_on_next_request():
     response = call(bearer)
 
     assert response.status_code == 403
-    assert response.json()["error"]["code"] == "account_disabled"
+    assert json.loads(response.content)["error"]["code"] == "account_disabled"

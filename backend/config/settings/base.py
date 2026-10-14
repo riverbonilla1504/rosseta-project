@@ -84,8 +84,8 @@ CACHES = {
 
 # --- DRF (docs/03-arquitectura/05-api.md) ---
 REST_FRAMEWORK = {
-    # La autenticación por cookie JWT se configura en la feature 002 (ADR-0006).
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    # Access token de Auth0 que añade el proxy BFF de Next.js (ADR-0007, feature 002).
+    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.accounts.authentication.Auth0JWTAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "UNAUTHENTICATED_USER": None,
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
