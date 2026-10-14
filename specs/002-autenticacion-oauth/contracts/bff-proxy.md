@@ -51,7 +51,7 @@ Mismo formato que el backend: `{ "error": { "code", "message", "details" } }`.
 
 ## Respuestas 403 del backend para cuentas rechazadas
 
-Si el backend devuelve **403** con `account_disabled`, `account_exists_other_provider` o `email_missing`, el proxy **no** deja que el cliente reintente en bucle. Responde 403 con ese mismo código y la interfaz navega a `/auth/denied?code=<código>` (ver [auth-flow.md §5](auth-flow.md)), que cierra la sesión del SDK y muestra la pantalla de error de acceso.
+Si el backend devuelve **403** con `account_disabled`, `account_exists_other_provider`, `email_missing` o `email_not_verified`, el proxy **no** deja que el cliente reintente en bucle. Responde 403 con ese mismo código y la interfaz navega a `/auth/denied?code=<código>` (ver [auth-flow.md §5](auth-flow.md)), que cierra la sesión del SDK y muestra la pantalla de error de acceso.
 
 ## Registro (FR-033)
 

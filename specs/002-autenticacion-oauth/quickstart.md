@@ -36,7 +36,7 @@ El tenant de desarrollo ya existe (creado el 2026-09-30, [08-infraestructura §4
 
 ## 3. Lista de comprobación de configuración (FR-035)
 
-Se rellena por entorno y se **anexa al acta de verificación** de la feature (ROS-189). Cada fila indica qué debe ser cierto y cómo comprobarlo. Un elemento fallido impide aprobar.
+Se rellena por entorno y se **anexa al acta de verificación** de la feature (ROS-189). Cada fila indica qué debe ser cierto y cómo comprobarlo. Un elemento fallido impide aprobar. **Formato de la evidencia:** un archivo `specs/002-autenticacion-oauth/evidence/tenant-config-<entorno>.md` con una fila por comprobación C1…C16 y las columnas Resultado (✅, ❌ o N/A), Fecha (AAAA-MM-DD) y Revisó (persona). Un entorno está *verificado* cuando las 16 filas tienen resultado, fecha y persona y ninguna es ❌. Una prueba automática (`backend/tests/security/test_tenant_config_evidence.py`) lo comprueba para desarrollo; **no sustituye** la revisión humana ni la verificación independiente.
 
 | # | Comprobación | Esperado | Cómo se comprueba |
 |---|---|---|---|

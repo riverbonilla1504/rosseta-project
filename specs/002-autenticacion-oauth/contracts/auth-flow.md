@@ -8,7 +8,7 @@ Los valores marcados **provisional** dependen de una decisión pendiente (DP) y 
 
 | Ruta | Pública | Qué muestra | Requisitos |
 |---|---|---|---|
-| `/login` | Sí | Pantalla de acceso: "Continuar con Google", "Continuar con Microsoft" y nota de privacidad. Con sesión abierta redirige a `/`. Si llega `notice=session_expired`, muestra encima el aviso de sesión vencida (FR-026) | FR-001, FR-002, FR-026, FR-040 |
+| `/login` | Sí | Pantalla de acceso: "Continuar con Google", "Continuar con Microsoft" y nota de privacidad. Con sesión abierta redirige a `/`. Si llega `notice=session_expired`, muestra encima el aviso de sesión vencida (FR-026). Al pulsar un botón guarda la cookie `rosetta_login_provider` (§4) | FR-001, FR-002, FR-026, FR-040 |
 | `/auth/error?code=<código>` | Sí | Pantalla de error de acceso: mensaje por código y "Volver a intentar" (a `/login`, conservando `returnTo` si es un destino interno) | FR-036…FR-039 |
 | `/auth/denied?code=<código>` | Sí | Sin pantalla: guarda el código en una cookie efímera, cierra la sesión del SDK y redirige a `/auth/error` (§5) | FR-009, FR-011, FR-039 |
 | `/` | No | Resuelve el destino: onboarding pendiente → `/onboarding`; si no → `/projects` | FR-014, FR-018 |
@@ -23,7 +23,7 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 |---|---|
 | `/auth/login` | Inicia el acceso (PKCE `S256` y `state` los pone el SDK, FR-027) |
 | `/auth/callback` | Recibe el código, valida, crea la sesión cifrada y redirige. Aquí actúa `onCallback` |
-| `/auth/logout` | Cierra la sesión de Rosetta y la del servicio de identidad (FR-025); no cierra la de Google ni la de Microsoft |
+| `/auth/logout` | Cierra la sesión de Rosetta y la del servicio de identidad (FR-025); no cierra la de Google ni la de Microsoft. **Siempre se invoca como `/auth/logout?returnTo=/login`**: sin `returnTo` el SDK usa la raíz, que no está en la lista blanca de cierre de sesión (§5), y el servicio de identidad rechazaría el cierre |
 
 ## 3. Reglas del middleware
 
@@ -47,16 +47,17 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 | Renovación | Silenciosa, la hace el SDK al pedir la credencial; el refresh token rota con detección de reutilización en el tenant (FR-023) |
 | Cookie de transacción de acceso | `__txn_<state>`; caduca a los 600 s (una solicitud de acceso iniciada vale 10 minutos) |
 | Cookie efímera de rechazo | `rosetta_auth_error`: solo contiene un código de la lista de §5; 60 s; `HttpOnly`; `SameSite=Lax`; `Secure` en producción; se borra al leerla |
+| Cookie del proveedor elegido | `rosetta_login_provider`: `google` o `microsoft` (lista cerrada; cualquier otro valor se ignora). La escribe el botón de `/login` al pulsarlo; 600 s; `SameSite=Lax`; `Secure` en producción; **no** es `HttpOnly` y no contiene nada sensible. Sirve para completar `{proveedor}` en los mensajes; sin ella se usa la forma genérica (FR-036, DP-025) |
 
 ## 5. Códigos de error de acceso
 
-Códigos que entiende `/auth/error`. Los textos viven en `features/auth/copy.ts`; los definitivos dependen de [DP-025](../../../docs/07-registro/02-decisiones-pendientes.md#dp-025).
+Códigos que entiende `/auth/error`. `{proveedor}` sale de la cookie `rosetta_login_provider` (§4). Los textos viven en `features/auth/copy.ts`; los definitivos dependen de [DP-025](../../../docs/07-registro/02-decisiones-pendientes.md#dp-025).
 
 | Código | Origen | Cuándo | Camino | Texto |
 |---|---|---|---|---|
 | `oauth_denied` | Proveedor | La persona cancela el consentimiento | `onCallback` → `/auth/error` (FR-036) | "Cancelaste el inicio de sesión con {proveedor}…" (ya definido en `04-contenido`) |
 | `oauth_failed` | Proveedor o SDK | El proveedor no responde o la respuesta es inválida; cualquier fallo no clasificado | `onCallback` → `/auth/error` (FR-037) | "{proveedor} no respondió…" (ya definido); el fallo inesperado usa el error genérico (FR-038) |
-| `email_not_verified` | Acción post-login | El proveedor no declara verificado el correo (FR-004) | `onCallback` → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
+| `email_not_verified` | Acción post-login **o backend (403)** | El proveedor no declara verificado el correo, o la credencial no afirma que lo está (FR-004) | `onCallback` → `/auth/error`; si lo rechaza el backend, `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
 | `email_missing` | Acción post-login o backend | No hay correo en la identidad | `onCallback` o `/auth/denied` | `[PENDIENTE: DP-025]` · **código provisional** |
 | `account_exists_other_provider` | Backend (403) | El correo ya pertenece a una cuenta de otro proveedor (FR-009) | `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` |
 | `account_disabled` | Backend (403) | La cuenta está desactivada (FR-011) | `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
@@ -85,13 +86,14 @@ El token lo emite el tenant para la audiencia de Rosetta API; la Acción post-lo
 | `https://rosetta/email` | Para crear la cuenta | Correo verificado. Sin él, 403 `email_missing` en un alta |
 | `https://rosetta/name` | Para crear la cuenta | Nombre. Si falta: **`[PENDIENTE: DP-023]`** |
 | `https://rosetta/picture` | No | Avatar |
+| `https://rosetta/email_verified` | Sí | Debe ser exactamente `true`. Si falta o no lo es, 403 `email_not_verified` en cualquier petición (FR-004): defensa en profundidad, la Acción post-login no es el único control |
 
 Cabecera del token: `alg` debe ser `RS256` y `kid` debe estar presente (FR-029).
 
 ## 7. Acción post-login del tenant (contrato)
 
 - **Deniega** el acceso si el correo no está verificado (motivo `email_not_verified`) o no existe (`email_missing`) (FR-004).
-- **Añade** al access token los tres claims de §6.
+- **Añade** al access token los claims propios de §6 (`email`, `name`, `picture` y `email_verified`).
 - No consulta ni llama a Rosetta: no depende de la disponibilidad del backend.
 - Es parte de la lista de comprobación de configuración que se anexa al acta (FR-035): ver [quickstart.md §3](../quickstart.md).
 

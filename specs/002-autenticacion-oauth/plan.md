@@ -129,7 +129,7 @@ backend/
     ├── factories/accounts.py               +
     ├── accounts/                           +  servicios: alta, reconocimiento, concurrencia, choque de correo, desactivada
     ├── api/test_me.py · test_onboarding.py +
-    ├── security/                           +  test_auth_tokens · test_jwks_refresh_limit · test_logging_redaction · test_security_headers
+    ├── security/                           +  test_auth_tokens · test_jwks_refresh_limit · test_logging_redaction · test_security_headers · test_tenant_config_evidence
     ├── test_exceptions.py · test_settings.py ~
 
 frontend/
@@ -172,7 +172,7 @@ Escribir primero y ver fallar cada prueba (commit de prueba roja antes del códi
 | Backend, seguridad | Credencial ausente, vencida, otra audiencia, otro emisor, firma alterada, `alg: none`, `kid` desconocido; límite de recarga del JWKS; registros sin JWT ni correos; cabeceras; producción rechaza emisor sin `https` | `tests/security/` | FR-029, FR-032…FR-034, SC-004, SC-008 |
 | Frontend, unitarias | Middleware (reglas y CSP), proxy (todo lo de [bff-proxy.md](contracts/bff-proxy.md)), `returnTo` interno, configuración del SDK (14 y 30 días, `allowInsecureRequests` apagado en producción), pantallas | `tests/unit/` | FR-002, FR-014, FR-015, FR-018, FR-024…FR-031, FR-036…FR-040 |
 | E2E con proveedor simulado | Acceso, onboarding, cierre de sesión, rutas protegidas, errores, PKCE y `state` en la URL, accesibilidad con axe y teclado | `tests/e2e/` | FR-001…FR-003, FR-014, FR-025, FR-027, FR-036…FR-040, SC-001, SC-006, SC-007, SC-009 (E2E-01 parcial y E2E-08) |
-| Verificación de configuración | Lista C1…C16 anexa al acta | [quickstart.md §3](quickstart.md) | FR-035, SC-010 |
+| Verificación de configuración | Lista C1…C16 anexa al acta; una prueba automática comprueba que existe, está completa y sin fallos (no sustituye la revisión humana) | `tests/security/` y [quickstart.md §3](quickstart.md) | FR-035, SC-010 |
 
 **E2E-01 completo** depende de la feature 003 (creación de proyectos); hasta entonces el E2E intercepta `/api/projects` ([research R-13](research.md#r-13--proveedor-simulado-y-pruebas-e2e)).
 

@@ -133,7 +133,8 @@ components:
         La credencial es válida pero Rosetta no admite esta cuenta. El proxy convierte estos
         códigos en una redirección a la pantalla de error de acceso (contracts/auth-flow.md §5).
         Códigos PROVISIONALES hasta DP-025: account_disabled (FR-011),
-        account_exists_other_provider (FR-009) y email_missing.
+        account_exists_other_provider (FR-009), email_missing y email_not_verified (FR-004: la
+        credencial no afirma que el correo está verificado).
       content:
         application/json:
           schema:
