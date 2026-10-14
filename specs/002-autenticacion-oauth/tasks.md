@@ -203,7 +203,7 @@ Aplicación web, estructura de [plan.md](plan.md): `backend/` (Django) y `fronte
 
 ### Pruebas (rojas primero)
 
-- [ ] T063 [P] [US5] [ROS-190] **Prueba roja** `backend/tests/security/test_logging_redaction.py`: `RedactFilter` enmascara patrones de JWT y de correo en el mensaje, en los argumentos y en el texto de excepciones; un flujo autenticado completo con captura de registros no contiene ningún JWT ni correo (SC-008); los eventos de seguridad solo llevan `event`, `reason`, `user_id`, `path`. Marcadores: ROS-93 · FR-033.
+- [X] T063 [P] [US5] [ROS-190] **Prueba roja** `backend/tests/security/test_logging_redaction.py`: `RedactFilter` enmascara patrones de JWT y de correo en el mensaje, en los argumentos y en el texto de excepciones; un flujo autenticado completo con captura de registros no contiene ningún JWT ni correo (SC-008); los eventos de seguridad solo llevan `event`, `reason`, `user_id`, `path`. Marcadores: ROS-93 · FR-033.
 - [ ] T064 [P] [US5] [ROS-190] **Prueba roja** `backend/tests/security/test_security_headers.py`: las respuestas JSON llevan `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` y la política de referencia; con la configuración de producción, HSTS ≥ 31 536 000 s. Marcadores: ROS-93 · FR-034.
 - [ ] T065 [P] [US5] [ROS-189] **Prueba roja** ampliar `backend/tests/test_settings.py`: en producción `AUTH0_ISSUER` y `AUTH0_JWKS_URL` deben ser `https` (si no, la configuración falla al cargar); las sobreescrituras de prueba no se aceptan en producción; `DEBUG` sigue en `False`. Marcadores: ROS-93 · FR-029, FR-032.
 - [ ] T066 [P] [US5] [ROS-189] **Prueba roja E2E** `frontend/tests/e2e/security.spec.ts`: la URL de `/auth/login` contiene `code_challenge`, `code_challenge_method=S256`, `state` y `audience`, y los scopes son exactamente `openid profile email offline_access` (S1, C10); una respuesta del proveedor con `state` que no corresponde se rechaza y no crea sesión; **ninguna** credencial de acceso ni de renovación aparece en el almacenamiento, en las respuestas ni en las direcciones del navegador (SC-005, S8); cabeceras de `/login` con CSP con nonce, `X-Frame-Options`, `nosniff` y `Referrer-Policy` (S5); un destino de cierre de sesión fuera de la lista blanca se rechaza. Marcadores: ROS-93 · FR-027, FR-028, FR-030, FR-034, FR-003 (criterios SC-004 y SC-005).
@@ -212,7 +212,7 @@ Aplicación web, estructura de [plan.md](plan.md): `backend/` (Django) y `fronte
 
 ### Implementación
 
-- [ ] T069 [US5] [ROS-190] Implementar `backend/apps/accounts/logging.py` (`RedactFilter`) y registrarlo en todos los *handlers* de `LOGGING` de `backend/config/settings/base.py`, junto con el registrador `rosetta.security`. T063 pasa.
+- [X] T069 [US5] [ROS-190] Implementar `backend/apps/accounts/logging.py` (`RedactFilter`) y registrarlo en todos los *handlers* de `LOGGING` de `backend/config/settings/base.py`, junto con el registrador `rosetta.security`. T063 pasa.
 - [ ] T070 [US5] [ROS-190] Implementar `backend/apps/core/middleware.py` (CSP para respuestas JSON) y registrarlo en `MIDDLEWARE` de `backend/config/settings/base.py`. T064 pasa.
 - [ ] T071 [US5] [ROS-189] En `backend/config/settings/base.py` y `prod.py`: aceptar `AUTH0_ISSUER` y `AUTH0_JWKS_URL` solo fuera de producción y exigir `https` en producción. T065 pasa.
 - [ ] T072 [US5] [ROS-190] Ajustar `frontend/next.config.ts`, `frontend/src/middleware.ts` y el proxy si T066 o T067 siguen en rojo; poner en verde `frontend/tests/e2e/security.spec.ts`.

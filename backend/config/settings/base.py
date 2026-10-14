@@ -120,11 +120,29 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-# --- Logs: JSON a stdout, sin PII (se endurece en la feature 002) ---
+# --- Logs a stdout sin tokens ni datos personales (FR-033, RNF-06; 07-seguridad §7) ---
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {"plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
-    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "plain"}},
+    "filters": {"redact": {"()": "apps.accounts.logging.RedactFilter"}},
+    "formatters": {
+        "plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"},
+        # Eventos de seguridad con campos cerrados (research R-11).
+        "security": {
+            "format": "%(asctime)s %(levelname)s %(name)s event=%(event)s reason=%(reason)s "
+            "user_id=%(user_id)s path=%(path)s"
+        },
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "plain", "filters": ["redact"]},
+        "security": {
+            "class": "logging.StreamHandler",
+            "formatter": "security",
+            "filters": ["redact"],
+        },
+    },
+    "loggers": {
+        "rosetta.security": {"handlers": ["security"], "level": "INFO", "propagate": False},
+    },
     "root": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
 }
