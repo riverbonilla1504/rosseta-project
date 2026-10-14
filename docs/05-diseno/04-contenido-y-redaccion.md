@@ -76,6 +76,7 @@
 | Correo no verificado o no entregado | `[PENDIENTE: DP-025]` |
 | Cuenta desactivada | `[PENDIENTE: DP-025]` |
 | Forma genérica de {proveedor} (cuando no se conoce) | `[PENDIENTE: DP-025]` |
+| Control de cierre de sesión | `[PENDIENTE: DP-025]` (propuesta: "Cerrar sesión") |
 | Insignia de solo lectura | "solo lectura" (title: "Rosetta nunca escribe en tu base de datos.") |
 | Modo de redacción (MVP) | "redacción por reglas" (title: "Descripciones generadas con plantillas deterministas, sin LLM.") |
 

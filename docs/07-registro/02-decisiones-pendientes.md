@@ -199,6 +199,8 @@
 | Correo no entregado | "{proveedor} no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo." |
 | Cuenta desactivada | "Tu cuenta está desactivada." `[PENDIENTE: canal de contacto, no definido en el MVP]` |
 | Forma genérica de `{proveedor}` (cuando la pantalla de error no sabe con qué proveedor se intentó entrar) | "tu proveedor de acceso" (por ejemplo: "Cancelaste el inicio de sesión con tu proveedor de acceso.") |
+| Control de cierre de sesión (área privada) | "Cerrar sesión" (añadido por CD-011: FR-025 exige el control y ningún documento define su texto) |
+| Nota de privacidad en `/login`, donde aún no se eligió proveedor | Con la forma genérica queda "…de tu cuenta de tu proveedor de acceso", poco natural. Alternativa: "…de tu cuenta de Google o Microsoft." (observación de CD-011 al implementar la spec 002) |
 
 - **Recomendación:** aprobar con los ajustes que indique el responsable de contenido. Definir junto con los textos los códigos de error nuevos (hoy solo existen `oauth_denied`, `oauth_failed` y `account_exists_other_provider`).
 - **Afecta:** ROS-184, ROS-186, [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), [03-pantallas §7](../05-diseno/03-pantallas.md), spec 002 (FR-002, FR-019, FR-036…FR-038).
