@@ -26,6 +26,8 @@ export const mockIdp = {
   reset: () => control("reset", {}),
   setIdentity: (identity: MockIdentity) => control("identity", identity),
   setAccessTokenTtl: (seconds: number) => control("token-ttl", { seconds }),
+  /** El canje del refresh token responde invalid_grant (revocado o reutilizado). */
+  rejectRefresh: (reject = true) => control("reject-refresh", { reject }),
   /** Cancelación del consentimiento: error=access_denied sin descripción de la Acción. */
   cancelNextAuthorize: () =>
     control("next-authorize", { error: "access_denied", description: "User cancelled" }),

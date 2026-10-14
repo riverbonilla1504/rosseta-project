@@ -21,6 +21,7 @@ const defaults = () => ({
   },
   tokenTtl: 900,
   nextAuthorize: null, // null | { error, description }
+  rejectRefresh: false, // true: el canje del refresh token responde invalid_grant
   logouts: [],
   authorizeRequests: [],
 });
@@ -53,7 +54,16 @@ server.issuer.on("beforeSigning", (token) => {
   }
 });
 
-server.service.on("beforeResponse", (response) => {
+server.service.on("beforeResponse", (response, req) => {
+  if (state.rejectRefresh && req.body?.grant_type === "refresh_token") {
+    // Como Auth0 ante un refresh token revocado o reutilizado.
+    response.statusCode = 400;
+    response.body = {
+      error: "invalid_grant",
+      error_description: "Unknown or invalid refresh token.",
+    };
+    return;
+  }
   if (response.body && typeof response.body === "object" && "expires_in" in response.body) {
     response.body.expires_in = state.tokenTtl;
   }
@@ -99,6 +109,10 @@ server.service.addRoute("POST", "/__control/token-ttl", (req, res) => {
 server.service.addRoute("POST", "/__control/next-authorize", (req, res) => {
   state.nextAuthorize = { error: req.body.error, description: req.body.description ?? "" };
   json(res, 200, state.nextAuthorize);
+});
+server.service.addRoute("POST", "/__control/reject-refresh", (req, res) => {
+  state.rejectRefresh = Boolean(req.body.reject);
+  json(res, 200, { rejectRefresh: state.rejectRefresh });
 });
 server.service.addRoute("GET", "/__control/state", (_req, res) => {
   json(res, 200, { logouts: state.logouts, authorizeRequests: state.authorizeRequests });
