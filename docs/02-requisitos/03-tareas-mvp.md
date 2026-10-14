@@ -91,7 +91,7 @@ Feature: `003-proyectos-y-nucleo-de-datos` · 3 tarea(s) · 21 h
 #### ROS-172 · Modelar proyectos y su pertenencia
 Base de datos · **5 h** · Sprint 1
 
-- [ ] Tabla proyectos (nombre, descripción, propietario, fechas, archivado)
+- [ ] Tabla proyectos (nombre, descripción, dialecto, propietario, fechas, archivado)
 - [ ] Relación usuario ↔ proyecto
 - [ ] Índices por propietario y por fecha
 - [ ] Migración y datos de ejemplo
@@ -119,7 +119,7 @@ Frontend · **8 h** · Sprint 1
 - [ ] Modal de creación de proyecto
 - [ ] Selector de proyecto activo en la barra superior
 - [ ] Limpiar y recargar el estado al cambiar de proyecto
-- [ ] Estado vacío "aún no tenés proyectos"
+- [ ] Estado vacío "aún no tienes proyectos"
 
 **Listo cuando:** cambiar de proyecto nunca mezcla datos de otro.
 
@@ -247,6 +247,7 @@ Frontend · **4 h** · Sprint 1
 - [ ] Rutas /auth/login, /auth/logout, /auth/callback montadas por el SDK (quitar el rewrite /auth hacia Django)
 - [ ] Pedir audiencia de Rosetta API y scopes openid profile email offline_access
 - [ ] Action post-login en Auth0 que añade email, nombre, avatar y email_verified como claims del access token
+- [ ] Código de la Action versionado en infra/auth0/actions/ y desplegado a mano desde ahí (DP-026)
 
 **Listo cuando:** tras iniciar sesión, el servidor de Next obtiene un access token para Rosetta API con email y nombre.
 
@@ -289,7 +290,7 @@ Backend · **5 h** · Sprint 1
 Frontend · **8 h** · Sprint 1
 
 - [ ] Pantalla /onboarding con bienvenida por nombre
-- [ ] Crear el primer proyecto (nombre, dialecto); el onboarding termina al crearlo
+- [ ] Crear el primer proyecto (nombre, dialecto: SQL Server, Oracle o PostgreSQL); el onboarding termina al crearlo
 - [ ] Redirección a /onboarding mientras esté pendiente; a /projects al completarlo
 - [ ] Pruebas del recorrido completo
 
@@ -307,7 +308,7 @@ Feature: `002-autenticacion-oauth` · 2 tarea(s) · 9 h
 Backend · **3 h** · Sprint 1
 
 - [ ] Access token de 15 min; refresh token con rotación y detección de reuso activadas en el tenant
-- [ ] Sesión del SDK con duración deslizante 14 días y máxima 30 días (provisional)
+- [ ] Sesión del SDK con duración deslizante 14 días y máxima 30 días (DP-022)
 - [ ] Logout de /auth/logout cierra la sesión de Rosetta y la de Auth0
 - [ ] Pruebas: token expirado se renueva en silencio; tras logout la API rechaza la sesión
 
@@ -375,7 +376,7 @@ Backend · **12 h** · Sprint 2
 - [ ] Extraer tablas y columnas del CREATE TABLE
 - [ ] Extraer tipo de dato, longitud y nulabilidad
 - [ ] Extraer llaves primarias, foráneas declaradas e índices
-- [ ] Tolerar dialectos comunes (Oracle, SQL Server, Postgres)
+- [ ] Dialectos del MVP (DP-019): T-SQL con pruebas completas; Oracle y PostgreSQL con un DDL de ejemplo cada uno
 - [ ] Pruebas con un DDL real de banca con nombres crípticos
 
 **Listo cuando:** un DDL de ejemplo produce el listado completo de tablas y columnas sin perder información.

@@ -27,7 +27,7 @@
 | GET | `/api/me` | Usuario actual y estado de onboarding | ROS-89, 91 / 185 |
 | POST | `/api/me/onboarding/complete` | Marca el onboarding como completado | ROS-91 / 185 |
 | GET | `/api/projects` | Lista proyectos del usuario (`?archived=false`) | ROS-78 / 173 |
-| POST | `/api/projects` | Crea proyecto | ROS-78 / 173 |
+| POST | `/api/projects` | Crea proyecto (nombre y dialecto obligatorio: `tsql` \| `oracle` \| `postgres`, [DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)) | ROS-78 / 173 |
 | GET | `/api/projects/{id}` | Detalle | ROS-78 / 173 |
 | PATCH | `/api/projects/{id}` | Renombra, cambia descripción o archiva (`archived: true`) | ROS-78 / 173 |
 | GET | `/api/projects/{id}/state` | Estado completo resumido al abrir | ROS-81 / 177 |
@@ -63,7 +63,7 @@
 
 ### 3.1 `POST /api/projects/{id}/sources/schema`
 
-Multipart: `file` (`.sql`, `.ddl`, `.txt`; máx. `[PENDIENTE]` 20 MB — [DP-013](../07-registro/02-decisiones-pendientes.md)), `dialect` (`tsql` \| `oracle` \| `postgres` \| `mysql` \| `auto`, por defecto `auto`).
+Multipart: `file` (`.sql`, `.ddl`, `.txt`; máx. `[PENDIENTE]` 20 MB — [DP-013](../07-registro/02-decisiones-pendientes.md)). El DDL se interpreta con el dialecto del proyecto (`source_dialect`, [DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)); no hay parámetro `dialect` ni autodetección.
 
 `202 Accepted`
 ```json
@@ -246,10 +246,10 @@ Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: 
 | `oauth_denied` | — | (redirección a `/auth/error?code=oauth_denied`) el usuario canceló |
 | `oauth_failed` | — | (redirección) proveedor caído o respuesta inválida |
 | `session_expired` | 401 | Sin token, token inválido o vencido y no renovable |
-| `account_exists_other_provider` | 403 | El correo ya existe con otro proveedor; el cliente navega a `/auth/denied` (la vinculación es ROS-98). Código **provisional** hasta [DP-025](../07-registro/02-decisiones-pendientes.md#dp-025) |
-| `account_disabled` | 403 | La cuenta está desactivada. **Provisional** (DP-025) |
-| `email_missing` | 403 | La identidad no trae correo y no se puede crear la cuenta. **Provisional** (DP-025) |
-| `email_not_verified` | 403 | El correo no está verificado. Lo deniega la Acción post-login (redirección a `/auth/error`) y, como defensa en profundidad, el backend rechaza con 403 una credencial sin el claim `email_verified` verdadero; el cliente navega a `/auth/denied`. **Provisional** (DP-025) |
+| `account_exists_other_provider` | 403 | El correo ya existe con otro proveedor; el cliente navega a `/auth/denied` (la vinculación es ROS-98). Definido en [DP-025](../07-registro/02-decisiones-pendientes.md#dp-025) |
+| `account_disabled` | 403 | La cuenta está desactivada (DP-025) |
+| `email_missing` | 403 | La identidad no trae correo y no se puede crear la cuenta (DP-025) |
+| `email_not_verified` | 403 | El correo no está verificado. Lo deniega la Acción post-login (redirección a `/auth/error`) y, como defensa en profundidad, el backend rechaza con 403 una credencial sin el claim `email_verified` verdadero; el cliente navega a `/auth/denied` (DP-025) |
 | `forbidden_origin` | 403 | Mutación cuyo `Origin` no es el de Rosetta (proxy BFF) |
 | `identity_unavailable` | 503 | El servicio de identidad no respondió al renovar la sesión (proxy BFF); la sesión no se toca |
 | `backend_unavailable` | 502 | El proxy BFF no pudo contactar con el backend |

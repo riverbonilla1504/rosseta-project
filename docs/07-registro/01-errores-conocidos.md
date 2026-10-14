@@ -39,7 +39,7 @@
 | [EC-019](#ec-019) | ROS-135 (MVP) incluye recalcular al cambiar el umbral, que es Fase 2 | producto | S4 | Abierto | ROS-135 |
 | [EC-020](#ec-020) | Contraste insuficiente probable en etiquetas de sección | diseño | S3 | Abierto | ROS-168, RNF-24 |
 | [EC-021](#ec-021) | PostgreSQL local del equipo de desarrollo ocupa el puerto 5432 | herramienta | S4 | Mitigado | — |
-| [EC-022](#ec-022) | Voseo en el estado vacío de proyectos de ROS-174 | diseño | S4 | Abierto | Feature 003 (UI) |
+| [EC-022](#ec-022) | Voseo en el estado vacío de proyectos de ROS-174 | diseño | S4 | Resuelto | — |
 | [EC-023](#ec-023) | `check-prerequisites.sh --template` exige `plan.md` antes de que exista | herramienta | S4 | Mitigado | — |
 | [EC-024](#ec-024) | `--nx-text-secondary` y `--nx-text-muted` no cumplen 4,5:1 sobre `--nx-surface` | diseño | S3 | Mitigado | ROS-168, RNF-24 |
 | [EC-025](#ec-025) | `HealthView` hace fallar la generación del esquema OpenAPI | herramienta | S4 | Abierto | RNF-34 |
@@ -185,6 +185,7 @@
 - **Descripción:** [03-tareas-mvp.md](../02-requisitos/03-tareas-mvp.md) (ROS-174) pide el estado vacío "aún no tenés proyectos", en voseo. [DP-009](02-decisiones-pendientes.md#dp-009) decidió tuteo neutro en toda la interfaz ([EC-008](#ec-008)).
 - **Impacto:** si se implementa tal cual, el texto contradice [04-contenido §2](../05-diseno/04-contenido-y-redaccion.md). El mismo texto está en la incidencia ROS-174 de Jira.
 - **Resolución propuesta:** CD que cambie el texto a "aún no tienes proyectos" en `03-tareas-mvp.md` y en Jira, antes de implementar la feature 003.
+- **Resolución (2026-10-14, CD-012):** texto corregido en `03-tareas-mvp.md` (ROS-174). Falta actualizar la incidencia ROS-174 de Jira.
 
 <a id="ec-023"></a>
 ### EC-023 · `check-prerequisites.sh --template` exige `plan.md` antes de que exista
