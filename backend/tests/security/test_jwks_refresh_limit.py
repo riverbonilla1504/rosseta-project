@@ -47,9 +47,9 @@ def make_client(fetcher, clock):
 
 
 def unknown_key_error():
-    from apps.accounts.jwks import UnknownSigningKey
+    from apps.accounts.jwks import UnknownSigningKeyError
 
-    return UnknownSigningKey
+    return UnknownSigningKeyError
 
 
 def test_known_kid_does_not_touch_the_network_after_first_load():

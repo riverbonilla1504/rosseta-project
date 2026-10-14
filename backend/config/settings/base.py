@@ -99,6 +99,14 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "apps.core.exceptions.api_exception_handler",
 }
 
+# --- Auth0 (ADR-0007; specs/002-autenticacion-oauth/contracts/auth-flow.md §8) ---
+AUTH0_DOMAIN = env("AUTH0_DOMAIN", default="")
+AUTH0_AUDIENCE = env("AUTH0_AUDIENCE", default="")
+# Solo pruebas y E2E pueden sobreescribir emisor y JWKS; producción exige https (prod.py).
+AUTH0_ISSUER = env("AUTH0_ISSUER", default=f"https://{AUTH0_DOMAIN}/")
+AUTH0_JWKS_URL = env("AUTH0_JWKS_URL", default=f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
+AUTH0_CLAIMS_NAMESPACE = "https://rosetta/"
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "Rosetta API",
     "DESCRIPTION": "Contrato en docs/03-arquitectura/05-api.md",
