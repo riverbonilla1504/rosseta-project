@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   let response = authResponse;
 
   if (authResponse.headers.get("x-middleware-next") === "1") {
+    const refreshedCookies = await refreshAccessToken(request);
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-nonce", nonce);
     requestHeaders.set("content-security-policy", csp);
@@ -26,13 +27,37 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       if (key.startsWith("x-middleware-") || key === "set-cookie") return;
       response.headers.set(key, value);
     });
-    for (const cookie of authResponse.headers.getSetCookie()) {
+    for (const cookie of [...authResponse.headers.getSetCookie(), ...refreshedCookies]) {
       response.headers.append("set-cookie", cookie);
     }
   }
 
   response.headers.set("content-security-policy", csp);
   return response;
+}
+
+/**
+ * Renueva el access token aquí y no en un componente de servidor (FR-022): allí el SDK no puede
+ * guardar la sesión renovada y, con la rotación de refresh tokens, la siguiente renovación
+ * reutilizaría el refresh token viejo y el tenant cerraría la sesión. La sesión renovada se
+ * guarda en la respuesta y se pasa a la petición, para que páginas y proxy ya la vean fresca.
+ * Si falla, la ruta decide (401 o 503); el middleware no corta la petición.
+ */
+async function refreshAccessToken(request: NextRequest): Promise<string[]> {
+  if (request.nextUrl.pathname.startsWith("/auth/")) return [];
+  if (!(await auth0.getSession(request))) return [];
+
+  const scratch = NextResponse.next();
+  try {
+    await auth0.getAccessToken(request, scratch);
+  } catch {
+    return [];
+  }
+  for (const cookie of scratch.cookies.getAll()) {
+    if (cookie.value === "" || cookie.maxAge === 0) request.cookies.delete(cookie.name);
+    else request.cookies.set(cookie.name, cookie.value);
+  }
+  return scratch.headers.getSetCookie();
 }
 
 export const config = {
