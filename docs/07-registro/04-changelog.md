@@ -7,6 +7,15 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.7.0] — 2026-10-13 · CD-008
+
+### Cambiado
+- **El correo verificado se exige en dos capas** (FR-004 de la spec 002): la Acción post-login deniega y añade el claim `https://rosetta/email_verified`; el backend lo exige verdadero y responde `403 email_not_verified`. Afecta [05-api](../03-arquitectura/05-api.md) (§3.8, §3.9 y la fila `email_not_verified`, que pasa de "solo redirección" a "403 y redirección"), [07-seguridad §2](../03-arquitectura/07-seguridad-y-autenticacion.md), [04-frontend §4](../03-arquitectura/04-frontend.md) y las actividades de ROS-183 y ROS-185.
+
+### Añadido
+- [DP-026](02-decisiones-pendientes.md#dp-026): ¿se versiona el código de la Acción post-login del tenant? (por defecto, solo en el tenant).
+- Forma genérica de `{proveedor}` como propuesta en [DP-025](02-decisiones-pendientes.md#dp-025) y como fila `[PENDIENTE: DP-025]` en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+
 ## [1.6.0] — 2026-10-01 · CD-007
 
 ### Cambiado

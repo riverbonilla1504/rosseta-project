@@ -96,7 +96,7 @@ export const qk = {
 - Cliente tipado: `openapi-fetch` con los tipos de `schema.d.ts` generados por `pnpm api:types` (lee `/api/schema/`). CI falla si los tipos generados difieren de los versionados.
 - Ante `401` (sesión vencida o sin sesión), el cliente redirige a `/login?returnTo=<ruta actual>`, la pantalla de acceso de Rosetta (`/auth/login` sin `connection` abriría la pantalla alojada por Auth0). La renovación del access token la hace el SDK en el servidor.
 - Sin sesión, el middleware redirige a `/login?returnTo=<ruta pedida>`; los botones de `/login` reenvían `returnTo` a `/auth/login?connection=…&returnTo=…`.
-- Si el backend rechaza una cuenta ya autenticada (403 `account_disabled`, `account_exists_other_provider` o `email_missing`), el cliente navega a `/auth/denied?code=…`, que cierra la sesión del SDK y muestra `/auth/error`; así no hay bucle entre `/login` y `/`. Detalle en `specs/002-autenticacion-oauth/contracts/auth-flow.md`.
+- Si el backend rechaza una cuenta ya autenticada (403 `account_disabled`, `account_exists_other_provider`, `email_missing` o `email_not_verified`), el cliente navega a `/auth/denied?code=…`, que cierra la sesión del SDK y muestra `/auth/error`; así no hay bucle entre `/login` y `/`. Detalle en `specs/002-autenticacion-oauth/contracts/auth-flow.md`.
 - Los componentes de servidor (RSC) se usan solo para el *shell* y páginas públicas; las pantallas de datos son componentes de cliente con TanStack Query (necesitan interactividad, teclado y caché compartida).
 
 ## 5. Atajos de teclado (ROS-47, ROS-160)

@@ -246,7 +246,7 @@ Frontend · **4 h** · Sprint 1
 - [ ] Instalar @auth0/nextjs-auth0 v4; cliente en src/lib/auth0.ts y middleware.ts
 - [ ] Rutas /auth/login, /auth/logout, /auth/callback montadas por el SDK (quitar el rewrite /auth hacia Django)
 - [ ] Pedir audiencia de Rosetta API y scopes openid profile email offline_access
-- [ ] Action post-login en Auth0 que añade email, nombre y avatar como claims del access token
+- [ ] Action post-login en Auth0 que añade email, nombre, avatar y email_verified como claims del access token
 
 **Listo cuando:** tras iniciar sesión, el servidor de Next obtiene un access token para Rosetta API con email y nombre.
 
@@ -276,6 +276,7 @@ Backend · **5 h** · Sprint 1
 
 - [ ] Crear el usuario local la primera vez que llega un token válido (por auth0_sub) y actualizar email/nombre/avatar
 - [ ] Marcar el onboarding como pendiente en el alta
+- [ ] Exigir el claim email_verified verdadero (403 email_not_verified si falta o no lo es) como defensa en profundidad
 - [ ] GET /api/me y POST /api/me/onboarding/complete
 - [ ] Pruebas de primer acceso, segundo acceso y datos del perfil actualizados
 

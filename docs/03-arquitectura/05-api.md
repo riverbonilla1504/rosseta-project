@@ -210,7 +210,7 @@ Invariante probado: `sum(by_level) == total_columns` (tarea ROS-146). Los númer
 
 ### 3.8 Autenticación de la API
 
-Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: Bearer <access token>` emitido por el tenant de Auth0 para la audiencia `AUTH0_AUDIENCE`. Django valida firma RS256 (JWKS), `iss` = `https://<AUTH0_DOMAIN>/`, `aud`, `exp`. El primer request válido de un `sub` nuevo crea el usuario local (onboarding pendiente). Token ausente o inválido → `401 session_expired`.
+Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: Bearer <access token>` emitido por el tenant de Auth0 para la audiencia `AUTH0_AUDIENCE`. Django valida firma RS256 (JWKS), `iss` = `https://<AUTH0_DOMAIN>/`, `aud`, `exp`. El primer request válido de un `sub` nuevo crea el usuario local (onboarding pendiente). Token ausente o inválido → `401 session_expired`. Además exige el claim `https://rosetta/email_verified` verdadero: si falta o no lo es → `403 email_not_verified` (defensa en profundidad; la Acción post-login ya deniega los correos no verificados, pero no es el único control).
 
 ### 3.9 `GET /api/me` y `POST /api/me/onboarding/complete`
 
@@ -226,7 +226,7 @@ Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: 
 ```
 - `avatar_url` es opcional (`null` si el proveedor no entrega avatar).
 - `POST /api/me/onboarding/complete` no tiene cuerpo, devuelve la misma forma con `onboarding_completed: true` y es **idempotente** (repetirla no cambia la fecha de finalización). No comprueba que exista un proyecto: la interfaz la llama tras crear el primero.
-- Ambas pueden responder `401 session_expired` o `403` con `account_disabled`, `account_exists_other_provider` o `email_missing` (ver §4).
+- Ambas pueden responder `401 session_expired` o `403` con `account_disabled`, `account_exists_other_provider`, `email_missing` o `email_not_verified` (ver §4).
 - Contrato detallado en `specs/002-autenticacion-oauth/contracts/accounts-api.yaml`.
 
 ## 4. Códigos de error de dominio
@@ -249,7 +249,7 @@ Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: 
 | `account_exists_other_provider` | 403 | El correo ya existe con otro proveedor; el cliente navega a `/auth/denied` (la vinculación es ROS-98). Código **provisional** hasta [DP-025](../07-registro/02-decisiones-pendientes.md#dp-025) |
 | `account_disabled` | 403 | La cuenta está desactivada. **Provisional** (DP-025) |
 | `email_missing` | 403 | La identidad no trae correo y no se puede crear la cuenta. **Provisional** (DP-025) |
-| `email_not_verified` | — | (redirección a `/auth/error`) el proveedor no declara verificado el correo; lo deniega la Acción post-login. **Provisional** (DP-025) |
+| `email_not_verified` | 403 | El correo no está verificado. Lo deniega la Acción post-login (redirección a `/auth/error`) y, como defensa en profundidad, el backend rechaza con 403 una credencial sin el claim `email_verified` verdadero; el cliente navega a `/auth/denied`. **Provisional** (DP-025) |
 | `forbidden_origin` | 403 | Mutación cuyo `Origin` no es el de Rosetta (proxy BFF) |
 | `identity_unavailable` | 503 | El servicio de identidad no respondió al renovar la sesión (proxy BFF); la sesión no se toca |
 | `backend_unavailable` | 502 | El proxy BFF no pudo contactar con el backend |
