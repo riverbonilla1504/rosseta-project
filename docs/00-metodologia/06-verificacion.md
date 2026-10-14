@@ -51,6 +51,8 @@ Cada entrega pasa por **todos** los niveles, en orden:
   4. Revisa la trazabilidad (claves, marcadores de pruebas, bloque "Fuente de verdad").
   5. Deja el **acta de verificación** en el PR (plantilla abajo).
 - Si el verificador es un agente de IA, recibe el prompt de verificación de [07-delegacion-a-ia.md](07-delegacion-a-ia.md) y **no** recibe el resumen del implementador.
+- **Lanzamiento automático** ([07-delegacion-a-ia.md §2.1](07-delegacion-a-ia.md)): cuando la implementación llega a "Converged", el implementador ejecuta `/verificar <rama> <carpeta de la feature>`. La orden crea un agente nuevo, de contexto limpio (`.claude/agents/verificador.md`: solo lectura más ejecución de pruebas; no puede tocar el código), le pasa **solo** la rama y la carpeta dentro del prompt fijo de [07-delegacion-a-ia.md §3.2](07-delegacion-a-ia.md) y devuelve el acta, que se pega **tal cual** en el PR, sin resumirla.
+- Lo humano se mantiene: la persona aprueba el PR y **solo el verificador** mueve la incidencia a *Listo* (nivel 7), cuando su veredicto es *Aprobado*, el PR está aprobado y el CI en verde.
 
 ### Nivel 6 — QA funcional (por historia)
 - Recorrido manual o E2E de los escenarios de `quickstart.md` de la feature.

@@ -7,6 +7,14 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.8.0] — 2026-10-13 · CD-009
+
+### Cambiado
+- **Verificador automático** (nivel 5): al llegar a "Converged", el implementador lanza `/verificar <rama> <carpeta>`, que crea un agente nuevo, de contexto limpio, con el prompt **fijo** de [07-delegacion §3.2](../00-metodologia/07-delegacion-a-ia.md) (ahora parametrizado solo por rama y carpeta). El acta se pega tal cual en el PR. La persona aprueba el PR y solo el verificador mueve la incidencia a *Listo*. Afecta [06-verificacion §2](../00-metodologia/06-verificacion.md) (nivel 5) y [07-delegacion §2, §2.1 y §3.2](../00-metodologia/07-delegacion-a-ia.md).
+
+### Añadido
+- Agente del repositorio `.claude/agents/verificador.md` (sin `Edit`, `Write`, `NotebookEdit`, `PowerShell` ni `Agent`; *hook* `.claude/hooks/verificador-solo-lectura.mjs` que solo deja pasar órdenes de lectura y de pruebas, lint y tipos) y skill `.claude/skills/verificar/`.
+
 ## [1.7.0] — 2026-10-13 · CD-008
 
 ### Cambiado

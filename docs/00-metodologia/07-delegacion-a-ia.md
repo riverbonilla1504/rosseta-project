@@ -25,12 +25,24 @@
 |---|---|---|
 | **Especificador** | `/speckit-specify`, `/speckit-clarify`, `/speckit-checklist` a partir de historias de `docs/` | Decidir alcance nuevo |
 | **Planificador** | `/speckit-plan`, `/speckit-tasks`, `/speckit-analyze`; asocia `T###` ↔ subtareas Jira | Cambiar el stack sin ADR |
-| **Implementador** | `/speckit-implement` sobre tareas asignadas; pruebas primero; PR | Verificar su propio trabajo como verificación final |
-| **Verificador** | Protocolo de [06-verificacion.md](06-verificacion.md) §2 nivel 5; acta de verificación | Recibir o confiar en el resumen del implementador |
+| **Implementador** | `/speckit-implement` sobre tareas asignadas; pruebas primero; PR. Al llegar a "Converged" lanza `/verificar <rama> <carpeta de la feature>` | Verificar su propio trabajo como verificación final; redactar o resumir el prompt del verificador; resumir el acta |
+| **Verificador** | Protocolo de [06-verificacion.md](06-verificacion.md) §2 nivel 5 con el prompt fijo de §3.2; acta de verificación; mueve la incidencia a *Listo* (nivel 7) | Recibir o confiar en el resumen del implementador; modificar código, pruebas, `specs/` o `docs/` |
 | **Documentador** | Redactar un CD siguiendo la matriz de impacto | Fusionar su propio CD sin revisión |
 | **Auditor de sincronización** | Checklist de [04-sincronizacion.md](04-sincronizacion.md) §8 | Corregir diferencias sin CD |
 
 Un mismo agente **no** puede ser implementador y verificador de la misma tarea.
+
+### 2.1 Verificador automático
+
+Cuando la implementación llega a "Converged", el implementador lanza `/verificar <rama> <carpeta de la feature>` (skill `.claude/skills/verificar/`) en la misma sesión, sin esperar a que se lo pidan. La orden:
+
+- Crea un agente **nuevo, de contexto limpio**, con la definición del repositorio `.claude/agents/verificador.md`: herramientas de solo lectura más la ejecución de pruebas, lint y tipos. No puede editar archivos (`Edit`, `Write` y `NotebookEdit` están prohibidos) y un *hook* rechaza cualquier orden de consola que no sea de lectura o de pruebas.
+- Le pasa **solo** la rama y la carpeta de la feature, dentro del prompt fijo de §3.2. El implementador no redacta, amplía ni resume ese prompt, y no le pasa su resumen, sus conclusiones ni el historial de la sesión.
+- Devuelve el acta, que se muestra a la persona y se pega **tal cual** en el PR, sin resumirla ni editarla.
+
+Lo humano no cambia: la **persona** aprueba el PR, y **solo el verificador** mueve la incidencia a *Listo* (con el comentario de cierre de [06-verificacion.md §4](06-verificacion.md)), y solo cuando su veredicto es *Aprobado*, la persona ya aprobó el PR y el CI está en verde. Si al verificar todavía no hay PR aprobado, el verificador no toca Jira; se vuelve a lanzar `/verificar` después de la aprobación.
+
+También se puede verificar desde un chat nuevo con el prompt de §3.2; vale lo mismo, siempre que no lo abra quien implementó.
 
 ## 3. Plantillas de delegación
 
@@ -65,18 +77,30 @@ No declares éxito sin mostrar la salida de las pruebas.
 
 ### 3.2 Verificar una tarea
 
+Prompt **fijo**: lo usa `/verificar` sustituyendo solo `<rama>` y `<carpeta>` (ver §2.1). Nadie lo redacta de nuevo ni le añade contexto.
+
 ```text
 Rol: verificador independiente en el proyecto Rosetta.
 NO has visto el trabajo del implementador y no debes confiar en ningún resumen suyo.
-Objetivo: comprobar si el PR <enlace> cumple las historias ROS-25, ROS-26.
+Rama: <rama>
+Feature: <carpeta>
+Objetivo: comprobar si la rama cumple las historias que lista la primera línea de <carpeta>/spec.md.
 
-1. Lee los criterios de aceptación desde docs/02-requisitos/02-historias-de-usuario.md (#ros-25, #ros-26)
-   y los FR de specs/005-motor-de-evidencia/spec.md.
-2. Para CADA criterio: localiza la prueba que lo cubre, ejecútala, y si no existe márcalo como NO CUBIERTO.
+0. Lee CLAUDE.md, docs/00-metodologia/07-delegacion-a-ia.md, docs/00-metodologia/06-verificacion.md
+   y la constitución. Trabaja sobre la rama indicada (git branch --show-current); si no es esa, detente.
+1. Lee los criterios de aceptación de esas historias desde docs/02-requisitos/02-historias-de-usuario.md
+   y los FR de <carpeta>/spec.md. No uses el PR ni los commits como fuente de los criterios.
+2. Para CADA criterio y FR: localiza la prueba que lo cubre, ejecútala y anota el comando y su salida;
+   si no existe, márcalo NO CUBIERTO. Ejecuta también la suite completa, el lint y los tipos.
 3. Busca comportamiento no especificado o que contradiga los no-objetivos.
-4. Revisa trazabilidad: claves en commits/PR, marcadores de pruebas, commit de prueba roja previo.
-5. Ejecuta /speckit-analyze y /speckit-converge y reporta su salida.
+4. Revisa trazabilidad: claves en commits/PR, marcadores de pruebas, commit de prueba roja previo
+   al de implementación, tareas ⛔ y su bloqueo registrado.
+5. Ejecuta /speckit-analyze y /speckit-converge y reporta su salida (no editas tasks.md: si converge
+   encuentra trabajo pendiente, lo listas en el acta).
 6. Rellena el "Acta de verificación" de docs/00-metodologia/06-verificacion.md §3.
+7. Solo si el veredicto es Aprobado, la persona ya aprobó el PR y el CI está en verde: publica en cada
+   incidencia el comentario de cierre de 06-verificacion.md §4 y muévela a Listo. Si no, no toques Jira.
+No modificas código, pruebas, specs/ ni docs/. Tu respuesta final es el acta completa, nada más.
 Veredicto: Aprobado / Aprobado con observaciones / Rechazado, con evidencia por criterio.
 ```
 
