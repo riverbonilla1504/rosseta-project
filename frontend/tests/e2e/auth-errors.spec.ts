@@ -62,7 +62,10 @@ test("[ROS-93][002:FR-004] la Acción deniega un correo no verificado", async ({
 
   await page.getByRole("link", { name: "Continuar con Google" }).click();
 
-  await expectErrorScreen(page, "Google no confirma que tu correo esté verificado.");
+  await expectErrorScreen(
+    page,
+    "Google no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo.",
+  );
 });
 
 test("[ROS-93][002:FR-004] el backend rechaza una credencial sin email_verified: /auth/denied → cierre → /auth/error", async ({
@@ -80,7 +83,10 @@ test("[ROS-93][002:FR-004] el backend rechaza una credencial sin email_verified:
 
   await page.getByRole("link", { name: "Continuar con Google" }).click();
 
-  await expectErrorScreen(page, "no confirma que tu correo esté verificado");
+  await expectErrorScreen(
+    page,
+    "no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo.",
+  );
   expect((await context.cookies()).some((c) => c.name === "__session")).toBe(false);
   expect((await context.cookies()).some((c) => c.name === "rosetta_auth_error")).toBe(false);
   expect(longest()).toBeLessThanOrEqual(MAX_REDIRECTS);
@@ -111,7 +117,10 @@ test("[ROS-90][002:FR-009] correo ya registrado con otro proveedor: mensaje, sin
   });
   await page.getByRole("link", { name: "Continuar con Microsoft" }).click();
 
-  await expectErrorScreen(page, "Ya existe una cuenta con ese correo, creada con otro proveedor.");
+  await expectErrorScreen(
+    page,
+    "Ya existe una cuenta con ese correo, creada con otro proveedor. Entra con el proveedor que usaste al registrarte.",
+  );
   expect((await context.cookies()).some((c) => c.name === "__session")).toBe(false);
   expect(longest()).toBeLessThanOrEqual(MAX_REDIRECTS);
 

@@ -37,11 +37,13 @@ describe("pantalla de acceso /login", () => {
     expect(screen.queryByText(/contraseña/i)).toBeNull();
   });
 
-  it("[ROS-90][002:FR-002] muestra la nota de privacidad (qué datos se piden y para qué)", async () => {
+  it("[ROS-90][002:FR-002] muestra la nota de privacidad aprobada (DP-025)", async () => {
     await renderLogin();
 
     expect(
-      screen.getByText(/nombre, correo y foto de perfil solo para identificarte/i),
+      screen.getByText(
+        "Usamos tu nombre, correo y foto de perfil solo para identificarte. No accedemos a nada más de tu cuenta de Google o Microsoft.",
+      ),
     ).toBeVisible();
   });
 
