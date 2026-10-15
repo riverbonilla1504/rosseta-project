@@ -1,7 +1,7 @@
 """Alta y reconocimiento del usuario a partir de los claims del access token.
 
 specs/002-autenticacion-oauth: research R-03, data-model.md (reglas de alta),
-contracts/auth-flow.md §6. Casos (a)…(m) de T015.
+contracts/auth-flow.md §6. Casos (a)…(m) de T015; el caso (l) lo sustituye T037 (DP-023).
 """
 
 import logging
@@ -10,7 +10,6 @@ from unittest.mock import patch
 
 import pytest
 from django.utils import timezone
-from rest_framework.exceptions import PermissionDenied
 
 from tests.factories.accounts import UserFactory
 
@@ -215,18 +214,33 @@ def test_k_email_not_verified_claim_is_rejected_without_changes(verified):
     assert user_model().objects.count() == 1
 
 
-@pytest.mark.story("ROS-91")
+@pytest.mark.story("ROS-90")
 @pytest.mark.fr("002:FR-005")
-def test_l_first_access_without_name_fails_closed_while_dp023_is_open():
-    from apps.accounts.exceptions import AccountDisabled
+@pytest.mark.parametrize(
+    ("email", "expected"),
+    [
+        ("ana.prueba@example.test", "ana.prueba"),
+        ("N" * 210 + "@example.test", "N" * 200),
+    ],
+    ids=["parte-local", "truncada-a-200"],
+)
+def test_l_first_access_without_name_uses_email_local_part(email, expected):
+    # DP-023 (opción A): sin nombre del proveedor, la parte local del correo, truncada a 200.
+    user = service().get_or_create_from_claims(claims(email=email, name=None))
 
-    with pytest.raises(PermissionDenied) as excinfo:
-        service().get_or_create_from_claims(claims(name=None))
+    assert user.full_name == expected
+    assert user_model().objects.count() == 1
 
-    assert not isinstance(excinfo.value, AccountDisabled)
-    assert getattr(excinfo.value, "error_code", None) is None
-    assert excinfo.value.status_code == 403
-    assert user_model().objects.count() == 0
+
+@pytest.mark.story("ROS-90")
+@pytest.mark.fr("002:FR-007")
+def test_l_later_access_with_name_replaces_email_local_part():
+    service().get_or_create_from_claims(claims(name=None))
+
+    user = service().get_or_create_from_claims(claims(name="Ana Prueba"))
+
+    assert user.full_name == "Ana Prueba"
+    assert user_model().objects.count() == 1
 
 
 @pytest.mark.story("ROS-93")
