@@ -2,7 +2,7 @@
 
 **Feature**: [spec.md](spec.md) · **Plan**: [plan.md](plan.md) · **Fuente de verdad**: [02-diccionario-de-datos.md](../../docs/04-datos/02-diccionario-de-datos.md)
 
-Este documento **no redefine** las columnas del diccionario: las implementa tal cual y solo detalla lo que la feature 003 añade o concreta. Lo marcado **(D1)**/**(D2)** es una desviación que CD-013 tiene que llevar al diccionario antes de implementar ([plan, Desviaciones](plan.md#desviaciones-respecto-a-docs-a-resolver-por-cd-013-antes-de-implementar)).
+Este documento **no redefine** las columnas del diccionario: las implementa tal cual y solo detalla lo que la feature 003 añade o concreta. Lo marcado **(D1)**/**(D2)** ya está en el diccionario desde CD-013 ([plan, Desviaciones](plan.md#desviaciones-respecto-a-docs-a-resolver-por-cd-013-antes-de-implementar)).
 
 ## Convenciones
 
@@ -74,7 +74,7 @@ Concreciones de esta feature:
 | `sources_naming_rule` | `for_user(user)` devuelve las del proyecto del usuario **más** las globales (`project_id is null`); las globales son de solo lectura (`global_rule_readonly`, ya en 05-api) |
 | `evidence_evidence` | `save()` rechaza actualizar una fila existente (FR-025): solo crear y borrar |
 | `review_review_action` | `save()` rechaza actualizar; `delete()` lanza error; trigger `BEFORE UPDATE OR DELETE` en la migración (FR-023) |
-| `catalog_column_interpretation` | La cola (R-09) ordena por `impact desc`, luego por `TABLA.COLUMNA`; índice `(project_id, level, impact desc)` |
+| `catalog_column_interpretation` | La cola (R-09) usa el orden de 05-api §3.6: `impact desc`, `has_open_conflict desc`, `TABLA.COLUMNA asc`; índice `(project_id, level, impact desc)` |
 
 ## Validaciones (resumen)
 

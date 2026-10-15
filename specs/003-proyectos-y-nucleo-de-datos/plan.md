@@ -30,7 +30,7 @@ La persistencia se comprueba con un proyecto de ejemplo sembrado desde una insta
 
 **Constraints**: aislamiento por propietario en el QuerySet, nunca en la vista (B4); toda escritura de más de un modelo en un service atómico (B2); acciones y evidencia inmutables (Constitución IV); sin datos de clientes ni personales en registros ni en direcciones (FR-019); cobertura backend ≥ 85 % y frontend ≥ 80 %.
 
-**Scale/Scope**: 3 historias, 8 subtareas, 29 FR, 9 SC; 10 tablas, 7 endpoints, 1 pantalla nueva (`/projects`) más la navegación del proyecto y el formulario compartido. El caso de ejemplo tiene ~30 tablas y ~300 columnas (la referencia de [03-datos-de-referencia §5](../../docs/04-datos/03-datos-de-referencia.md) en proporciones reducidas).
+**Scale/Scope**: 3 historias, 8 subtareas, 29 FR, 9 SC; 10 tablas, 5 operaciones de API en 3 rutas, 1 pantalla nueva (`/projects`) más la navegación del proyecto y el formulario compartido. El caso de ejemplo tiene ~30 tablas y ~300 columnas (la referencia de [03-datos-de-referencia §5](../../docs/04-datos/03-datos-de-referencia.md) en proporciones reducidas).
 
 ## Constitution Check
 
@@ -38,28 +38,28 @@ La persistencia se comprueba con un proyecto de ejemplo sembrado desde una insta
 
 | Principio | Antes de Fase 0 | Después del diseño | Evidencia |
 |---|---|---|---|
-| **I. La especificación es la fuente de verdad** | Pasa con observaciones | Pasa con observaciones | Cada FR rastrea a ROS-78, 81 u 84. El diseño se aparta de `docs/` en 6 puntos (tabla *Desviaciones*): hay que alinearlos por **CD antes de implementar** (propuesta CD-013) |
+| **I. La especificación es la fuente de verdad** | Pasa con observaciones | Pasa | Cada FR rastrea a ROS-78, 81 u 84. El diseño se apartaba de `docs/` en 6 puntos (tabla *Desviaciones*); **CD-013 los alineó** (2026-10-14), junto con las aclaraciones de la spec |
 | **II. Pruebas primero** | Pasa | Pasa | Estrategia abajo; PostgreSQL real; la suite de acceso cruzado falla con una ruta nueva sin caso (FR-018) |
 | **III. El motor nunca inventa** | Pasa | Pasa | Esta feature no calcula niveles. La instantánea sembrada marca `engine_version = "fixture"` y solo sirve para pruebas y demostraciones; ningún proceso de esta feature produce `CONFIRMED` sin una `ReviewAction` (CHECK del diccionario) |
 | **IV. Auditabilidad y determinismo** | Pasa | Pasa | `review_review_action` inmutable en el modelo y en la base (trigger); evidencia sin actualización; siembra determinista |
 | **V. Seguridad y aislamiento** | Pasa | Pasa | QuerySets `for_user` en los 10 modelos; 404 idéntico; UUID v4; registro de denegaciones con campos cerrados; sin datos reales (instantánea sintética). Cifrado en reposo y HSTS de producción dependen de DP-015 (T de seguimiento, como T089 en la 002) |
 | **VI. Simplicidad** | Pasa | Pasa | Sin servicios nuevos. Los "repositorios" de ROS-176 son Managers/QuerySets (B5). Sin caché de servidor (R-09). Una dependencia nueva, ya prevista en `docs/` |
-| **VII. Consistencia de interfaz** | Pasa con observación | Pasa con observación | Nocturne y WCAG 2.1 AA; la insignia usa el valor interno del dialecto (DP-019). **Observación:** faltan textos de interfaz en `docs/` (propuesta DP-028); se implementan como provisionales marcados, igual que DP-025 en la 002 |
+| **VII. Consistencia de interfaz** | Pasa con observación | Pasa con observación | Nocturne y WCAG 2.1 AA; la insignia usa el valor interno del dialecto (DP-019). **Observación:** los textos que faltaban están propuestos en [DP-028](../../docs/07-registro/02-decisiones-pendientes.md#dp-028) (abierta); se implementan como provisionales marcados, igual que DP-025 en la 002 |
 | **Restricciones** | Pasa | Pasa | Versiones fijadas; identificadores en inglés y textos en español |
-| **Gates del flujo** (1 a 5) | Pendiente | Pendiente | Faltan `tasks.md` y `/speckit-analyze` sin CRITICAL, y el CD-013 de la tabla siguiente |
+| **Gates del flujo** (1 a 5) | Pendiente | Pasa (gate 1) | `tasks.md` hecho y `/speckit-analyze` sin CRITICAL; CD-013 fusionado en la rama de docs |
 
-**Veredicto:** el diseño cumple la constitución, con dos condiciones antes de implementar: (1) CD-013 alinea `docs/` con las desviaciones D1–D6; (2) DP-028 registra los textos que faltan.
+**Veredicto:** el diseño cumple la constitución. CD-013 alineó `docs/` con D1–D6 y registró DP-028; los textos de DP-028 siguen abiertos y se implementan como provisionales.
 
-## Desviaciones respecto a `docs/` (a resolver por CD-013 antes de implementar)
+## Desviaciones respecto a `docs/` (resueltas por CD-013)
 
-La constitución no permite que un `plan.md` contradiga `docs/03-arquitectura/` ni `docs/04-datos/`. Estos puntos vienen de las aclaraciones de la spec (2026-10-14) o rellenan huecos del contrato; se proponen para un CD con el OK de la persona.
+La constitución no permite que un `plan.md` contradiga `docs/03-arquitectura/` ni `docs/04-datos/`. Estos puntos venían de las aclaraciones de la spec (2026-10-14) o rellenaban huecos del contrato; **CD-013** (2026-10-14, con el OK de la persona) cambió los documentos y hoy coinciden con el plan. Al redactarlo se ajustaron tres detalles a lo que ya decía 05-api: `not_found` ya existía en §4 (solo se precisó), la lista usa la paginación de §1 y el estado reutiliza el orden de la cola de §3.6 y la forma de la cobertura de §3.7. La tabla se conserva como registro.
 
-| # | Qué cambia | Qué dice hoy `docs/` | Por qué | Documentos que tocaría CD-013 |
+| # | Qué cambia | Qué decía `docs/` | Por qué | Documentos que tocó CD-013 |
 |---|---|---|---|---|
 | D1 | `projects_project.last_activity_at` (no nulo) e índice `(owner_id, last_activity_at desc)` | El diccionario no tiene "última actividad"; ROS-172 pide "índices por propietario y por fecha" | Aclaración de FR-005: la lista muestra y ordena por la última actividad del contenido, no solo por la fila del proyecto ([R-07](research.md#r-07--última-actividad)) | 04-datos/02 |
 | D2 | Restricción única parcial `(owner_id, lower(name)) where archived_at is null` | No existe | Aclaración de FR-004 ([R-05](research.md#r-05--unicidad-del-nombre)) | 04-datos/02 |
 | D3 | `PATCH /api/projects/{id}` acepta `archived: false` (desarchivar) y `name` en la misma petición; `GET /api/projects?archived=true` lista los archivados | 05-api: "archiva (`archived: true`)" y `?archived=false` | Aclaración de FR-013 ([R-08](research.md#r-08--archivar-desarchivar-y-solo-lectura)) | 03-arquitectura/05 §2 |
-| D4 | Códigos de error nuevos: `project_name_taken` (400), `project_archived` (409) y `not_found` (404, cuerpo único para lo inexistente y lo ajeno) | 05-api §4 no los tiene | FR-003, FR-004, FR-013, FR-015 ([R-03](research.md#r-03--aislamiento-y-respuesta-no-encontrado), R-08) | 03-arquitectura/05 §4 |
+| D4 | Códigos de error nuevos: `project_name_taken` (400) y `project_archived` (409); `not_found` (404) precisado: mismo cuerpo para lo inexistente, lo ajeno y un identificador inválido | 05-api §4 no tenía los dos primeros | FR-003, FR-004, FR-013, FR-015 ([R-03](research.md#r-03--aislamiento-y-respuesta-no-encontrado), R-08) | 03-arquitectura/05 §4 |
 | D5 | Forma de las respuestas de `/api/projects` y de `GET /api/projects/{id}/state` ([contracts/projects-api.yaml](contracts/projects-api.yaml)) | 05-api lista los endpoints sin detallar la respuesta | FR-005, FR-022; las specs no fijan contratos que `05-api` no recoja | 03-arquitectura/05 §2–3 |
 | D6 | ROS-177 "caché ligera del estado por proyecto" = caché **del cliente** por proyecto (TanStack Query), sin caché de servidor | La actividad de ROS-177 no dice dónde | Sin metas de tiempo (DP-018) una caché de servidor es complejidad sin necesidad medida e invalida mal tras confirmar ([R-09](research.md#r-09--estado-del-proyecto-al-abrir)) | 02-requisitos/03-tareas-mvp (ROS-177) y Jira |
 

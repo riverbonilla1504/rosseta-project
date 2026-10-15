@@ -121,7 +121,7 @@ La persona cambia el nombre o la descripción de un proyecto y archiva los que y
 - **Sesión que vence mientras se crea o renombra:** aplica FR-026 de la feature 002: la operación se rechaza completa, se pide un nuevo acceso y no se pierde nada ya guardado.
 - **Archivar el proyecto que está abierto:** la persona sale de él a la pantalla de proyectos y el proyecto deja de aparecer en el selector (FR-010).
 - **Todos los proyectos archivados:** la lista por defecto muestra el estado vacío "aún no tienes proyectos"; el filtro de archivados sigue mostrándolos (FR-006, FR-012). El onboarding no vuelve a aparecer: ya se completó (feature 002, FR-018).
-- **Proyecto recién creado:** sin fuentes, con 0 tablas, 0 columnas y 0 % confirmado; su Panorama muestra el estado "Todavía no hay evidencia. Sube el DDL de tu base para empezar." de [04-contenido §5](../../docs/05-diseno/04-contenido-y-redaccion.md) cuando exista esa pantalla.
+- **Proyecto recién creado:** sin fuentes, con 0 tablas y 0 columnas, y el porcentaje confirmado se muestra como "sin dato" (no hay columnas sobre las que calcularlo; texto en DP-028); su Panorama muestra el estado "Todavía no hay evidencia. Sube el DDL de tu base para empezar." de [04-contenido §5](../../docs/05-diseno/04-contenido-y-redaccion.md) cuando exista esa pantalla.
 - **Dirección de un proyecto ajeno o inexistente abierta a mano:** la misma pantalla de "no encontrado" en los dos casos (FR-015).
 - **Cambio de proyecto mientras el anterior aún carga:** los datos que llegan tarde del proyecto anterior se descartan y nunca se muestran en el nuevo (FR-009).
 - **Persona desactivada:** no puede usar sus proyectos (feature 002, FR-011); los proyectos y sus acciones auditadas se conservan, porque una persona con proyectos no se borra.
@@ -155,7 +155,7 @@ La persona cambia el nombre o la descripción de un proyecto y archiva los que y
 **Aislamiento y protección**
 
 - **FR-014** [ROS-84]: Cada persona DEBE ver y modificar **solo sus propios proyectos** y todo lo que contienen (fuentes, tablas, columnas, interpretaciones, evidencia, conflictos, acciones). Esto aplica a toda operación del producto, también a las que añadan las features siguientes (RN-24).
-- **FR-015** [ROS-84]: Pedir o intentar modificar un proyecto o un recurso de otra persona DEBE producir **exactamente la misma respuesta** que un recurso inexistente ("no encontrado"), sin revelar que existe.
+- **FR-015** [ROS-84]: Pedir o intentar modificar un proyecto o un recurso de otra persona DEBE producir **el mismo código y el mismo cuerpo** de respuesta que un recurso inexistente o con un identificador inválido ("no encontrado"), sin revelar que existe. El tiempo de respuesta no forma parte de este requisito.
 - **FR-016** [ROS-84]: Los identificadores de proyectos y recursos que aparecen en las direcciones del producto NO DEBEN ser predecibles: ni secuenciales ni derivables de otro identificador (RNF-04).
 - **FR-017** [ROS-84]: Todo intento de acceso denegado por pertenencia DEBE registrarse con la persona, la ruta y el identificador del recurso, sin correos, nombres, tokens ni contenido del proyecto ([07-seguridad §4](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md)).
 - **FR-018** [ROS-84]: DEBE existir una comprobación automática de acceso cruzado entre dos personas que cubra **cada operación** del producto sobre datos de proyectos, y una operación nueva sin esa comprobación DEBE hacer fallar la verificación (RNF-03).
@@ -169,7 +169,7 @@ La persona cambia el nombre o la descripción de un proyecto y archiva los que y
 - **FR-023** [ROS-81]: Toda acción humana sobre una interpretación (confirmar, editar, rechazar) DEBE quedar registrada de forma **inmutable** con autor, fecha, estado anterior y estado posterior; ese registro no se modifica ni se borra (Constitución IV). Las acciones en sí son de la feature de revisión; esta feature garantiza su guardado.
 - **FR-024** [ROS-81]: Toda operación que cambie varias cosas a la vez (por ejemplo, una confirmación con propagación) DEBE guardarse completa o no guardarse: nunca deja cambios parciales.
 - **FR-025** [ROS-81]: La evidencia guardada NO DEBE editarse: si cambia, se borra y se vuelve a generar. Cada evidencia guarda su cita (Constitución III, RN-10).
-- **FR-026** [ROS-81]: El modelo guardado DEBE soportar las cinco pantallas del MVP (Panorama, Revisión, Catálogo, Fuentes y Proyectos) según el [diccionario de datos](../../docs/04-datos/02-diccionario-de-datos.md), sin cambios estructurales previsibles para las features 004 a 008.
+- **FR-026** [ROS-81]: El modelo guardado DEBE implementar el [diccionario de datos](../../docs/04-datos/02-diccionario-de-datos.md) completo del MVP (tablas, columnas, tipos, nulabilidad, restricciones e índices) sin desviaciones, de modo que soporte las cinco pantallas del MVP (Panorama, Revisión, Catálogo, Fuentes y Proyectos).
 - **FR-027** [ROS-81]: El sistema DEBE poder sembrar, en un proyecto de ejemplo, el caso de referencia (MOV0010, CTANRO, IMPTE…) de [03-datos-de-referencia](../../docs/04-datos/03-datos-de-referencia.md), solo con datos sintéticos (Constitución V), para desarrollo, pruebas y demostraciones. Es una herramienta del equipo (semilla de ROS-176), no una función de la interfaz: las personas usuarias no ven una opción de "proyecto de ejemplo".
 - **FR-028** [ROS-81]: El almacenamiento DEBE poder construirse desde cero de forma reproducible, con los cambios de estructura versionados (RNF-20).
 
@@ -179,7 +179,7 @@ La persona cambia el nombre o la descripción de un proyecto y archiva los que y
 
 ### Key Entities *(include if feature involves data)*
 
-- **Proyecto**: el espacio de trabajo de una base de datos que se quiere descifrar. Tiene nombre, descripción (puede estar vacía), dialecto (no cambia), propietaria única, fechas de creación y modificación, y estado activo o archivado. Reserva un campo de organización que en el MVP siempre está vacío.
+- **Proyecto**: el espacio de trabajo de una base de datos que se quiere descifrar. Tiene nombre, descripción (puede estar vacía), dialecto (no cambia), propietaria única, fechas de creación y de última actividad (FR-005), y estado activo o archivado. Reserva un campo de organización que en el MVP siempre está vacío.
 - **Fuente**: un archivo cargado en el proyecto (DDL o muestra), con tipo, estado de procesamiento y resumen. La crea la feature 004; aquí solo se guarda.
 - **Tabla y Columna del catálogo**: la estructura de la base del cliente tal como la declara el DDL, con tipos, nulabilidad, llaves y la marca de dato personal.
 - **Interpretación de una columna**: lo que Rosetta cree que significa la columna (nombre de negocio, descripción, tipo semántico, referencia), con su nivel de confianza (los cinco niveles), su puntaje y su desglose, y quién y cuándo la confirmó.
@@ -194,8 +194,8 @@ La persona cambia el nombre o la descripción de un proyecto y archiva los que y
 ### Measurable Outcomes
 
 - **SC-001**: La comprobación automática de acceso cruzado cubre el 100 % de las operaciones sobre datos de proyectos y el 100 % de los intentos de una persona sobre recursos de otra obtienen la respuesta de "no encontrado", con cero datos revelados (RNF-03).
-- **SC-002**: Al cerrar y reabrir un proyecto sembrado con el caso de ejemplo, también desde otro navegador, el estado completo coincide en el 100 % de las comparaciones (RNF-16).
-- **SC-003**: Una persona nueva va del primer acceso a su primer proyecto creado con un solo formulario, sin pasos intermedios ajenos (recorrido E2E-01 de [01-estrategia-de-pruebas](../../docs/06-calidad/01-estrategia-de-pruebas.md); cierra el SC-001 de la feature 002).
+- **SC-002**: Al cerrar y reabrir un proyecto sembrado con el caso de ejemplo, también desde otro navegador, coinciden en el 100 % de las comparaciones el estado al abrir (cobertura, fuentes, número de tablas y cabeza de la cola) y el catálogo guardado (tablas, columnas e interpretaciones con su nivel) (RNF-16).
+- **SC-003**: Una persona nueva va del primer acceso a su primer proyecto creado con un solo formulario, sin pasos intermedios ajenos (recorrido E2E-01 de [01-estrategia-de-pruebas](../../docs/06-calidad/01-estrategia-de-pruebas.md), que ejecuta la tarea T087 de la feature 002 con el formulario de esta feature y cierra el SC-001 de la 002).
 - **SC-004**: En el recorrido de cambio entre dos proyectos con datos distintos, cero elementos del proyecto anterior aparecen en el nuevo en ningún momento.
 - **SC-005**: Los registros y las direcciones capturados durante un recorrido completo (crear, abrir, renombrar, archivar, cambiar de proyecto, accesos denegados) contienen cero correos, nombres, credenciales, valores de muestras o contenidos de esquemas.
 - **SC-006**: Una operación de varias escrituras interrumpida a mitad deja cero cambios parciales en el 100 % de los casos probados.

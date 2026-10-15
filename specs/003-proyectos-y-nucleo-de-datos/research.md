@@ -55,14 +55,15 @@ La arquitectura ya está decidida en [03-backend](../../docs/03-arquitectura/03-
 
 ## R-08 · Archivar, desarchivar y solo lectura
 
+- **Lista:** `GET /api/projects` usa la paginación estándar de 05-api §1 (`{count, next, previous, results}`).
 - **Decisión:** `PATCH /api/projects/{id}` con `{"archived": true}` archiva (`archived_at = now`) y con `{"archived": false, "name"?}` desarchiva; si el nombre choca con un activo, `400 project_name_taken` y la interfaz pide uno nuevo y reenvía con `name`. Mientras está archivado, toda mutación del proyecto o de su contenido responde `409 project_archived`; la guarda `projects.services.ensure_project_writable(project)` la usan todos los services de escritura, también los de las features futuras. La lectura sigue permitida (FR-013).
 - **Rationale:** aclaración de FR-013; una sola guarda evita olvidar el caso en 004–006.
 - **Proyecto abierto que se archiva** (FR-010): la interfaz navega a `/projects` tras el 200.
 
 ## R-09 · Estado del proyecto al abrir
 
-- **Decisión:** `GET /api/projects/{id}/state` devuelve en una sola respuesta: el proyecto, la cobertura por nivel (los cinco niveles y el total, DP-020), la lista de fuentes con estado, el número de tablas y la **cabeza de la cola** (las primeras 50 columnas no confirmadas por impacto descendente y luego por identificador `TABLA.COLUMNA`). El catálogo completo no viaja en el estado: lo sirven los endpoints de catálogo paginados de su feature (ROS-162). Sin caché de servidor; el cliente guarda el estado por proyecto con TanStack Query (desviación D6).
-- **Rationale:** ROS-177 ("incluir catálogo, niveles, cola y fuentes; paginar o diferir lo pesado") y FR-022. El orden total (impacto, luego identificador) hace el resultado determinista y comparable en SC-002. Sin metas de tiempo (DP-018) no hay necesidad medida de caché de servidor, y una caché invalidada mal rompería RN-18.
+- **Decisión:** `GET /api/projects/{id}/state` devuelve en una sola respuesta: el proyecto, la cobertura por nivel con la forma de [05-api §3.7](../../docs/03-arquitectura/05-api.md) sin el desglose por tabla (`total_columns` y `by_level`, DP-020), la lista de fuentes con estado, el número de tablas y la **cabeza de la cola**: las primeras 50 filas de la cola de 05-api §3.6, con su orden (impacto desc, conflicto abierto desc, `TABLA.COLUMNA` asc). El catálogo completo no viaja en el estado: lo sirven los endpoints de catálogo paginados de su feature (ROS-162). Sin caché de servidor; el cliente guarda el estado por proyecto con TanStack Query (desviación D6).
+- **Rationale:** ROS-177 ("incluir catálogo, niveles, cola y fuentes; paginar o diferir lo pesado") y FR-022. El orden total de §3.6 hace el resultado determinista y comparable en SC-002; reutilizarlo evita dos órdenes distintos para la misma cola. SC-002 compara además el catálogo guardado en la base, que el estado no transporta. Sin metas de tiempo (DP-018) no hay necesidad medida de caché de servidor, y una caché invalidada mal rompería RN-18.
 - **Consultas:** número fijo (proyecto, agregado por nivel, fuentes, conteo de tablas, cabeza de la cola), comprobado con `django_assert_max_num_queries`.
 
 ## R-10 · Atomicidad
