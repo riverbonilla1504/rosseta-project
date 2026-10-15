@@ -7,6 +7,17 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.12.0] — 2026-10-14 · CD-013
+
+### Cambiado
+- **Proyectos** (spec 003, aclaraciones del 2026-10-14): `projects_project.last_activity_at` ordena la lista; el nombre es único entre los proyectos activos de la persona sin distinguir mayúsculas ([diccionario](../04-datos/02-diccionario-de-datos.md)); un proyecto archivado es de solo lectura y se puede desarchivar; al crear desde la lista se entra en el proyecto ([03-pantallas §7](../05-diseno/03-pantallas.md)).
+- [05-api](../03-arquitectura/05-api.md): §2 y §3.10 con la lista paginada, `?archived=true`, `PATCH` para desarchivar, la forma del resumen de proyecto y la del estado al abrir; §4 con `project_name_taken` y `project_archived` y `not_found` precisado.
+- [04-frontend §1](../03-arquitectura/04-frontend.md): `p/[projectId]/layout.tsx` y `not-found.tsx`.
+- [03-tareas-mvp](../02-requisitos/03-tareas-mvp.md): ROS-173 (desarchivar), ROS-174 (filtro de archivados y solo lectura), ROS-177 (caché del estado en el cliente).
+
+### Añadido
+- [DP-028](02-decisiones-pendientes.md#dp-028): textos de la pantalla de proyectos y del formulario (propuestas); "Aún no tienes proyectos." en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+
 ## [1.11.0] — 2026-10-14 · CD-012
 
 ### Cambiado
