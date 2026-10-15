@@ -21,6 +21,8 @@ frontend/
 │   │   │   ├── onboarding/page.tsx
 │   │   │   ├── projects/page.tsx         # listado y creación de proyectos
 │   │   │   └── p/[projectId]/
+│   │   │       ├── layout.tsx            # pestañas (DP-017), insignia, selector de proyecto, aviso de solo lectura
+│   │   │       ├── not-found.tsx         # proyecto inexistente o ajeno (mismo aspecto en ambos casos)
 │   │   │       ├── page.tsx              # Panorama
 │   │   │       ├── review/page.tsx       # Revisión (?column=<uuid>)
 │   │   │       ├── catalog/page.tsx      # Catálogo: lista de tablas

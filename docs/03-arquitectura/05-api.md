@@ -26,11 +26,11 @@
 | GET | `/auth/profile` | **SDK de Auth0.** Perfil de la sesión (para la UI) | ROS-89 / 183 |
 | GET | `/api/me` | Usuario actual y estado de onboarding | ROS-89, 91 / 185 |
 | POST | `/api/me/onboarding/complete` | Marca el onboarding como completado | ROS-91 / 185 |
-| GET | `/api/projects` | Lista proyectos del usuario (`?archived=false`) | ROS-78 / 173 |
+| GET | `/api/projects` | Lista paginada de los proyectos del usuario: activos por defecto, `?archived=true` solo los archivados; orden por última actividad (§3.10) | ROS-78 / 173 |
 | POST | `/api/projects` | Crea proyecto (nombre y dialecto obligatorio: `tsql` \| `oracle` \| `postgres`, [DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)) | ROS-78 / 173 |
 | GET | `/api/projects/{id}` | Detalle | ROS-78 / 173 |
-| PATCH | `/api/projects/{id}` | Renombra, cambia descripción o archiva (`archived: true`) | ROS-78 / 173 |
-| GET | `/api/projects/{id}/state` | Estado completo resumido al abrir | ROS-81 / 177 |
+| PATCH | `/api/projects/{id}` | Renombra, cambia descripción, archiva (`archived: true`) o desarchiva (`archived: false`, con `name` si el nombre choca); el dialecto no se cambia; sobre un archivado solo admite desarchivar (§3.10) | ROS-78 / 173 |
+| GET | `/api/projects/{id}/state` | Estado resumido al abrir: proyecto, cobertura, fuentes, número de tablas y cabeza de la cola (§3.10) | ROS-81 / 177 |
 | GET | `/api/projects/{id}/sources` | Fuentes con estado y cobertura | ROS-22 / 128 |
 | POST | `/api/projects/{id}/sources/schema` | Sube DDL (multipart) | ROS-16 / 121 |
 | POST | `/api/projects/{id}/sources/sample` | Sube muestra CSV de una tabla (multipart) | ROS-17 / 124 |
@@ -229,11 +229,47 @@ Toda ruta `/api/*` (salvo `/api/health` y `/api/schema/`) exige `Authorization: 
 - Ambas pueden responder `401 session_expired` o `403` con `account_disabled`, `account_exists_other_provider`, `email_missing` o `email_not_verified` (ver §4).
 - Contrato detallado en `specs/002-autenticacion-oauth/contracts/accounts-api.yaml`.
 
+### 3.10 Proyectos y estado al abrir (CD-013)
+
+Resumen de proyecto (respuesta de `POST`, `GET` detalle, `PATCH` y elementos de la lista):
+
+```json
+{
+  "id": "p1…", "name": "CORE_PRD", "description": "", "source_dialect": "tsql",
+  "archived": false, "archived_at": null, "created_at": "2026-10-05T10:00:00Z",
+  "last_activity_at": "2026-10-05T10:14:00Z",
+  "table_count": 918, "column_count": 18442, "confirmed_ratio": 0.2234
+}
+```
+- `POST /api/projects` recibe `{name, source_dialect}`: `name` se recorta y tiene de 1 a 120 caracteres; `source_dialect` es `tsql` \| `oracle` \| `postgres` (DP-019). El nombre no se repite entre los proyectos activos de la persona sin distinguir mayúsculas (`400 project_name_taken`).
+- `confirmed_ratio` = columnas `CONFIRMED` (directas + propagadas, DP-020) / `column_count`; `null` si no hay columnas.
+- `PATCH` admite `name`, `description` y `archived`; `source_dialect` se rechaza con `400`. Sobre un proyecto archivado solo admite `{"archived": false}` (con `name` opcional); cualquier otro cambio, del proyecto o de su contenido, responde `409 project_archived`. Al desarchivar con un nombre que choca con un activo responde `400 project_name_taken` y no cambia nada.
+- La lista usa la paginación de §1 y se ordena por `last_activity_at` desc y luego `id`.
+
+`GET /api/projects/{id}/state`:
+
+```json
+{
+  "project": { "id": "p1…", "name": "CORE_PRD", "…": "resumen de proyecto" },
+  "coverage": { "total_columns": 18442,
+                "by_level": { "CONFIRMED": 4120, "HIGH_UNVALIDATED": 0, "INFERRED": 7980, "HYPOTHESIS": 2913, "UNKNOWN": 3429 } },
+  "sources": [{ "id": "s1…", "kind": "SCHEMA_DDL", "status": "READY", "original_filename": "core_prd.sql", "created_at": "2026-10-05T10:00:00Z" }],
+  "table_count": 918,
+  "queue_head": [{ "column_id": "c0…", "identifier": "MOV0010.PGCOD", "level": "HIGH_UNVALIDATED", "impact": 380, "has_open_conflict": false }]
+}
+```
+- `coverage` tiene la forma de §3.7 sin el desglose por tabla; las cinco claves de nivel siempre presentes.
+- `queue_head` son las primeras 50 filas de la cola de §3.6, con su mismo orden; el catálogo completo se pide paginado (§2). Dos lecturas sin cambios intermedios devuelven el mismo documento (RNF-16).
+- Sin caché de servidor: el cliente guarda el estado por proyecto (ROS-177).
+- Contrato detallado en `specs/003-proyectos-y-nucleo-de-datos/contracts/projects-api.yaml`.
+
 ## 4. Códigos de error de dominio
 
 | `code` | HTTP | Significado |
 |---|---|---|
-| `not_found` | 404 | Recurso inexistente o ajeno |
+| `not_found` | 404 | Recurso inexistente, ajeno o con un identificador que no es UUID: el mismo cuerpo en todos los casos. Si es ajeno se registra el intento sin datos personales ([07-seguridad §4](07-seguridad-y-autenticacion.md)) |
+| `project_name_taken` | 400 | Ya hay un proyecto activo de la persona con ese nombre (sin distinguir mayúsculas), al crear, renombrar o desarchivar (CD-013) |
+| `project_archived` | 409 | El proyecto está archivado y es de solo lectura; solo admite desarchivar (CD-013) |
 | `validation_error` | 400 | Entrada inválida |
 | `file_too_large` | 413 | Archivo supera el límite |
 | `unsupported_file` | 400 | Extensión o formato no admitido |

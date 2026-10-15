@@ -78,6 +78,8 @@
 | Cuenta desactivada | "Tu cuenta está desactivada." Sin canal de contacto en el MVP (DP-025, DP-024) |
 | Forma genérica de {proveedor} (cuando no se conoce) | "tu proveedor de acceso" (p. ej. "Cancelaste el inicio de sesión con tu proveedor de acceso.") (DP-025) |
 | Control de cierre de sesión | "Cerrar sesión" (DP-025) |
+| Sin proyectos (lista de proyectos) | "Aún no tienes proyectos." (ROS-174, EC-022) |
+| Formulario de proyecto, lista, archivar, solo lectura, "no encontrado" | `[PENDIENTE: DP-028]` (propuestas en la entrada) |
 | Dialectos (selector del formulario de proyecto) | "SQL Server", "Oracle", "PostgreSQL"; en la insignia del proyecto se muestra el valor interno `tsql`, `oracle` o `postgres` (DP-019) |
 | Insignia de solo lectura | "solo lectura" (title: "Rosetta nunca escribe en tu base de datos.") |
 | Modo de redacción (MVP) | "redacción por reglas" (title: "Descripciones generadas con plantillas deterministas, sin LLM.") |

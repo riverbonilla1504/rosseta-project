@@ -105,7 +105,7 @@ Backend · **8 h** · Sprint 1
 - [ ] POST /api/projects — crear proyecto
 - [ ] GET /api/projects — listar los del usuario
 - [ ] GET /api/projects/:id — detalle
-- [ ] PATCH /api/projects/:id — renombrar y archivar
+- [ ] PATCH /api/projects/:id — renombrar, archivar y desarchivar (un archivado es de solo lectura; CD-013)
 - [ ] Verificar propiedad del proyecto en cada endpoint
 - [ ] Pruebas de API incluyendo acceso de otro usuario
 
@@ -120,6 +120,7 @@ Frontend · **8 h** · Sprint 1
 - [ ] Selector de proyecto activo en la barra superior
 - [ ] Limpiar y recargar el estado al cambiar de proyecto
 - [ ] Estado vacío "aún no tienes proyectos"
+- [ ] Filtro de archivados, apertura en solo lectura y desarchivar (CD-013)
 
 **Listo cuando:** cambiar de proyecto nunca mezcla datos de otro.
 
@@ -161,7 +162,7 @@ Backend · **6 h** · Sprint 1
 - [ ] Endpoint GET /api/projects/:id/state
 - [ ] Incluir catálogo, niveles, cola y fuentes
 - [ ] Paginar o diferir lo que sea pesado
-- [ ] Caché ligera del estado por proyecto
+- [ ] Caché ligera del estado por proyecto en el cliente, sin caché de servidor (CD-013)
 - [ ] Pruebas de consistencia tras confirmar y recargar
 
 **Listo cuando:** cerrar y reabrir el proyecto devuelve exactamente el mismo estado.
