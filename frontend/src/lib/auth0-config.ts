@@ -6,7 +6,7 @@ import type { Auth0ClientOptions } from "@auth0/nextjs-auth0/types";
  */
 type Env = Readonly<Record<string, string | undefined>>;
 
-// PROVISIONAL (DP-022): 14 días sin uso y 30 días de máximo, alineados con el refresh token del tenant.
+// 14 días sin uso y 30 días de máximo (DP-022), alineados con el refresh token del tenant.
 const INACTIVITY_SECONDS = 14 * 24 * 60 * 60;
 const ABSOLUTE_SECONDS = 30 * 24 * 60 * 60;
 // Una solicitud de acceso iniciada vale 10 minutos (por defecto el SDK usa 1 h).
