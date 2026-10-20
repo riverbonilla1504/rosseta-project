@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
+import { ArchiveControls } from "@/features/projects/ArchiveControls";
 import { ProjectBadge } from "@/features/projects/ProjectBadge";
 import styles from "@/features/projects/ProjectBar.module.css";
 import { getProjectOnServer } from "@/features/projects/server";
@@ -12,7 +13,9 @@ import { ProjectTabs } from "@/features/projects/ProjectTabs";
  * "nombre · dialecto" y selector de proyecto. El key por projectId vuelve a montar todo lo que
  * cuelga del proyecto al cambiar de proyecto, para que ningún estado local pase al nuevo.
  * El 404 de la API (proyecto ajeno, inexistente o identificador inválido) lleva a la pantalla
- * de "no encontrado" de p/not-found.tsx, sin la barra del proyecto (FR-015, T042).
+ * de "no encontrado" de p/not-found.tsx, sin la barra del proyecto (FR-015, T042). Un proyecto
+ * archivado se abre en solo lectura: aviso y "Desarchivar", sin selector, porque un archivado no
+ * aparece en él (FR-012, FR-013, T060).
  */
 export default async function ProjectLayout({
   children,
@@ -28,6 +31,7 @@ export default async function ProjectLayout({
     redirect(`/login?returnTo=${encodeURIComponent(pathname)}`);
   }
   if (result.status === "not_found") notFound();
+  const archived = result.status === "ok" && result.project.archived;
 
   return (
     <div key={projectId}>
@@ -35,9 +39,11 @@ export default async function ProjectLayout({
         <ProjectTabs projectId={projectId} />
         <div className={styles.meta}>
           <ProjectBadge projectId={projectId} />
-          <ProjectSwitcher projectId={projectId} />
+          {!archived && <ProjectSwitcher projectId={projectId} />}
+          {!archived && <ArchiveControls projectId={projectId} />}
         </div>
       </div>
+      {archived && <ArchiveControls projectId={projectId} />}
       {children}
     </div>
   );

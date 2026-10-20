@@ -24,6 +24,7 @@ vi.mock("@/lib/auth0", () => ({ auth0: { getAccessToken } }));
 vi.mock("@/features/projects/ProjectTabs", () => ({ ProjectTabs: () => <nav>pestañas</nav> }));
 vi.mock("@/features/projects/ProjectBadge", () => ({ ProjectBadge: () => <span>insignia</span> }));
 vi.mock("@/features/projects/ProjectSwitcher", () => ({ ProjectSwitcher: () => null }));
+vi.mock("@/features/projects/ArchiveControls", () => ({ ArchiveControls: () => null }));
 
 const { getProjectOnServer } = await import("@/features/projects/server");
 const { default: ProjectLayout } = await import("@/app/(app)/p/[projectId]/layout");

@@ -14,8 +14,7 @@ import { createProject, type Dialect, type ProjectSummary } from "./api";
 import { DIALECT_LABELS, DIALECTS, projectsCopy } from "./copy";
 import styles from "./ProjectForm.module.css";
 import { projectKeys } from "./queryKeys";
-
-const NAME_MAX_LENGTH = 120;
+import { NAME_MAX_LENGTH, nameError } from "./validation";
 
 type Field = "name" | "source_dialect";
 type Errors = Partial<Record<Field, string>>;
@@ -24,13 +23,6 @@ type Props = {
   onCreated: (project: ProjectSummary) => void | Promise<void>;
   submitLabel?: string;
 };
-
-function nameError(name: string): string | undefined {
-  const trimmed = name.trim();
-  if (!trimmed) return projectsCopy.nameRequired;
-  if (trimmed.length > NAME_MAX_LENGTH) return projectsCopy.nameTooLong;
-  return undefined;
-}
 
 function localErrors(name: string, dialect: Dialect | null): Errors {
   const errors: Errors = {};

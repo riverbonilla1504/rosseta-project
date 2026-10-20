@@ -17,6 +17,20 @@ export const TAB_LABELS = {
   review: "Revisión",
   catalog: "Catálogo",
   sources: "Fuentes",
+  showArchived: "Ver archivados",
+  showActive: "Ver activos",
+  rename: "Renombrar",
+  renameTitle: "Renombrar proyecto",
+  save: "Guardar",
+  cancel: "Cancelar",
+  archive: "Archivar",
+  archiveTitle: (name: string) => `Archivar ${name}`,
+  archiveBody:
+    "El proyecto deja de aparecer en tu lista. Sus datos se conservan y puedes desarchivarlo cuando quieras.",
+  archivedNotice: "Proyecto archivado: solo lectura. Desarchívalo para hacer cambios.",
+  unarchive: "Desarchivar",
+  unarchiveNameTaken: (name: string) =>
+    `Ya tienes un proyecto activo llamado ${name}. Elige otro nombre para desarchivarlo.`,
   // Temporal, hasta la feature de cada pestaña (proyecto con fuentes).
   tabUnavailable: (tab: string) => `${tab} aún no está disponible.`,
 } as const;
@@ -53,6 +67,20 @@ export const projectsCopy = {
   switchProject: "Cambiar de proyecto",
   notFound: "Este proyecto no existe o no tienes acceso.",
   goToProjects: "Ir a tus proyectos",
+  showArchived: "Ver archivados",
+  showActive: "Ver activos",
+  rename: "Renombrar",
+  renameTitle: "Renombrar proyecto",
+  save: "Guardar",
+  cancel: "Cancelar",
+  archive: "Archivar",
+  archiveTitle: (name: string) => `Archivar ${name}`,
+  archiveBody:
+    "El proyecto deja de aparecer en tu lista. Sus datos se conservan y puedes desarchivarlo cuando quieras.",
+  archivedNotice: "Proyecto archivado: solo lectura. Desarchívalo para hacer cambios.",
+  unarchive: "Desarchivar",
+  unarchiveNameTaken: (name: string) =>
+    `Ya tienes un proyecto activo llamado ${name}. Elige otro nombre para desarchivarlo.`,
   // Temporal, hasta la feature de cada pestaña (proyecto con fuentes).
   tabUnavailable: (tab: string) => `${tab} aún no está disponible.`,
 } as const;

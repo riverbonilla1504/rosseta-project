@@ -3,11 +3,13 @@
 /**
  * Lista de proyectos de /projects (feature 003, ROS-174): FR-005 (proyectos activos con sus
  * cifras, en el orden de la API: última actividad, la más reciente primero), FR-006 (estado
- * vacío) y FR-001 (crear con el formulario compartido entra en el proyecto nuevo).
+ * vacío), FR-001 (crear con el formulario compartido entra en el proyecto nuevo) y FR-012 (filtro
+ * de archivados; un archivado se abre en solo lectura).
  */
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { listProjects, type ProjectSummary } from "./api";
 import { DIALECT_LABELS, projectsCopy } from "./copy";
@@ -57,24 +59,35 @@ function ProjectsTable({ projects }: { projects: ProjectSummary[] }) {
 
 export function ProjectList() {
   const router = useRouter();
+  const [archived, setArchived] = useState(false);
   const projects = useQuery({
-    queryKey: projectKeys.list(false),
-    queryFn: ({ signal }) => listProjects(false, signal),
+    queryKey: projectKeys.list(archived),
+    queryFn: ({ signal }) => listProjects(archived, signal),
   });
 
   return (
     <div className={styles.list}>
       <section aria-busy={projects.isPending}>
+        <button
+          className={styles.filter}
+          type="button"
+          aria-pressed={archived}
+          onClick={() => setArchived((value) => !value)}
+        >
+          {archived ? projectsCopy.showActive : projectsCopy.showArchived}
+        </button>
         {projects.isError && (
           <p className={styles.notice} role="alert">
             {projectsCopy.genericError}
           </p>
         )}
         {projects.data &&
-          (projects.data.results.length === 0 ? (
-            <p className={styles.notice}>{projectsCopy.empty}</p>
-          ) : (
+          (projects.data.results.length > 0 ? (
             <ProjectsTable projects={projects.data.results} />
+          ) : (
+            // Sin proyectos activos (también si todos están archivados): el estado vacío. El
+            // filtro de archivados vacío no tiene texto propio en 04-contenido §5.
+            !archived && <p className={styles.notice}>{projectsCopy.empty}</p>
           ))}
       </section>
       <section className={styles.create}>

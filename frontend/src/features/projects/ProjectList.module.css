@@ -49,3 +49,16 @@
 .create {
   max-width: calc(var(--nx-space-8) * 8);
 }
+
+.filter {
+  align-self: flex-start;
+  margin-bottom: var(--nx-space-4);
+  padding: var(--nx-space-2) var(--nx-space-4);
+  border: 1px solid var(--nx-accent-outline);
+  border-radius: var(--nx-radius-md);
+  background: transparent;
+  color: var(--nx-text);
+  font: inherit;
+  font-size: var(--nx-text-caption);
+  cursor: pointer;
+}

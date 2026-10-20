@@ -69,6 +69,17 @@ export function createProject(input: ProjectInput): Promise<ProjectSummary> {
   });
 }
 
+/** Cambios de PATCH /api/projects/{id}: el dialecto no se puede cambiar (FR-010). */
+export type ProjectChanges = { name?: string; description?: string; archived?: boolean };
+
+export function updateProject(projectId: string, changes: ProjectChanges): Promise<ProjectSummary> {
+  return apiFetch<ProjectSummary>(`/api/projects/${encodeURIComponent(projectId)}`, {
+    method: "PATCH",
+    headers: JSON_HEADERS,
+    body: JSON.stringify(changes),
+  });
+}
+
 export function getProject(projectId: string, signal?: AbortSignal): Promise<ProjectSummary> {
   return apiFetch<ProjectSummary>(`/api/projects/${encodeURIComponent(projectId)}`, { signal });
 }
