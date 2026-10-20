@@ -63,8 +63,8 @@ description: "Lista de tareas de la feature 003-proyectos-y-nucleo-de-datos"
 - [X] T018 [P] [ROS-178] **Prueba roja** `backend/tests/security/test_ownership.py` (tras CD-013) para `get_owned_or_404()`: recurso ajeno, inexistente e identificador que no es UUID → `404` con cuerpo **idéntico** `{"error":{"code":"not_found",…}}`; solo el ajeno emite `access_denied` por `rosetta.security` con exactamente `event`, `reason`, `user_id`, `path` y `resource_id`. Marcadores: ROS-84 · FR-015, FR-017.
 - [X] T019 [ROS-178] Implementar `backend/apps/core/ownership.py` y los códigos `not_found`, `project_archived` y `project_name_taken` en `backend/apps/core/exceptions.py` (y sus mensajes en `messages.py`). T018 pasa.
 - [X] T020 [P] [ROS-176] Factorías en `backend/tests/factories/` (`projects.py`, `catalog.py`, `sources.py`, `evidence.py`, `review.py`) con datos sintéticos.
-- [ ] T021 [P] [ROS-174] **Prueba roja** `frontend/tests/unit/query-provider.test.tsx`: el área privada ofrece un `QueryClient` único por pestaña y sin reintentos automáticos de mutaciones. Marcadores: ROS-78 · FR-009.
-- [ ] T022 [ROS-174] Implementar `frontend/src/lib/query-client.ts` y el `QueryClientProvider` en `frontend/src/app/(app)/layout.tsx`, y crear `frontend/src/features/projects/api.ts`, `queryKeys.ts` y `copy.ts` (etiquetas de dialecto de DP-019, "aún no tienes proyectos", "Todavía no hay evidencia…", el resto `PROVISIONAL (DP-028)`). T021 pasa.
+- [X] T021 [P] [ROS-174] **Prueba roja** `frontend/tests/unit/query-provider.test.tsx`: el área privada ofrece un `QueryClient` único por pestaña y sin reintentos automáticos de mutaciones. Marcadores: ROS-78 · FR-009.
+- [X] T022 [ROS-174] Implementar `frontend/src/lib/query-client.ts` y el `QueryClientProvider` en `frontend/src/app/(app)/layout.tsx`, y crear `frontend/src/features/projects/api.ts`, `queryKeys.ts` y `copy.ts` (etiquetas de dialecto de DP-019, "aún no tienes proyectos", "Todavía no hay evidencia…", el resto `PROVISIONAL (DP-028)`). T021 pasa.
 
 **Checkpoint**: todo el núcleo de datos existe, aislado por propietario y con migraciones reproducibles.
 
