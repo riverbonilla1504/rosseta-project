@@ -166,11 +166,12 @@ description: "Lista de tareas de la feature 003-proyectos-y-nucleo-de-datos"
 
 ## Fase 8: Cierre y aspectos transversales
 
-- [ ] T061 [P] [ROS-174] **Prueba E2E** `frontend/tests/e2e/projects-a11y.spec.ts`: `/projects`, formulario, selector, pestañas y "no encontrado" sin violaciones serias o críticas de axe y recorribles solo con teclado (SC-008). Marcadores: ROS-78 · FR-029.
-- [ ] T062 [P] [ROS-173] Ampliar `backend/tests/api/test_openapi_contract.py` para comparar el esquema generado con [contracts/projects-api.yaml](contracts/projects-api.yaml) (resolviendo `HealthView` contra [EC-025](../../docs/07-registro/01-errores-conocidos.md#ec-025) en esta tarea).
-- [ ] T063 [ROS-175] Comprobar que los modelos coinciden con el diccionario de datos columna a columna (FR-026) y registrar la comparación en `specs/003-proyectos-y-nucleo-de-datos/evidence/model-vs-dictionary.md`.
-- [ ] T064 [ROS-178] Trazabilidad: cada FR-001…FR-029 tiene al menos una prueba con su marcador `003:FR-###` (o evidencia manual enlazada); tabla en `evidence/fr-coverage.md`.
+- [X] T061 [P] [ROS-174] **Prueba E2E** `frontend/tests/e2e/projects-a11y.spec.ts`: `/projects`, formulario, selector, pestañas y "no encontrado" sin violaciones serias o críticas de axe y recorribles solo con teclado (SC-008). Marcadores: ROS-78 · FR-029.
+- [X] T062 [P] [ROS-173] Ampliar `backend/tests/api/test_openapi_contract.py` para comparar el esquema generado con [contracts/projects-api.yaml](contracts/projects-api.yaml) (resolviendo `HealthView` contra [EC-025](../../docs/07-registro/01-errores-conocidos.md#ec-025) en esta tarea).
+- [X] T063 [ROS-175] Comprobar que los modelos coinciden con el diccionario de datos columna a columna (FR-026) y registrar la comparación en `specs/003-proyectos-y-nucleo-de-datos/evidence/model-vs-dictionary.md`.
+- [X] T064 [ROS-178] Trazabilidad: cada FR-001…FR-029 tiene al menos una prueba con su marcador `003:FR-###` (o evidencia manual enlazada); tabla en `evidence/fr-coverage.md`.
 - [ ] T065 [ROS-178] Ejecutar la suite completa con la salida real de cada comando: `ruff`, `mypy`, `pytest --cov` (≥ 85 %), `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage` (≥ 80 %), `playwright test`; y los escenarios Q1–Q12 de [quickstart.md](quickstart.md) en `evidence/quickstart-run.md`.
+  - *2026-10-19: hecho salvo dos puntos: ruff tiene 1 error previo (I001 en `tests/security/test_logging_redaction.py`) y la E2E completa da 3 fallos de la 002 (`security.spec.ts:49`, `smoke-idp.spec.ts:13` y `:45`) sin investigar. Detalle en `evidence/quickstart-run.md`.*
 - [ ] T066 [ROS-178] Proponer el **CD de cierre** con el OK de la persona: matriz de trazabilidad (`docs/06-calidad/03-matriz-de-trazabilidad.md`), registro de sincronización y changelog.
 - [ ] T067 [ROS-178] Ejecutar `/speckit-converge` hasta **Converged** y lanzar `/verificar 003-proyectos-y-nucleo-de-datos specs/003-proyectos-y-nucleo-de-datos` (CD-009).
 
