@@ -43,7 +43,7 @@
 | [EC-023](#ec-023) | `check-prerequisites.sh --template` exige `plan.md` antes de que exista | herramienta | S4 | Mitigado | — |
 | [EC-024](#ec-024) | `--nx-text-secondary` y `--nx-text-muted` no cumplen 4,5:1 sobre `--nx-surface` | diseño | S3 | Mitigado | ROS-168, RNF-24 |
 | [EC-025](#ec-025) | `HealthView` hace fallar la generación del esquema OpenAPI | herramienta | S4 | Abierto | RNF-34 |
-| [EC-026](#ec-026) | El proxy BFF reenvía el cuerpo de las mutaciones sin `content-length` y Django lo recibe vacío | código | S2 | Abierto | ROS-188 (arreglo en curso) |
+| [EC-026](#ec-026) | El proxy BFF reenvía el cuerpo de las mutaciones sin `content-length` y Django lo recibe vacío | código | S2 | Resuelto | — |
 
 ---
 
@@ -216,6 +216,7 @@
 - **Descripción:** `frontend/src/lib/api/proxy.ts` (ROS-188, spec 002) reenvía a Django el cuerpo de `POST`/`PATCH`/`PUT` como *stream* sin la cabecera `content-length`; Django lo recibe vacío y responde `400`. Las pruebas de la 002 no lo detectaron porque ninguna mutación de esa feature lleva cuerpo (`POST /api/me/onboarding/complete` no tiene).
 - **Impacto:** ninguna operación que envíe JSON desde el navegador funciona: crear un proyecto (spec 003, historia 1) falla de punta a punta aunque sus pruebas unitarias pasen; bloquea T032 y T036 de la 003 y el E2E-01 (T087 de la 002).
 - **Resolución propuesta:** reenviar `content-length` en las mutaciones, con prueba roja previa, en un commit propio `fix(auth): ROS-188` en la rama de la 003 y llevado a la rama 002 por cherry-pick (autorizado por la persona el 2026-10-19).
+- **Resolución (2026-10-19, CD-014):** prueba roja y `fix(auth): ROS-188` en la rama de la historia 2 de la 003 (`a1a94de`, `a6fdcf2`) y cherry-pick a `002-autenticacion-oauth` (`57020f0`, `04dd464`); `content-length` añadida a la lista cerrada del contrato `specs/002-autenticacion-oauth/contracts/bff-proxy.md`. En la 002: la prueba falla sin el arreglo y pasa con él (30/30), suite unitaria 160/160.
 
 ---
 
