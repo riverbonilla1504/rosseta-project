@@ -20,6 +20,8 @@ export const copy = {
   genericProvider: "tu proveedor de acceso",
   // 04-contenido §5 (DP-025)
   logout: "Cerrar sesión",
+  // 04-contenido §5 (DP-025)
+  welcome: (name: string) => `Hola, ${name}. Crea tu primer proyecto para empezar.`,
   // 04-contenido §5
   sessionExpired: "Tu sesión terminó. Vuelve a iniciar sesión para continuar.",
   retry: "Volver a intentar", // 03-pantallas §7
