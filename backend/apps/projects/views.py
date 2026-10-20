@@ -3,6 +3,7 @@
 GET /api/projects: FR-005 (paginación de 05-api §1, cifras sin consultas por proyecto).
 POST /api/projects: FR-001, FR-003 y FR-004. GET /api/projects/{id}: FR-001 y FR-015 (lo
 ajeno, lo inexistente y un identificador inválido responden el mismo not_found).
+GET /api/projects/{id}/state: FR-021 y FR-022 (ROS-177).
 """
 
 from typing import Any
@@ -19,10 +20,11 @@ from apps.core.ownership import get_owned_or_404
 from apps.core.pagination import StandardPagination
 
 from .models import Project
-from .selectors import list_projects, with_summary
+from .selectors import get_project_state, list_projects, with_summary
 from .serializers import (
     ProjectCreateSerializer,
     ProjectListQuerySerializer,
+    ProjectStateSerializer,
     ProjectSummarySerializer,
 )
 from .services import create_project
@@ -87,3 +89,19 @@ class ProjectDetailView(APIView):
             with_summary(Project.objects.for_user(request.user)), project_id, request
         )
         return Response(ProjectSummarySerializer(project).data)
+
+
+class ProjectStateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="getProjectState",
+        parameters=[PROJECT_ID],
+        responses=ProjectStateSerializer,
+        tags=["proyectos"],
+    )
+    def get(self, request: Request, project_id: str) -> Response:
+        project = get_owned_or_404(
+            with_summary(Project.objects.for_user(request.user)), project_id, request
+        )
+        return Response(ProjectStateSerializer(get_project_state(project)).data)

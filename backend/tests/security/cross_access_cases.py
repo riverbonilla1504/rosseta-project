@@ -53,4 +53,5 @@ def project_of(owner: Any) -> dict[str, str]:
 
 CROSS_ACCESS_CASES: list[CrossAccessCase] = [
     CrossAccessCase("GET", "/api/projects/{project_id}", project_of),
+    CrossAccessCase("GET", "/api/projects/{project_id}/state", project_of),
 ]

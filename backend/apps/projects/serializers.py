@@ -8,6 +8,9 @@ from typing import Any
 
 from rest_framework import serializers
 
+from apps.catalog.models import Level
+from apps.sources.models import Source
+
 from . import messages
 from .models import Project
 
@@ -65,3 +68,43 @@ class ProjectSummarySerializer(serializers.ModelSerializer[Project]):
         if not project.column_count:
             return None
         return float(project.confirmed_count) / float(project.column_count)
+
+
+class LevelCountSerializer(serializers.Serializer[Any]):
+    """Las cinco claves de nivel, siempre presentes (contracts/projects-api.yaml)."""
+
+    CONFIRMED = serializers.IntegerField(min_value=0)
+    HIGH_UNVALIDATED = serializers.IntegerField(min_value=0)
+    INFERRED = serializers.IntegerField(min_value=0)
+    HYPOTHESIS = serializers.IntegerField(min_value=0)
+    UNKNOWN = serializers.IntegerField(min_value=0)
+
+
+class CoverageSerializer(serializers.Serializer[Any]):
+    total_columns = serializers.IntegerField(min_value=0)
+    by_level = LevelCountSerializer()
+
+
+class StateSourceSerializer(serializers.ModelSerializer[Source]):
+    class Meta:
+        model = Source
+        fields = ["id", "kind", "status", "original_filename", "created_at"]
+        read_only_fields = fields
+
+
+class QueueRowSerializer(serializers.Serializer[Any]):
+    column_id = serializers.UUIDField()
+    identifier = serializers.CharField(help_text="TABLA.COLUMNA tal como el origen (RN-17)")
+    level = serializers.ChoiceField(choices=Level.choices)
+    impact = serializers.IntegerField(min_value=0)
+    has_open_conflict = serializers.BooleanField()
+
+
+class ProjectStateSerializer(serializers.Serializer[Any]):
+    """Estado al abrir el proyecto (05-api §3.10; requiere selectors.get_project_state)."""
+
+    project = ProjectSummarySerializer()
+    coverage = CoverageSerializer()
+    sources = StateSourceSerializer(many=True)
+    table_count = serializers.IntegerField(min_value=0)
+    queue_head = QueueRowSerializer(many=True)
