@@ -1,7 +1,8 @@
 """Services de proyectos (regla B1 de docs/03-arquitectura/03-backend.md).
 
-Implementa FR-001, FR-003 y FR-004 (create_project) y FR-005 (touch_activity) de
-specs/003-proyectos-y-nucleo-de-datos (ROS-173), según research R-05 y R-07.
+Implementa FR-001, FR-003 y FR-004 (create_project), FR-005 (touch_activity) y FR-010…FR-013
+(rename_project, archive_project, unarchive_project y la guarda ensure_project_writable) de
+specs/003-proyectos-y-nucleo-de-datos (ROS-173), según research R-05, R-07 y R-08.
 """
 
 from datetime import datetime
@@ -11,12 +12,14 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from apps.core.exceptions import ProjectNameTaken
+from apps.core.exceptions import ProjectArchived, ProjectNameTaken
 
 from . import messages
 from .models import Dialect, Project
 
 NAME_MAX_LENGTH = 120
+# Distingue "no se envió el campo" de un valor nulo.
+UNSET: Any = object()
 
 
 def _clean_name(value: Any) -> str:
@@ -73,3 +76,78 @@ def touch_activity(project: Project, at: datetime | None = None) -> None:
     """
     project.last_activity_at = at or timezone.now()
     project.save(update_fields=["last_activity_at", "updated_at"])
+
+
+def ensure_project_writable(project: Project) -> None:
+    """Guarda de solo lectura (FR-013, research R-08): un archivado no admite cambios.
+
+    La usan todos los services que escriben en el proyecto o en su contenido, también los de
+    las features siguientes; desarchivar es la única excepción.
+    """
+    if project.archived:
+        raise ProjectArchived()
+
+
+@transaction.atomic
+def rename_project(project: Project, *, name: Any = UNSET, description: Any = UNSET) -> Project:
+    """Cambia el nombre (reglas de FR-001, FR-003 y FR-004) y/o la descripción (FR-011)."""
+    ensure_project_writable(project)
+    fields = []
+    if name is not UNSET:
+        try:
+            clean_name = _clean_name(name)
+        except ValueError as exc:
+            raise ValidationError({"name": [str(exc)]}) from None
+        if _name_taken(project.owner, clean_name, exclude_id=project.id):
+            raise ProjectNameTaken()
+        project.name = clean_name
+        fields.append("name")
+    if description is not UNSET:
+        # La forma (texto, no nulo) la valida el serializer de PATCH; aquí no hay más reglas.
+        project.description = description
+        fields.append("description")
+    if fields:
+        _save_guarding_name(project, fields)
+        touch_activity(project)
+    return project
+
+
+@transaction.atomic
+def archive_project(project: Project) -> Project:
+    """Archiva sin borrar nada (FR-012): sale de la lista y del selector."""
+    ensure_project_writable(project)
+    project.archived_at = timezone.now()
+    project.save(update_fields=["archived_at", "updated_at"])
+    touch_activity(project)
+    return project
+
+
+@transaction.atomic
+def unarchive_project(project: Project, *, name: Any = UNSET) -> Project:
+    """Desarchiva, con un nombre nuevo opcional; todo o nada (FR-013, FR-024).
+
+    Si el nombre (el actual o el nuevo) choca con un proyecto activo, project_name_taken y no
+    cambia nada: la interfaz pide otro nombre y reenvía.
+    """
+    if not project.archived:
+        return project
+    if name is not UNSET:
+        try:
+            project.name = _clean_name(name)
+        except ValueError as exc:
+            raise ValidationError({"name": [str(exc)]}) from None
+    if _name_taken(project.owner, project.name, exclude_id=project.id):
+        raise ProjectNameTaken()
+    project.archived_at = None
+    _save_guarding_name(project, ["name", "archived_at"])
+    touch_activity(project)
+    return project
+
+
+def _save_guarding_name(project: Project, fields: list[str]) -> None:
+    """Guarda; si otra petición ocupó el nombre a la vez, la única parcial lo rechaza (R-05)."""
+    try:
+        with transaction.atomic():
+            project.save(update_fields=[*fields, "updated_at"])
+    except IntegrityError:
+        raise ProjectNameTaken() from None
