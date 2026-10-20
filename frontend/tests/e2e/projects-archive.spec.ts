@@ -36,9 +36,9 @@ async function createViaApi(page: Page, name: string): Promise<string> {
 
 async function archiveFromInside(page: Page, id: string) {
   await page.goto(`/p/${id}`);
-  await page.getByRole("button", { name: "Archivar" }).click();
+  await page.getByRole("button", { name: "Archivar", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Archivar Ventas" });
-  await dialog.getByRole("button", { name: "Archivar" }).click();
+  await dialog.getByRole("button", { name: "Archivar", exact: true }).click();
   await page.waitForURL((url) => url.pathname === "/projects");
 }
 
@@ -78,7 +78,7 @@ test("[ROS-78][003:FR-013] Q8: un archivado se abre en solo lectura y no hay for
   ).toBeVisible();
   await expect(page.getByTestId("project-badge")).toHaveText("Ventas · oracle");
   await expect(page.getByRole("button", { name: "Renombrar" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Archivar" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Archivar", exact: true })).toHaveCount(0);
   await expect(page.getByRole("combobox", { name: "Cambiar de proyecto" })).toHaveCount(0);
   const rename = await page.request.patch(`/api/projects/${ventas}`, {
     headers: { origin: APP },
@@ -107,7 +107,7 @@ test("[ROS-78][003:FR-004][003:FR-013] Q9: desarchivar con el nombre ocupado pid
 
   await expect(page.getByTestId("project-badge")).toHaveText("Ventas 2025 · oracle");
   await expect(page.getByText(/Proyecto archivado/)).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Archivar" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Archivar", exact: true })).toBeVisible();
   await page.goto("/projects");
   await expect(page.getByRole("link", { name: "Ventas 2025" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Ventas", exact: true })).toBeVisible();
