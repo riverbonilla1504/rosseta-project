@@ -43,6 +43,7 @@
 | [EC-023](#ec-023) | `check-prerequisites.sh --template` exige `plan.md` antes de que exista | herramienta | S4 | Mitigado | — |
 | [EC-024](#ec-024) | `--nx-text-secondary` y `--nx-text-muted` no cumplen 4,5:1 sobre `--nx-surface` | diseño | S3 | Mitigado | ROS-168, RNF-24 |
 | [EC-025](#ec-025) | `HealthView` hace fallar la generación del esquema OpenAPI | herramienta | S4 | Abierto | RNF-34 |
+| [EC-026](#ec-026) | El proxy BFF reenvía el cuerpo de las mutaciones sin `content-length` y Django lo recibe vacío | código | S2 | Abierto | ROS-188 (arreglo en curso) |
 
 ---
 
@@ -208,6 +209,13 @@
 - **Descripción:** `manage.py spectacular` informa "unable to guess serializer" para `apps.core.views.HealthView` (esqueleto de la fase 0.5): es un `APIView` sin `serializer_class` ni `extend_schema`, y el esquema sale sin la respuesta de `/api/health`.
 - **Impacto:** RNF-34 (contrato documentado y coincidente con [05-api](../03-arquitectura/05-api.md)); hoy no rompe nada porque la prueba de contrato de 002 solo cubre `/api/me`.
 - **Resolución propuesta:** tarea técnica que documente la respuesta de `/api/health` con `extend_schema` (sin cambiar su comportamiento).
+
+<a id="ec-026"></a>
+### EC-026 · El proxy BFF reenvía el cuerpo de las mutaciones sin `content-length`
+- **Tipo / Sev.:** código · S2 — **Detectado:** 2026-10-19 (E2E T032 de la spec 003, primera mutación con cuerpo JSON desde el navegador)
+- **Descripción:** `frontend/src/lib/api/proxy.ts` (ROS-188, spec 002) reenvía a Django el cuerpo de `POST`/`PATCH`/`PUT` como *stream* sin la cabecera `content-length`; Django lo recibe vacío y responde `400`. Las pruebas de la 002 no lo detectaron porque ninguna mutación de esa feature lleva cuerpo (`POST /api/me/onboarding/complete` no tiene).
+- **Impacto:** ninguna operación que envíe JSON desde el navegador funciona: crear un proyecto (spec 003, historia 1) falla de punta a punta aunque sus pruebas unitarias pasen; bloquea T032 y T036 de la 003 y el E2E-01 (T087 de la 002).
+- **Resolución propuesta:** reenviar `content-length` en las mutaciones, con prueba roja previa, en un commit propio `fix(auth): ROS-188` en la rama de la 003 y llevado a la rama 002 por cherry-pick (autorizado por la persona el 2026-10-19).
 
 ---
 
