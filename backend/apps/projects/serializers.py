@@ -108,3 +108,24 @@ class ProjectStateSerializer(serializers.Serializer[Any]):
     sources = StateSourceSerializer(many=True)
     table_count = serializers.IntegerField(min_value=0)
     queue_head = QueueRowSerializer(many=True)
+
+
+class ProjectUpdateSerializer(serializers.Serializer[Any]):
+    """Entrada de PATCH /api/projects/{id}: name, description y archived (contracts, D3).
+
+    source_dialect no se admite (FR-010): como cualquier otro campo, da validation_error.
+    """
+
+    name = serializers.CharField(
+        required=False, allow_null=True, allow_blank=True, trim_whitespace=False
+    )
+    description = serializers.CharField(required=False, allow_blank=True, trim_whitespace=False)
+    archived = serializers.BooleanField(required=False)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        unknown = sorted(set(self.initial_data) - set(self.fields))
+        if unknown:
+            raise serializers.ValidationError(
+                {field: [messages.FIELD_NOT_ALLOWED] for field in unknown}
+            )
+        return attrs

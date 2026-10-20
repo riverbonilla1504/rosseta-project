@@ -151,3 +151,23 @@ def _save_guarding_name(project: Project, fields: list[str]) -> None:
             project.save(update_fields=[*fields, "updated_at"])
     except IntegrityError:
         raise ProjectNameTaken() from None
+
+
+@transaction.atomic
+def update_project(
+    project: Project, *, name: Any = UNSET, description: Any = UNSET, archived: Any = UNSET
+) -> Project:
+    """PATCH /api/projects/{id} (05-api §3.10): reparte en los services de arriba, todo o nada.
+
+    Sobre un archivado solo se admite {"archived": false} con un name opcional; cualquier otro
+    cambio responde project_archived (FR-013).
+    """
+    if project.archived:
+        if archived is False and description is UNSET:
+            return unarchive_project(project, name=name)
+        raise ProjectArchived()
+    if name is not UNSET or description is not UNSET:
+        rename_project(project, name=name, description=description)
+    if archived is True:
+        archive_project(project)
+    return project

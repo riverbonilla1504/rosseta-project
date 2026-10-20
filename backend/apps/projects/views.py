@@ -3,6 +3,7 @@
 GET /api/projects: FR-005 (paginación de 05-api §1, cifras sin consultas por proyecto).
 POST /api/projects: FR-001, FR-003 y FR-004. GET /api/projects/{id}: FR-001 y FR-015 (lo
 ajeno, lo inexistente y un identificador inválido responden el mismo not_found).
+PATCH /api/projects/{id}: FR-010…FR-013 (renombrar, descripción, archivar y desarchivar).
 GET /api/projects/{id}/state: FR-021 y FR-022 (ROS-177).
 """
 
@@ -10,7 +11,7 @@ from typing import Any
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import status
+from rest_framework import exceptions, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -26,8 +27,9 @@ from .serializers import (
     ProjectListQuerySerializer,
     ProjectStateSerializer,
     ProjectSummarySerializer,
+    ProjectUpdateSerializer,
 )
-from .services import create_project
+from .services import create_project, update_project
 
 PROJECT_ID = OpenApiParameter(
     "project_id", OpenApiTypes.STR, OpenApiParameter.PATH, description="UUID del proyecto."
@@ -89,6 +91,23 @@ class ProjectDetailView(APIView):
             with_summary(Project.objects.for_user(request.user)), project_id, request
         )
         return Response(ProjectSummarySerializer(project).data)
+
+    @extend_schema(
+        operation_id="updateProject",
+        parameters=[PROJECT_ID],
+        request=ProjectUpdateSerializer,
+        responses=ProjectSummarySerializer,
+        tags=["proyectos"],
+    )
+    def patch(self, request: Request, project_id: str) -> Response:
+        project = get_owned_or_404(Project.objects.for_user(request.user), project_id, request)
+        if not request.data:
+            # minProperties: 1 del contrato; sin texto propio, el mensaje genérico de validación.
+            raise exceptions.ValidationError({})
+        serializer = ProjectUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        update_project(project, **serializer.validated_data)
+        return Response(ProjectSummarySerializer(_summary(request.user, project.pk)).data)
 
 
 class ProjectStateView(APIView):
