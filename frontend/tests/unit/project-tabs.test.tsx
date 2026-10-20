@@ -2,10 +2,14 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { projectsCopy } from "@/features/projects/copy";
+import { QueryProvider } from "@/lib/query-client";
 
 /** Navegación del proyecto (FR-007 de la feature 003, DP-017) y pestañas vacías (R-14). */
 let pathname = "/p/p1";
-vi.mock("next/navigation", () => ({ usePathname: () => pathname }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => pathname,
+  useParams: () => ({ projectId: "p1" }),
+}));
 
 const { ProjectTabs } = await import("@/features/projects/ProjectTabs");
 const { default: OverviewPage } = await import("@/app/(app)/p/[projectId]/page");
@@ -49,11 +53,28 @@ describe("pestañas del proyecto", () => {
     ["Fuentes", SourcesPage],
   ])(
     "[ROS-78][003:FR-007] %s muestra el estado de proyecto sin fuentes (04-contenido §5)",
-    (title, Page) => {
-      render(<Page />);
+    async (title, Page) => {
+      const empty = { CONFIRMED: 0, HIGH_UNVALIDATED: 0, INFERRED: 0, HYPOTHESIS: 0, UNKNOWN: 0 };
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () =>
+          Response.json({
+            project: { id: "p1" },
+            coverage: { total_columns: 0, by_level: empty },
+            sources: [],
+            table_count: 0,
+            queue_head: [],
+          }),
+        ),
+      );
+      render(
+        <QueryProvider>
+          <Page />
+        </QueryProvider>,
+      );
 
       expect(screen.getByRole("heading", { level: 1, name: title })).toBeInTheDocument();
-      expect(screen.getByText(projectsCopy.noEvidence)).toBeInTheDocument();
+      expect(await screen.findByText(projectsCopy.noEvidence)).toBeInTheDocument();
     },
   );
 });
