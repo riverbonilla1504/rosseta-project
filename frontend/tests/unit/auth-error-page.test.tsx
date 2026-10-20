@@ -43,17 +43,24 @@ describe("pantalla de error de acceso /auth/error", () => {
   });
 
   it.each([
-    ["email_not_verified", "Google no confirma que tu correo esté verificado."],
-    ["email_missing", "Google no compartió tu correo y lo necesitamos para crear tu cuenta."],
+    [
+      "email_not_verified",
+      "Google no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo.",
+    ],
+    [
+      "email_missing",
+      "Google no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo.",
+    ],
     [
       "account_exists_other_provider",
-      "Ya existe una cuenta con ese correo, creada con otro proveedor.",
+      "Ya existe una cuenta con ese correo, creada con otro proveedor. Entra con el proveedor que usaste al registrarte.",
     ],
+    // Sin canal de contacto en el MVP (DP-025, DP-024).
     ["account_disabled", "Tu cuenta está desactivada."],
-  ])("[ROS-90][002:FR-038] %s tiene su propio mensaje", async (code, text) => {
+  ])("[ROS-90][002:FR-038] %s tiene su mensaje aprobado (DP-025)", async (code, text) => {
     await renderError({ code });
 
-    expect(message()).toHaveTextContent(text);
+    expect(message().textContent).toBe(text);
   });
 
   it("[ROS-90][002:FR-038] sin código: error genérico", async () => {

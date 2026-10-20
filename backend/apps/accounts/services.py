@@ -11,7 +11,6 @@ from typing import Any, NoReturn
 
 from django.db import IntegrityError, transaction
 from django.utils import timezone
-from rest_framework.exceptions import PermissionDenied
 
 from .exceptions import AccountDisabled, AccountExistsOtherProvider, EmailMissing, EmailNotVerified
 from .models import User
@@ -64,7 +63,7 @@ def get_or_create_from_claims(claims: dict[str, Any], path: str | None = None) -
 
     Orden de comprobaciones: correo verificado (FR-004) → reconocer por auth0_sub (FR-006)
     → desactivada (FR-011) o actualizar (FR-007, FR-010); si no existe: correo presente,
-    correo libre (FR-009), nombre presente (DP-023, falla cerrado) y alta (FR-005, FR-017).
+    correo libre (FR-009) y alta (FR-005, FR-017); sin nombre, la parte local del correo (DP-023).
     """
     if claims.get(f"{CLAIMS_NS}email_verified") is not True:
         _reject(EmailNotVerified(), "email_not_verified", path)
@@ -91,9 +90,8 @@ def _create(sub: str, email: Any, name: str | None, avatar: str | None, path: st
     if User.objects.filter(email__iexact=email).exclude(auth0_sub=sub).exists():
         _reject(AccountExistsOtherProvider(), "account_exists_other_provider", path)
     if name is None:
-        # DP-023 sigue abierta: sin nombre no se crea la cuenta (comportamiento mínimo y
-        # seguro, no una decisión; T037 lo sustituye cuando se decida).
-        _reject(PermissionDenied(), "name_missing", path)
+        # DP-023 (opción A): el nombre visible es lo que va antes de @, truncado a 200.
+        name = email.strip().rsplit("@", 1)[0][:NAME_MAX_LENGTH]
 
     try:
         with transaction.atomic():

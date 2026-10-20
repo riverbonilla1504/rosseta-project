@@ -13,7 +13,7 @@ const baseEnv = {
 } as const;
 
 describe("configuración del SDK de Auth0", () => {
-  it("[ROS-92][002:FR-024] sesión deslizante de 14 días y máxima de 30 (PROVISIONAL DP-022)", () => {
+  it("[ROS-92][002:FR-024] sesión deslizante de 14 días y máxima de 30 (DP-022)", () => {
     const { session } = buildAuth0Options(baseEnv);
 
     expect(session?.rolling).toBe(true);

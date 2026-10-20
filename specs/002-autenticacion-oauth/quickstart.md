@@ -50,7 +50,7 @@ Se rellena por entorno y se **anexa al acta de verificación** de la feature (RO
 | C8 | Base de datos de contraseñas | Deshabilitada para Rosetta Web | Panel › Authentication › Database |
 | C9 | Tipo de cuenta de Microsoft | Solo personales | Registro de la aplicación en Microsoft Entra ID (producción) |
 | C10 | Scopes que pide la aplicación | Solo `openid profile email offline_access` (RNF-36) | Prueba V10 (URL de `/auth/login`) |
-| C11 | Acción post-login | Desplegada y asociada al flujo; deniega correo no verificado o ausente; añade los tres claims | Panel › Actions › Flows › Login |
+| C11 | Acción post-login | Desplegada y asociada al flujo; su código es el de [`infra/auth0/actions/rosetta-claims-post-login.js`](../../infra/auth0/actions/rosetta-claims-post-login.js), que se despliega a mano desde ese archivo ([DP-026](../../docs/07-registro/02-decisiones-pendientes.md#dp-026)); deniega correo no verificado o ausente; añade los tres claims | Panel › Actions › Flows › Login; comparar el código desplegado con el archivo |
 | C12 | Credenciales propias en producción | Conexiones con credenciales de Rosetta, no las de desarrollo de Auth0 | Panel › Authentication › Social (producción) |
 | C13 | Separación de entornos | Tenant de desarrollo distinto del de producción; el MCP no apunta a producción | Dominios distintos en `.env` de cada entorno |
 | C14 | MFA en el panel | Todos los administradores del tenant con segundo factor | Panel › Dashboard Admins |

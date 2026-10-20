@@ -2,7 +2,7 @@ import { copy, PROVIDER_NAMES, type Provider } from "./copy";
 
 /**
  * Códigos de error de acceso que entiende /auth/error (contracts/auth-flow.md §5).
- * account_disabled, email_missing y email_not_verified son PROVISIONALES hasta DP-025.
+ * account_disabled, email_missing y email_not_verified se aprobaron en DP-025 (CD-012).
  * Implementa FR-036 a FR-039 (ROS-90).
  */
 export const AUTH_ERROR_CODES = [
