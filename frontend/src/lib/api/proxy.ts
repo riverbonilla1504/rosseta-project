@@ -45,6 +45,9 @@ const PUBLIC_PATHS = new Set(["/api/health", "/api/schema/"]);
 const FORWARDED_REQUEST_HEADERS = [
   "accept",
   "accept-language",
+  // Con el cuerpo en streaming y sin content-length, fetch lo envía chunked y Django (WSGI)
+  // lo lee vacío (EC-026).
+  "content-length",
   "content-type",
   "if-none-match",
   "x-request-id",
