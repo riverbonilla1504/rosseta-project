@@ -7,6 +7,11 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.13.0] — 2026-10-19 · CD-014
+
+### Añadido
+- [EC-026](01-errores-conocidos.md#ec-026): el proxy BFF reenvía el cuerpo de las mutaciones sin `content-length` y Django lo recibe vacío (ROS-188).
+
 ## [1.12.0] — 2026-10-14 · CD-013
 
 ### Cambiado
