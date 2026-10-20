@@ -120,7 +120,7 @@ describe("lista de proyectos", () => {
     expect(dialect).toBe("SQL Server");
     expect(date).toMatch(/^19 oct 2026, \d{2}:\d{2}$/);
     expect([tables, columns, ratio]).toEqual(["918", "18.442", "22,3%"]);
-    // Sin columnas no hay porcentaje (DP-020): "–" (DP-028, provisional).
+    // Sin columnas no hay porcentaje (DP-020): "–" (DP-028).
     expect(cells(second)).toEqual([
       "Ventas",
       "Oracle",
