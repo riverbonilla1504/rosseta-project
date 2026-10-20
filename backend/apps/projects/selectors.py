@@ -9,7 +9,7 @@ from django.db.models.functions import Coalesce
 
 from apps.catalog.models import Column, ColumnInterpretation, Level, Table
 
-from .models import ProjectQuerySet
+from .models import Project, ProjectQuerySet
 
 
 def _count(queryset: models.QuerySet[models.Model]) -> Coalesce:
@@ -30,3 +30,14 @@ def with_summary(queryset: ProjectQuerySet) -> ProjectQuerySet:
         column_count=_count(Column.objects.all()),
         confirmed_count=_count(ColumnInterpretation.objects.filter(level=Level.CONFIRMED)),
     )
+
+
+def list_projects(user: object, *, archived: bool = False) -> ProjectQuerySet:
+    """Proyectos de la persona para GET /api/projects (FR-005; ?archived=true, CD-013).
+
+    Activos por defecto o solo los archivados; orden por última actividad, la más reciente
+    primero, y luego id para que la paginación sea estable (05-api §3.10).
+    """
+    projects = Project.objects.for_user(user)
+    projects = projects.filter(archived_at__isnull=not archived)
+    return with_summary(projects).order_by("-last_activity_at", "id")

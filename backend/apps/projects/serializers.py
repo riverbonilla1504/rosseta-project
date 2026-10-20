@@ -29,6 +29,12 @@ class ProjectCreateSerializer(serializers.Serializer[Any]):
         return attrs
 
 
+class ProjectListQuerySerializer(serializers.Serializer[Any]):
+    """Parámetros de GET /api/projects además de la paginación (contracts/projects-api.yaml)."""
+
+    archived = serializers.BooleanField(required=False, default=False)
+
+
 class ProjectSummarySerializer(serializers.ModelSerializer[Project]):
     """Proyecto con las cifras de la lista (requiere selectors.with_summary)."""
 

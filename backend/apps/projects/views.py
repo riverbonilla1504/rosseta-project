@@ -1,5 +1,6 @@
 """Vistas de proyectos (contracts/projects-api.yaml de la feature 003). ROS-173.
 
+GET /api/projects: FR-005 (paginación de 05-api §1, cifras sin consultas por proyecto).
 POST /api/projects: FR-001, FR-003 y FR-004. GET /api/projects/{id}: FR-001 y FR-015 (lo
 ajeno, lo inexistente y un identificador inválido responden el mismo not_found).
 """
@@ -15,10 +16,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.ownership import get_owned_or_404
+from apps.core.pagination import StandardPagination
 
 from .models import Project
-from .selectors import with_summary
-from .serializers import ProjectCreateSerializer, ProjectSummarySerializer
+from .selectors import list_projects, with_summary
+from .serializers import (
+    ProjectCreateSerializer,
+    ProjectListQuerySerializer,
+    ProjectSummarySerializer,
+)
 from .services import create_project
 
 PROJECT_ID = OpenApiParameter(
@@ -32,6 +38,22 @@ def _summary(user: Any, project_id: Any) -> Project:
 
 class ProjectListCreateView(APIView):
     permission_classes = [IsAuthenticated]
+    # Declarada en la vista para que el esquema OpenAPI documente la paginación de la lista.
+    pagination_class = StandardPagination
+
+    @extend_schema(
+        operation_id="listProjects",
+        parameters=[ProjectListQuerySerializer],
+        responses=ProjectSummarySerializer(many=True),
+        tags=["proyectos"],
+    )
+    def get(self, request: Request) -> Response:
+        query = ProjectListQuerySerializer(data=request.query_params)
+        query.is_valid(raise_exception=True)
+        projects = list_projects(request.user, archived=query.validated_data["archived"])
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(projects, request, view=self)
+        return paginator.get_paginated_response(ProjectSummarySerializer(page, many=True).data)
 
     @extend_schema(
         operation_id="createProject",
