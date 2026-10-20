@@ -5,9 +5,25 @@ created_at / updated_at en UTC (USE_TZ). Feature 003, research R-02 (ROS-175).
 """
 
 import uuid
+from typing import Any, Self
 
 from django.db import models
 from django.utils import timezone
+
+
+class OwnedQuerySet(models.QuerySet[Any]):
+    """Aislamiento por propietario en el QuerySet (regla B4; FR-014 de la feature 003).
+
+    Cada modelo de cliente declara owner_path, el camino hasta el propietario del proyecto.
+    Sin persona (None o anónima) no devuelve nada.
+    """
+
+    owner_path = "project__owner"
+
+    def for_user(self, user: Any) -> Self:
+        if user is None or not getattr(user, "is_authenticated", False):
+            return self.none()
+        return self.filter(**{self.owner_path: user})
 
 
 class UUIDModel(models.Model):

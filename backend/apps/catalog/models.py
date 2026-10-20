@@ -8,7 +8,7 @@ más el índice de la cola de data-model.md. Esta feature solo crea los modelos:
 from django.conf import settings
 from django.db import models
 
-from apps.core.models import TimeStampedModel, UUIDModel, enum_check
+from apps.core.models import OwnedQuerySet, TimeStampedModel, UUIDModel, enum_check
 
 
 class Level(models.TextChoices):
@@ -62,6 +62,8 @@ class Table(UUIDModel, TimeStampedModel):
         "sources.Source", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
 
+    objects = OwnedQuerySet.as_manager()
+
     class Meta:
         db_table = "catalog_table"
 
@@ -89,6 +91,8 @@ class Column(UUIDModel, TimeStampedModel):
     declared_fk_target = models.CharField(max_length=260, null=True, blank=True)  # noqa: DJ001
     default_expression = models.CharField(max_length=200, null=True, blank=True)  # noqa: DJ001
     is_pii = models.BooleanField(default=False)
+
+    objects = OwnedQuerySet.as_manager()
 
     class Meta:
         db_table = "catalog_column"
@@ -132,6 +136,8 @@ class ColumnInterpretation(UUIDModel, TimeStampedModel):
     engine_version = models.CharField(max_length=20)
     computed_at = models.DateTimeField()
 
+    objects = OwnedQuerySet.as_manager()
+
     class Meta:
         db_table = "catalog_column_interpretation"
         constraints = [
@@ -163,6 +169,11 @@ class ColumnInterpretation(UUIDModel, TimeStampedModel):
         return str(self.id)
 
 
+class ProfileQuerySet(OwnedQuerySet):
+    # El perfil no tiene project_id en el diccionario: el propietario se alcanza por la columna.
+    owner_path = "column__project__owner"
+
+
 class ColumnProfile(UUIDModel, TimeStampedModel):
     """Perfil de una columna calculado desde una muestra (ROS-123)."""
 
@@ -182,6 +193,8 @@ class ColumnProfile(UUIDModel, TimeStampedModel):
     out_of_catalog_count = models.BigIntegerField(null=True, blank=True)
     stats = models.JSONField(default=dict)
     computed_at = models.DateTimeField()
+
+    objects = ProfileQuerySet.as_manager()
 
     class Meta:
         db_table = "catalog_column_profile"

@@ -10,7 +10,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.functions import Lower
 
-from apps.core.models import TimeStampedModel, UUIDModel
+from apps.core.models import OwnedQuerySet, TimeStampedModel, UUIDModel
 
 
 class Dialect(models.TextChoices):
@@ -21,9 +21,8 @@ class Dialect(models.TextChoices):
     POSTGRES = "postgres", "PostgreSQL"
 
 
-class ProjectQuerySet(models.QuerySet["Project"]):
-    def for_user(self, user: Any) -> "ProjectQuerySet":
-        return self.filter(owner=user)
+class ProjectQuerySet(OwnedQuerySet):
+    owner_path = "owner"
 
     def active(self) -> "ProjectQuerySet":
         return self.filter(archived_at__isnull=True)

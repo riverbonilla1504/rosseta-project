@@ -9,7 +9,7 @@ from typing import Any
 from django.conf import settings
 from django.db import models
 
-from apps.core.models import TimeStampedModel, UUIDModel, enum_check
+from apps.core.models import OwnedQuerySet, TimeStampedModel, UUIDModel, enum_check
 
 EVIDENCE_FORMAT_VERSION = 1
 
@@ -87,6 +87,8 @@ class Evidence(UUIDModel):
     format_version = models.SmallIntegerField(default=EVIDENCE_FORMAT_VERSION)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = OwnedQuerySet.as_manager()
+
     class Meta:
         db_table = "evidence_evidence"
         constraints = [
@@ -134,6 +136,8 @@ class Conflict(UUIDModel, TimeStampedModel):
     evidences = models.ManyToManyField(
         Evidence, related_name="conflicts", db_table="evidence_conflict_evidences"
     )
+
+    objects = OwnedQuerySet.as_manager()
 
     class Meta:
         db_table = "evidence_conflict"

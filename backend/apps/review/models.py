@@ -10,7 +10,7 @@ from typing import Any
 from django.conf import settings
 from django.db import models
 
-from apps.core.models import UUIDModel, enum_check
+from apps.core.models import OwnedQuerySet, UUIDModel, enum_check
 
 
 class ActionKind(models.TextChoices):
@@ -38,6 +38,8 @@ class ReviewAction(UUIDModel):
     reverted_count = models.IntegerField(default=0)
     engine_version = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = OwnedQuerySet.as_manager()
 
     class Meta:
         db_table = "review_review_action"

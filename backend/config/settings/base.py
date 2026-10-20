@@ -133,10 +133,12 @@ LOGGING = {
     "filters": {"redact": {"()": "apps.accounts.logging.RedactFilter"}},
     "formatters": {
         "plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"},
-        # Eventos de seguridad con campos cerrados (research R-11).
+        # Eventos de seguridad con campos cerrados (research R-11). resource_id solo lo llevan
+        # los accesos denegados por pertenencia (feature 003, FR-017); el resto imprime "-".
         "security": {
             "format": "%(asctime)s %(levelname)s %(name)s event=%(event)s reason=%(reason)s "
-            "user_id=%(user_id)s path=%(path)s"
+            "user_id=%(user_id)s path=%(path)s resource_id=%(resource_id)s",
+            "defaults": {"resource_id": "-"},
         },
     },
     "handlers": {

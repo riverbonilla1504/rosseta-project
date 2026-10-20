@@ -12,7 +12,7 @@ from django.db import models
 from django.db.models.functions import Cast, Coalesce
 
 from apps.catalog.models import SemanticType
-from apps.core.models import TimeStampedModel, UUIDModel, enum_check
+from apps.core.models import OwnedQuerySet, TimeStampedModel, UUIDModel, enum_check
 from apps.projects.models import Dialect
 
 MAX_NAMING_RULE_WEIGHT = Decimal("0.40")
@@ -73,6 +73,8 @@ class Source(UUIDModel, TimeStampedModel):
     )
     processed_at = models.DateTimeField(null=True, blank=True)
 
+    objects = OwnedQuerySet.as_manager()
+
     class Meta:
         db_table = "sources_source"
         constraints = [
@@ -87,6 +89,14 @@ class Source(UUIDModel, TimeStampedModel):
 
     def __str__(self) -> str:
         return str(self.id)
+
+
+class NamingRuleQuerySet(OwnedQuerySet):
+    def for_user(self, user: Any) -> "NamingRuleQuerySet":
+        """Las del proyecto de la persona más las globales (estas, de solo lectura)."""
+        if user is None or not getattr(user, "is_authenticated", False):
+            return self.none()
+        return self.filter(models.Q(project__owner=user) | models.Q(project__isnull=True))
 
 
 class NamingRule(UUIDModel, TimeStampedModel):
@@ -114,6 +124,8 @@ class NamingRule(UUIDModel, TimeStampedModel):
         blank=True,
         related_name="+",
     )
+
+    objects = NamingRuleQuerySet.as_manager()
 
     class Meta:
         db_table = "sources_naming_rule"
