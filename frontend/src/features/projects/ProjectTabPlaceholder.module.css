@@ -1,0 +1,20 @@
+/* Sobre --nx-bg; los textos usan --nx-text (EC-024). */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-space-4);
+  max-width: var(--nx-content-max-width);
+  padding: var(--nx-space-7) var(--nx-space-6);
+}
+
+.title {
+  margin: 0;
+  color: var(--nx-text);
+  font-size: var(--nx-text-display);
+}
+
+.empty {
+  margin: 0;
+  color: var(--nx-text);
+  font-size: var(--nx-text-body);
+}

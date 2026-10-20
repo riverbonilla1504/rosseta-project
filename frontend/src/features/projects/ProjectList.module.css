@@ -1,0 +1,51 @@
+/* Lista de proyectos (03-pantallas, Proyectos). Solo tokens de Nocturne.
+   Va sobre --nx-bg, pero por EC-024 los textos usan --nx-text igual que el formulario: ni
+   --nx-text-secondary ni --nx-text-muted sobre --nx-surface. */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-space-7);
+}
+
+.notice {
+  margin: 0;
+  color: var(--nx-text);
+  font-size: var(--nx-text-body);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--nx-text);
+  font-size: var(--nx-text-body);
+}
+
+.table th,
+.table td {
+  padding: var(--nx-space-3) var(--nx-space-4);
+  border-bottom: 1px solid var(--nx-border);
+  text-align: left;
+}
+
+.table th {
+  font-size: var(--nx-text-label);
+  letter-spacing: var(--nx-label-tracking);
+}
+
+.table .number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.link {
+  color: var(--nx-text);
+  text-decoration: underline;
+}
+
+.link:hover {
+  text-decoration-color: var(--nx-accent);
+}
+
+.create {
+  max-width: calc(var(--nx-space-8) * 8);
+}

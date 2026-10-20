@@ -23,6 +23,15 @@ export type ProjectSummary = {
 
 export type ProjectInput = { name: string; source_dialect: Dialect };
 
+/** Paginación estándar de 05-api §1. */
+export type Page<T> = { count: number; next: string | null; previous: string | null; results: T[] };
+
+/**
+ * Lista y selector piden una sola página del tamaño máximo de 05-api §1 (200), ya ordenada por
+ * última actividad (FR-005); la spec no pide paginar la lista en la interfaz.
+ */
+const LIST_PAGE_SIZE = 200;
+
 const JSON_HEADERS = { "content-type": "application/json" };
 
 export function createProject(input: ProjectInput): Promise<ProjectSummary> {
@@ -35,4 +44,15 @@ export function createProject(input: ProjectInput): Promise<ProjectSummary> {
 
 export function getProject(projectId: string, signal?: AbortSignal): Promise<ProjectSummary> {
   return apiFetch<ProjectSummary>(`/api/projects/${encodeURIComponent(projectId)}`, { signal });
+}
+
+export function listProjects(
+  archived: boolean,
+  signal?: AbortSignal,
+): Promise<Page<ProjectSummary>> {
+  const params = new URLSearchParams({
+    archived: String(archived),
+    page_size: String(LIST_PAGE_SIZE),
+  });
+  return apiFetch<Page<ProjectSummary>>(`/api/projects?${params.toString()}`, { signal });
 }

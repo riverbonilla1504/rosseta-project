@@ -1,0 +1,56 @@
+/* Barra del proyecto: pestañas a la izquierda, insignia y selector a la derecha (03-pantallas,
+   estructura común). Solo tokens de Nocturne. EC-024: la barra va sobre --nx-surface, así que
+   ningún texto usa --nx-text-secondary ni --nx-text-muted; la pestaña activa no depende solo del
+   color (lleva subrayado en el acento). */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nx-space-4);
+  padding: var(--nx-space-3) var(--nx-space-6);
+  border-bottom: 1px solid var(--nx-border);
+  background: var(--nx-surface);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--nx-space-5);
+}
+
+.tab {
+  padding-block: var(--nx-space-2);
+  border-bottom: 2px solid transparent;
+  color: var(--nx-text);
+  font-size: var(--nx-text-body);
+  text-decoration: none;
+}
+
+.tab[aria-current="page"] {
+  border-bottom-color: var(--nx-accent);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--nx-space-3);
+}
+
+.badge {
+  padding: var(--nx-space-1) var(--nx-space-3);
+  border-radius: var(--nx-radius-sm);
+  background: var(--nx-badge-bg);
+  color: var(--nx-text);
+  font-family: var(--nx-font-mono);
+  font-size: var(--nx-text-caption);
+}
+
+.switcher {
+  padding: var(--nx-space-2) var(--nx-space-3);
+  border: 1px solid var(--nx-accent-outline);
+  border-radius: var(--nx-radius-md);
+  background: var(--nx-surface-raised);
+  color: var(--nx-text);
+  font: inherit;
+  font-size: var(--nx-text-caption);
+}

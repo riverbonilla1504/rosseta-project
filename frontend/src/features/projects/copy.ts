@@ -12,6 +12,14 @@ export const DIALECT_LABELS: Record<Dialect, string> = {
   postgres: "PostgreSQL",
 };
 
+/** Pestañas del proyecto, en su orden (DP-017; 03-pantallas, estructura común). */
+export const TAB_LABELS = {
+  overview: "Panorama",
+  review: "Revisión",
+  catalog: "Catálogo",
+  sources: "Fuentes",
+} as const;
+
 /** Orden del selector: el de DP-019. */
 export const DIALECTS: readonly Dialect[] = ["tsql", "oracle", "postgres"];
 
@@ -39,6 +47,22 @@ export const projectsCopy = {
   dialectRequired: "Elige el dialecto SQL de tu base.",
   // PROVISIONAL (DP-028)
   nameTaken: "Ya tienes un proyecto activo con ese nombre. Elige otro.",
+  // PROVISIONAL (DP-028)
+  columnName: "Nombre",
+  // PROVISIONAL (DP-028)
+  columnDialect: "Dialecto",
+  // PROVISIONAL (DP-028)
+  columnActivity: "Última actividad",
+  // PROVISIONAL (DP-028)
+  columnTables: "Tablas",
+  // PROVISIONAL (DP-028)
+  columnColumns: "Columnas",
+  // PROVISIONAL (DP-028)
+  columnConfirmed: "Confirmadas",
+  // PROVISIONAL (DP-028): porcentaje confirmado sin columnas (DP-020).
+  noRatio: "–",
+  // PROVISIONAL (DP-028): nombre accesible del selector de proyecto.
+  switchProject: "Cambiar de proyecto",
   // PROVISIONAL (DP-028)
   notFound: "Este proyecto no existe o no tienes acceso.",
   // PROVISIONAL (DP-028)
