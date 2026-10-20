@@ -119,6 +119,11 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Contrato en docs/03-arquitectura/05-api.md",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # Nombres únicos para los enums que comparten nombre de campo (esquema sin avisos, T062).
+    "ENUM_NAME_OVERRIDES": {
+        "HealthStatusEnum": ["ok", "error"],
+        "SourceStatusEnum": "apps.sources.models.SourceStatus",
+    },
 }
 
 # --- Seguridad común (docs/03-arquitectura/07-seguridad-y-autenticacion.md §5) ---
