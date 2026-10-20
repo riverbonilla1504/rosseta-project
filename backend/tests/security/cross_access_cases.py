@@ -10,7 +10,6 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps.projects.models import Project
 from tests.factories.catalog import (
     ColumnFactory,
     ColumnInterpretationFactory,
@@ -31,9 +30,9 @@ class CrossAccessCase:
     body: dict[str, Any] = field(default_factory=dict)
 
 
-def seed_everything(owner: Any) -> Project:
+def seed_everything(owner: Any) -> Any:
     """Un proyecto activo con contenido en todas las tablas de cliente y otro archivado."""
-    project = ProjectFactory(owner=owner, name="SECRETO_DE_ANA")
+    project: Any = ProjectFactory(owner=owner, name="SECRETO_DE_ANA")
     table = TableFactory(project=project, name="MOVSECRETO")
     column = ColumnFactory(table=table, name="CTASECRETA", name_normalized="CTASECRETA")
     ColumnInterpretationFactory(column=column)
