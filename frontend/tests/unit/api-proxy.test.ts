@@ -1,4 +1,7 @@
 // @vitest-environment node
+import { createServer } from "node:http";
+import type { AddressInfo } from "node:net";
+
 import { AccessTokenError, AccessTokenErrorCode, OAuth2Error } from "@auth0/nextjs-auth0/errors";
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
@@ -196,6 +199,58 @@ describe("proxy BFF /api/*", () => {
     expect(init.body).toBeInstanceOf(ReadableStream);
     expect((init as { duplex?: string }).duplex).toBe("half");
     expect(headers.get("content-type")).toBe("application/json");
+  });
+
+  it("[ROS-92][002:FR-022] reenvía content-length para que el backend no reciba el cuerpo chunked (EC-026)", async () => {
+    // Backend real en local: Django (WSGI) solo lee CONTENT_LENGTH bytes; con
+    // Transfer-Encoding: chunked y sin content-length recibe el cuerpo vacío.
+    const received = await new Promise<{ te?: string; cl?: string; body: string }>(
+      (resolve, reject) => {
+        const server = createServer((request, response) => {
+          let body = "";
+          request.on("data", (chunk) => (body += chunk));
+          request.on("end", () => {
+            response.setHeader("content-type", "application/json");
+            response.end("{}");
+            server.close();
+            resolve({
+              te: request.headers["transfer-encoding"],
+              cl: request.headers["content-length"],
+              body,
+            });
+          });
+        });
+        server.listen(0, async () => {
+          const { port } = server.address() as AddressInfo;
+          const payload = JSON.stringify({ name: "Ventas", source_dialect: "oracle" });
+          try {
+            await createProxyHandler({
+              appBaseUrl: APP,
+              backendUrl: `http://localhost:${port}`,
+              getAccessToken,
+              log: () => {},
+            })(
+              req("/api/projects", {
+                method: "POST",
+                headers: {
+                  origin: APP,
+                  "content-type": "application/json",
+                  "content-length": String(Buffer.byteLength(payload)),
+                },
+                body: payload,
+              }),
+            );
+          } catch (error) {
+            server.close();
+            reject(error);
+          }
+        });
+      },
+    );
+
+    expect(received.te).toBeUndefined();
+    expect(received.cl).toBe("43");
+    expect(JSON.parse(received.body)).toEqual({ name: "Ventas", source_dialect: "oracle" });
   });
 
   it.each(["/api/health", "/api/schema/"])(
