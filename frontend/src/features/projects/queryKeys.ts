@@ -7,4 +7,5 @@ export const projectKeys = {
   all: ["projects"] as const,
   list: (archived: boolean) => ["projects", { archived }] as const,
   detail: (projectId: string) => ["project", projectId] as const,
+  state: (projectId: string) => ["project", projectId, "state"] as const,
 };

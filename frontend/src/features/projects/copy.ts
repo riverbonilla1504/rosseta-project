@@ -17,6 +17,8 @@ export const TAB_LABELS = {
   review: "Revisión",
   catalog: "Catálogo",
   sources: "Fuentes",
+  // Temporal, hasta la feature de cada pestaña (proyecto con fuentes).
+  tabUnavailable: (tab: string) => `${tab} aún no está disponible.`,
 } as const;
 
 /** Orden del selector: el de DP-019. */
@@ -51,4 +53,6 @@ export const projectsCopy = {
   switchProject: "Cambiar de proyecto",
   notFound: "Este proyecto no existe o no tienes acceso.",
   goToProjects: "Ir a tus proyectos",
+  // Temporal, hasta la feature de cada pestaña (proyecto con fuentes).
+  tabUnavailable: (tab: string) => `${tab} aún no está disponible.`,
 } as const;
