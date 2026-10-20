@@ -9,6 +9,8 @@ export class ApiError extends Error {
     readonly status: number,
     readonly code: string,
     readonly retryable: boolean,
+    /** details del error de la API, por campo (05-api §1); vacío si no viene. */
+    readonly details: Record<string, unknown> = {},
   ) {
     super(code);
     this.name = "ApiError";
@@ -41,8 +43,10 @@ export async function apiFetch<T = unknown>(
 
   if (response.ok) return (await response.json()) as T;
 
-  const code: string =
-    (await response.json().catch(() => null))?.error?.code ?? `http_${response.status}`;
+  const error = (await response.json().catch(() => null))?.error;
+  const code: string = error?.code ?? `http_${response.status}`;
+  const details: Record<string, unknown> =
+    error?.details && typeof error.details === "object" ? error.details : {};
 
   if (response.status === 401) {
     const params = new URLSearchParams({ returnTo: currentPath(), notice: "session_expired" });
@@ -54,5 +58,5 @@ export async function apiFetch<T = unknown>(
     navigate(`/auth/denied?code=${code}`);
     throw new ApiError(403, code, false);
   }
-  throw new ApiError(response.status, code, response.status === 503);
+  throw new ApiError(response.status, code, response.status === 503, details);
 }
