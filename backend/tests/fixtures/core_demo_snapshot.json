@@ -1,0 +1,1254 @@
+{
+  "_comment": "Instantánea sintética del caso de referencia (docs/04-datos/03-datos-de-referencia.md §2, §3, §5 y §6) para seed_reference_project (feature 003, T050, ROS-176). Los niveles y puntajes son datos de prueba (engine_version = fixture), no salida del motor. Sin datos reales (Constitución V).",
+  "project": {
+    "name": "CORE_DEMO",
+    "source_dialect": "tsql"
+  },
+  "computed_at": "2026-10-01T00:00:00+00:00",
+  "sources": [
+    {
+      "kind": "SCHEMA_DDL",
+      "status": "READY",
+      "original_filename": "core_demo.sql",
+      "size_bytes": 0,
+      "sha256": "8e28a18d63498870643580bf81e625c67950811642524468dd53afccfff42525"
+    }
+  ],
+  "tables": [
+    {
+      "name": "MOV0010",
+      "business_name": "Movimientos de cuenta",
+      "row_count": 412043221,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": "Entidad",
+          "level": "HIGH_UNVALIDATED",
+          "score": "0.910",
+          "impact": 38
+        },
+        {
+          "name": "SUCCOD",
+          "data_type": "smallint",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Sucursal",
+          "level": "CONFIRMED",
+          "score": "0.930",
+          "impact": 0
+        },
+        {
+          "name": "MONCOD",
+          "data_type": "char(3)",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Moneda",
+          "level": "CONFIRMED",
+          "score": "0.940",
+          "impact": 0
+        },
+        {
+          "name": "PAPEL",
+          "data_type": "int",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Producto",
+          "level": "INFERRED",
+          "score": "0.710",
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": "Número de cuenta",
+          "level": "HIGH_UNVALIDATED",
+          "score": "0.900",
+          "impact": 21
+        },
+        {
+          "name": "FEPRO",
+          "data_type": "int",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Fecha de proceso",
+          "level": "HIGH_UNVALIDATED",
+          "score": "0.960",
+          "impact": 0
+        },
+        {
+          "name": "IMPTE",
+          "data_type": "decimal(17,2)",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Valor del movimiento",
+          "level": "HIGH_UNVALIDATED",
+          "score": "0.920",
+          "impact": 0
+        },
+        {
+          "name": "ESTREG",
+          "data_type": "char(1)",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Estado del registro",
+          "level": "HIGH_UNVALIDATED",
+          "score": "0.890",
+          "impact": 0
+        },
+        {
+          "name": "USRALT",
+          "data_type": "char(8)",
+          "is_nullable": true,
+          "is_pii": true,
+          "business_name": "Usuario (sin precisar)",
+          "level": "HYPOTHESIS",
+          "score": "0.480",
+          "impact": 0
+        },
+        {
+          "name": "FEALT",
+          "data_type": "datetime",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": "Fecha de alta",
+          "level": "CONFIRMED",
+          "score": "0.940",
+          "impact": 0
+        },
+        {
+          "name": "RESERV3",
+          "data_type": "varchar(20)",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "CTA0001",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "CLI0001",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 6
+        }
+      ]
+    },
+    {
+      "name": "PAR0012",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PARCOD",
+          "data_type": "smallint",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "SUC0001",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "SUCCOD",
+          "data_type": "smallint",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "MON0001",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "MONCOD",
+          "data_type": "char(3)",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "PAP0001",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PAPCOD",
+          "data_type": "int",
+          "is_nullable": true,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0001",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0002",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0003",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0004",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0005",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0006",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "PETDOC",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0007",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0008",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0009",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0010",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0011",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0012",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0013",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0014",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0015",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0016",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0017",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0018",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0019",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0020",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0021",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        },
+        {
+          "name": "CTANRO",
+          "data_type": "decimal(9,0)",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0022",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0023",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0024",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0025",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0026",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0027",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0028",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0029",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0030",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0031",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0032",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0033",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0034",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0035",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0036",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0037",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    },
+    {
+      "name": "EXT0038",
+      "business_name": null,
+      "row_count": null,
+      "columns": [
+        {
+          "name": "PGCOD",
+          "data_type": "smallint",
+          "is_nullable": false,
+          "is_pii": false,
+          "business_name": null,
+          "level": "UNKNOWN",
+          "score": null,
+          "impact": 0
+        }
+      ]
+    }
+  ],
+  "naming_rules": [
+    {
+      "pattern": "FE",
+      "match_type": "PREFIX",
+      "meaning": "fecha",
+      "semantic_type": "DATE"
+    },
+    {
+      "pattern": "IMPTE",
+      "match_type": "TOKEN",
+      "meaning": "importe",
+      "semantic_type": "AMOUNT"
+    },
+    {
+      "pattern": "NRO",
+      "match_type": "TOKEN",
+      "meaning": "número",
+      "semantic_type": "IDENTIFIER"
+    },
+    {
+      "pattern": "COD",
+      "match_type": "SUFFIX",
+      "meaning": "código",
+      "semantic_type": "CODE"
+    },
+    {
+      "pattern": "CTA",
+      "match_type": "TOKEN",
+      "meaning": "cuenta",
+      "semantic_type": null
+    },
+    {
+      "pattern": "SUC",
+      "match_type": "PREFIX",
+      "meaning": "sucursal",
+      "semantic_type": null
+    },
+    {
+      "pattern": "MON",
+      "match_type": "PREFIX",
+      "meaning": "moneda",
+      "semantic_type": null
+    },
+    {
+      "pattern": "CLI",
+      "match_type": "PREFIX",
+      "meaning": "cliente",
+      "semantic_type": null
+    },
+    {
+      "pattern": "USR",
+      "match_type": "PREFIX",
+      "meaning": "usuario",
+      "semantic_type": "USER"
+    },
+    {
+      "pattern": "EST",
+      "match_type": "PREFIX",
+      "meaning": "estado",
+      "semantic_type": "ENUM"
+    },
+    {
+      "pattern": "ALT",
+      "match_type": "SUFFIX",
+      "meaning": "alta",
+      "semantic_type": null
+    },
+    {
+      "pattern": "PRO",
+      "match_type": "SUFFIX",
+      "meaning": "proceso",
+      "semantic_type": null
+    },
+    {
+      "pattern": "DOC",
+      "match_type": "SUFFIX",
+      "meaning": "documento",
+      "semantic_type": null
+    },
+    {
+      "pattern": "RESERV",
+      "match_type": "PREFIX",
+      "meaning": "reservado",
+      "semantic_type": null
+    }
+  ],
+  "confirmations": [
+    {
+      "table": "MOV0010",
+      "column": "SUCCOD"
+    },
+    {
+      "table": "MOV0010",
+      "column": "MONCOD"
+    },
+    {
+      "table": "MOV0010",
+      "column": "FEALT"
+    }
+  ]
+}
