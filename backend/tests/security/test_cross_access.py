@@ -21,17 +21,7 @@ from apps.evidence.models import Conflict, Evidence
 from apps.projects.models import Project
 from apps.review.models import ReviewAction
 from apps.sources.models import NamingRule, Source
-from tests.factories.catalog import (
-    ColumnFactory,
-    ColumnInterpretationFactory,
-    ColumnProfileFactory,
-    TableFactory,
-)
-from tests.factories.evidence import ConflictFactory, EvidenceFactory
-from tests.factories.projects import ProjectFactory
-from tests.factories.review import ReviewActionFactory
-from tests.factories.sources import NamingRuleFactory, SourceFactory
-from tests.security.cross_access_cases import CROSS_ACCESS_CASES
+from tests.security.cross_access_cases import CROSS_ACCESS_CASES, seed_everything
 
 pytestmark = [pytest.mark.django_db, pytest.mark.story("ROS-84")]
 
@@ -73,27 +63,14 @@ def person(tokens, sub):
     return User.objects.get(auth0_sub=sub)
 
 
-def seed_everything(owner):
-    """Un proyecto activo con contenido en todas las tablas de cliente y otro archivado."""
-    project = ProjectFactory(owner=owner, name="SECRETO_DE_ANA")
-    table = TableFactory(project=project, name="MOVSECRETO")
-    column = ColumnFactory(table=table, name="CTASECRETA", name_normalized="CTASECRETA")
-    ColumnInterpretationFactory(column=column)
-    ColumnProfileFactory(column=column)
-    SourceFactory(project=project, original_filename="secreto.sql")
-    NamingRuleFactory(project=project, pattern="SECR")
-    EvidenceFactory(column=column)
-    ConflictFactory(column=column)
-    ReviewActionFactory(column=column)
-    ProjectFactory(owner=owner, name="ARCHIVO_DE_ANA", archived_at=project.created_at)
-    return project
-
-
 def snapshot(owner):
     """Todas las filas de cliente de la persona, para comprobar que nada cambia."""
     return {
         model.__name__: sorted(
-            (json.dumps(row, default=str, sort_keys=True) for row in model.objects.for_user(owner).values()),
+            (
+                json.dumps(row, default=str, sort_keys=True)
+                for row in model.objects.for_user(owner).values()
+            ),
         )
         for model in CLIENT_MODELS
     }

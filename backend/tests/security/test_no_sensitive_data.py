@@ -51,7 +51,10 @@ def journey(tokens):
 
     assert request("get", "/api/me", as_ana(tokens)).status_code == 200
     created = request(
-        "post", "/api/projects", as_ana(tokens), {"name": "BANCO_SENSIBLE", "source_dialect": "tsql"}
+        "post",
+        "/api/projects",
+        as_ana(tokens),
+        {"name": "BANCO_SENSIBLE", "source_dialect": "tsql"},
     )
     assert created.status_code == 201
     project_id = created.json()["id"]
@@ -144,7 +147,9 @@ def test_route_parameters_are_resource_ids():
                 yield prefix + str(entry.pattern)
 
     parameters = {
-        name for route in routes(get_resolver().url_patterns) for name in ROUTE_PARAMETER.findall(route)
+        name
+        for route in routes(get_resolver().url_patterns)
+        for name in ROUTE_PARAMETER.findall(route)
     }
 
     assert parameters, "debería haber rutas con recurso"
