@@ -33,7 +33,7 @@ sequenceDiagram
     U->>A: sigue
     A-->>U: 302 → P (login y consentimiento)
     P-->>A: identidad del usuario
-    A->>A: Action post-login: añade email, nombre y avatar al access token
+    A->>A: Action post-login: añade email, nombre, avatar y email_verified al access token
     A-->>U: 302 → /auth/callback?code…&state…
     U->>F: GET /auth/callback
     F->>A: POST /oauth/token (code + code_verifier)
@@ -51,7 +51,7 @@ sequenceDiagram
 - Proveedores: **Google** (`google-oauth2`) y **Microsoft** (DP-014), este último **solo con cuentas personales** en el MVP (conexión social). Las cuentas de trabajo o institucionales (Entra ID) exigen una conexión empresarial y llegan con el SSO empresarial (ROS-102, Fase 3). La base de datos de usuario/contraseña de Auth0 está **desactivada**.
 - Scopes: `openid profile email offline_access`, con audiencia `AUTH0_AUDIENCE` (Rosetta API). Nada más (RNF-36, ROS-101).
 - Identidad: el usuario local se vincula por **`auth0_sub`**. Si el correo ya existe con otro proveedor, Auth0 crea otra identidad; en el MVP **no** se vinculan automáticamente y Rosetta muestra el error `account_exists_other_provider` (la vinculación es ROS-98, Fase 3). Si para un `auth0_sub` ya conocido el proveedor informa un correo que ya pertenece a otro usuario, se deja entrar, **se conserva el correo anterior** (no se actualiza) y se registra un evento `WARNING` sin datos personales (CD-006).
-- Solo se aceptan correos **verificados** (la Action post-login rechaza `email_verified=false`).
+- Solo se aceptan correos **verificados**, con el control en dos capas: la Action post-login rechaza `email_verified=false` o sin correo y añade el claim `https://rosetta/email_verified`; Django lo exige verdadero y responde `403 email_not_verified` si falta (CD-008). Ningún componente es el único control.
 - Cancelar el consentimiento o fallo del proveedor → `/auth/error?code=…` con mensaje claro y botón para reintentar (sin pantalla en blanco ni bucle). Si el backend rechaza la cuenta después de autenticarse (403 `account_*`), `/auth/denied?code=…` cierra la sesión del SDK y lleva a `/auth/error`, para evitar un bucle; la lista blanca de cierre de sesión del tenant es exactamente `/login` y `/auth/error` (CD-007).
 
 ## 3. Sesión y tokens (ROS-92, ROS-187, ROS-188)

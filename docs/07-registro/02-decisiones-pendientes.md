@@ -34,6 +34,7 @@
 | [DP-023](#dp-023) | ¿Qué hacer si el proveedor de acceso no entrega el nombre? | Sprint 1 (ROS-185) | — (ver recomendación) | Abierta |
 | [DP-024](#dp-024) | ¿Hace falta un acceso de administración interna en el MVP y cómo se protege? | Sprint 1 (ROS-180) | Consola administrativa no expuesta | Abierta |
 | [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | Abierta |
+| [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | Abierta |
 
 ---
 
@@ -196,6 +197,14 @@
 | Correo no verificado | "{proveedor} no confirma que tu correo esté verificado. Verifícalo allí e inténtalo de nuevo." |
 | Correo no entregado | "{proveedor} no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo." |
 | Cuenta desactivada | "Tu cuenta está desactivada." `[PENDIENTE: canal de contacto, no definido en el MVP]` |
+| Forma genérica de `{proveedor}` (cuando la pantalla de error no sabe con qué proveedor se intentó entrar) | "tu proveedor de acceso" (por ejemplo: "Cancelaste el inicio de sesión con tu proveedor de acceso.") |
 
 - **Recomendación:** aprobar con los ajustes que indique el responsable de contenido. Definir junto con los textos los códigos de error nuevos (hoy solo existen `oauth_denied`, `oauth_failed` y `account_exists_other_provider`).
 - **Afecta:** ROS-184, ROS-186, [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), [03-pantallas §7](../05-diseno/03-pantallas.md), spec 002 (FR-002, FR-019, FR-036…FR-038).
+
+<a id="dp-026"></a>
+### DP-026 · Versionado de la Acción post-login del tenant
+- **Contexto:** la Acción `rosetta-claims-post-login` vive solo dentro del tenant de Auth0 (se creó con el MCP y no hay copia en el repositorio). Ahora aporta un control de seguridad (denegar correos no verificados o ausentes) y los claims que el backend exige, incluido `email_verified` ([CD-008](03-registro-de-sincronizacion.md)). Sin una copia versionada, un cambio hecho en el panel no pasa por revisión de PR ni queda registrado, y el tenant de producción no se puede reproducir con certeza.
+- **Opciones:** A) Versionar el código de la Acción en el repositorio (por ejemplo `infra/auth0/actions/rosetta-claims-post-login.js`) y desplegarla a mano desde ahí, citando el archivo en el acta. B) Mantenerla solo en el tenant y exportar su código al acta de cada verificación. C) Versionarla y desplegarla desde CI (más piezas y un secreto de gestión nuevo).
+- **Recomendación:** **A**: da revisión y reproducibilidad sin añadir automatización ni secretos (Constitución V y VI).
+- **Afecta:** ROS-182, ROS-183, ROS-189, comprobación C11 de la lista de configuración de la feature 002 (`specs/002-autenticacion-oauth/quickstart.md`) y la estructura del repositorio ([08-infraestructura §1](../03-arquitectura/08-infraestructura-y-entornos.md)).
