@@ -12,7 +12,7 @@
 | Sesión del usuario | Robo de refresh token | El refresh vive solo en la sesión cifrada del servidor de Next; rotación con detección de reuso activada en Auth0 |
 | Flujo OAuth | Interceptación del código, CSRF de login, redirect abierto | PKCE (S256) y `state` del SDK de Auth0; callback, logout y orígenes en lista blanca del tenant, sin comodines (ROS-189) |
 | API | Token falsificado o de otra aplicación | Django valida firma RS256 con JWKS del tenant, `iss`, `aud` = Rosetta API, `exp`, algoritmo y `kid` (ROS-181) |
-| Tenant de Auth0 | Cambios no autorizados en la configuración | Acceso al panel con MFA; el MCP de Auth0 solo contra el tenant de **desarrollo** y con permisos mínimos |
+| Tenant de Auth0 | Cambios no autorizados en la configuración | Acceso al panel con MFA; el MCP de Auth0 solo contra el tenant de **desarrollo**, con una aplicación *Machine to Machine* propia (nunca la de Rosetta Web) y permisos mínimos sobre la Management API |
 | Secretos | Filtrado en el repositorio o logs | Variables de entorno, `gitleaks`, filtros de logs (ROS-190) |
 | Archivos subidos | Archivo malicioso / enorme | Límite de tamaño, extensión y tipo; se procesan como texto, nunca se ejecutan; nombre aleatorio en almacenamiento |
 | Datos en tránsito | Escucha | HTTPS obligatorio + HSTS (ROS-179) |
@@ -95,7 +95,7 @@ Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route han
 - Secretos: `DJANGO_SECRET_KEY`, `AUTH0_SECRET` (cifra la cookie de sesión), `AUTH0_CLIENT_SECRET`, `DATABASE_URL`, credenciales de almacenamiento, `SENTRY_DSN`. Los secretos de Google y Microsoft **se guardan en el panel de Auth0**, no en Rosetta.
 - Rotación: `AUTH0_CLIENT_SECRET` se rota desde el panel (Auth0 permite dos secretos durante la transición); `AUTH0_SECRET` rotado cierra las sesiones activas (aceptable).
 - `gitleaks` en pre-commit y CI.
-- El MCP de Auth0 guarda su token en el llavero del sistema operativo; al terminar se ejecuta `npx @auth0/auth0-mcp-server logout`.
+- El MCP de Auth0 (solo tenant de desarrollo) usa una aplicación *Machine to Machine* propia con permisos mínimos sobre la Management API (`read:clients`, `update:clients`, `read:resource_servers`, `read:connections`, `read:actions`, `update:actions`, `read:attack_protection`). Queda conectado de forma permanente: un lanzador local, fuera del repositorio, pide un token nuevo con *client credentials* en cada arranque y lo pasa al servidor por variable de entorno (el llavero de Windows no admite el tamaño del token). El secreto de esa aplicación vive solo en variables de entorno del usuario, nunca en el repositorio ni en el chat de un agente; si se expone, se rota (CD-010). Nunca se usa el MCP contra producción.
 
 ## 7. Logs y privacidad
 

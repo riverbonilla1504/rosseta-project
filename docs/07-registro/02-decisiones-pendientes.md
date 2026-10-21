@@ -35,6 +35,7 @@
 | [DP-024](#dp-024) | ¿Hace falta un acceso de administración interna en el MVP y cómo se protege? | Sprint 1 (ROS-180) | Consola administrativa no expuesta | Abierta |
 | [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | Abierta |
 | [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | Abierta |
+| [DP-027](#dp-027) | ¿Cuánto tiempo guarda el servicio de identidad el nombre, el correo y el avatar, y cómo se borran? | Antes del tenant de producción | Lo que haga el plan de Auth0 por defecto (sin borrado propio) | Abierta |
 
 ---
 
@@ -208,3 +209,10 @@
 - **Opciones:** A) Versionar el código de la Acción en el repositorio (por ejemplo `infra/auth0/actions/rosetta-claims-post-login.js`) y desplegarla a mano desde ahí, citando el archivo en el acta. B) Mantenerla solo en el tenant y exportar su código al acta de cada verificación. C) Versionarla y desplegarla desde CI (más piezas y un secreto de gestión nuevo).
 - **Recomendación:** **A**: da revisión y reproducibilidad sin añadir automatización ni secretos (Constitución V y VI).
 - **Afecta:** ROS-182, ROS-183, ROS-189, comprobación C11 de la lista de configuración de la feature 002 (`specs/002-autenticacion-oauth/quickstart.md`) y la estructura del repositorio ([08-infraestructura §1](../03-arquitectura/08-infraestructura-y-entornos.md)).
+
+<a id="dp-027"></a>
+### DP-027 · Retención de los datos personales en el servicio de identidad
+- **Contexto:** Auth0 guarda el nombre, el correo y el avatar de cada persona (ADR-0007: encargado del tratamiento). Ningún documento define cuánto tiempo los conserva, qué pasa cuando una cuenta de Rosetta se desactiva ni cómo se atiende una petición de borrado. Se detectó al revisar `checklists/acceso.md` de la spec 002 (CHK038). La región del tenant ya está en [DP-015](#dp-015).
+- **Opciones:** A) Aceptar la retención por defecto del plan de Auth0 y documentarla, con borrado manual en el panel ante una petición. B) Borrar el usuario de Auth0 cuando se desactiva su cuenta en Rosetta (requiere un proceso y permisos de gestión). C) Definir un plazo de retención tras la última actividad.
+- **Recomendación:** **A** en el MVP (sin piezas nuevas), revisándola con [DP-015](#dp-015) antes de producción.
+- **Afecta:** ROS-182, ROS-190, [07-seguridad §7](../03-arquitectura/07-seguridad-y-autenticacion.md), spec 002 (Assumptions).
