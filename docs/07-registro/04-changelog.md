@@ -7,6 +7,18 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.15.0] — 2026-10-20 · CD-016
+
+### Añadido
+- [EC-027](01-errores-conocidos.md#ec-027) (resuelto: `created_at` de `catalog_column_interpretation` en el [diccionario](../04-datos/02-diccionario-de-datos.md)), [EC-028](01-errores-conocidos.md#ec-028), [EC-029](01-errores-conocidos.md#ec-029) y [EC-030](01-errores-conocidos.md#ec-030).
+- [DP-029](02-decisiones-pendientes.md#dp-029) (textos que faltan en proyectos, decidida: aprobados en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md)) y [DP-030](02-decisiones-pendientes.md#dp-030) (access token en el payload RSC de desarrollo, decidida: corregir).
+
+### Cambiado
+- [EC-025](01-errores-conocidos.md#ec-025) resuelto (T062 de la 003).
+- [07-seguridad §5](../03-arquitectura/07-seguridad-y-autenticacion.md): `SECURE_SSL_REDIRECT` activo en producción.
+- [04-frontend §1](../03-arquitectura/04-frontend.md): "no encontrado" vive en `p/not-found.tsx`.
+- [Matriz de trazabilidad](../06-calidad/03-matriz-de-trazabilidad.md): 002 y 003 con spec, plan, tareas y análisis hechos; historias de la 003 en implementación.
+
 ## [1.14.0] — 2026-10-19 · CD-015
 
 ### Cambiado

@@ -20,9 +20,9 @@ frontend/
 │   │   │   ├── layout.tsx                # barra superior: marca, navegación, insignias
 │   │   │   ├── onboarding/page.tsx
 │   │   │   ├── projects/page.tsx         # listado y creación de proyectos
+│   │   │   ├── p/not-found.tsx           # proyecto inexistente o ajeno (mismo aspecto); Next atiende el notFound() del layout del proyecto con el segmento padre
 │   │   │   └── p/[projectId]/
-│   │   │       ├── layout.tsx            # pestañas (DP-017), insignia, selector de proyecto, aviso de solo lectura
-│   │   │       ├── not-found.tsx         # proyecto inexistente o ajeno (mismo aspecto en ambos casos)
+│   │   │       ├── layout.tsx            # pestañas (DP-017), insignia, selector de proyecto (oculto en un archivado), aviso de solo lectura
 │   │   │       ├── page.tsx              # Panorama
 │   │   │       ├── review/page.tsx       # Revisión (?column=<uuid>)
 │   │   │       ├── catalog/page.tsx      # Catálogo: lista de tablas

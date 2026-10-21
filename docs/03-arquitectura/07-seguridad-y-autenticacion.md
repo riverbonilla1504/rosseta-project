@@ -87,7 +87,7 @@ Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route han
 | `X-Frame-Options` | `DENY` |
 | `X-Content-Type-Options` | `nosniff` |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` |
-| `SECURE_PROXY_SSL_HEADER`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` | activos en prod |
+| `SECURE_PROXY_SSL_HEADER`, `SECURE_SSL_REDIRECT`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` | activos en prod |
 | `DEBUG` | `False` fuera de dev (prueba en CI que `prod.py` lo fuerza) |
 | `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | por entorno |
 
