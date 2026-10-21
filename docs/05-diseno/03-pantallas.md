@@ -9,7 +9,7 @@
 ```text
 ┌───────────────────────────────────────────────────────────────────────────────┐
 │ Rosetta MOTOR DE EVIDENCIA   Panorama Revisión Catálogo [Fuentes]             │
-│                                      [CORE_PRD · sqlserver] (solo lectura) redacción… │
+│                                      [CORE_PRD · tsql] (solo lectura) redacción…      │
 ├───────────────────────────────────────────────────────────────────────────────┤
 │  Título de pantalla (display)                         [acción sec.] [acción ⟶]│
 │  Subtítulo con cifras del proyecto                                              │
@@ -19,7 +19,8 @@
 
 - Fondo `--nx-bg`, contenido alineado a la izquierda con ancho máximo ~1280 px.
 - Navegación superior con la pestaña activa en acento.
-- Insignias a la derecha: proyecto · dialecto (mono), "solo lectura" (contorno), modo de redacción.
+- Pestañas del MVP: Panorama · Revisión · Catálogo · Fuentes; Hallazgos y Generador no se muestran hasta la Fase 2 ([DP-017](../07-registro/02-decisiones-pendientes.md#dp-017)).
+- Insignias a la derecha: proyecto · dialecto (mono; valor interno `tsql`, `oracle` o `postgres`, [DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)), "solo lectura" (contorno), modo de redacción.
 
 ---
 
@@ -108,9 +109,9 @@ Deben diseñarse con Nocturne en la feature correspondiente (la spec incluye un 
 
 | Pantalla | Ruta | Contenido mínimo | Feature |
 |---|---|---|---|
-| Login | `/login` | Marca, frase de valor, "Continuar con Google", "Continuar con Microsoft" (van a `/auth/login?connection=…` de Auth0), nota de privacidad (textos: `[PENDIENTE: DP-025]`) | 002 |
-| Error de acceso | `/auth/error` | Mensaje según código (`oauth_denied`, `oauth_failed`, `account_exists_other_provider`) + "Volver a intentar"; códigos y textos de correo no verificado, correo no entregado y cuenta desactivada: `[PENDIENTE: DP-025]` | 002 |
-| Onboarding | `/onboarding` | Bienvenida con el nombre y un solo paso en el MVP: crear el primer proyecto (nombre, dialecto); el onboarding termina al crearlo. El paso "subir el DDL" se añade cuando exista la feature 004 (CD-006) | 002, 003 |
+| Login | `/login` | Marca, frase de valor, "Continuar con Google", "Continuar con Microsoft" (van a `/auth/login?connection=…` de Auth0), nota de privacidad (textos en [04-contenido §5](04-contenido-y-redaccion.md), DP-025) | 002 |
+| Error de acceso | `/auth/error` | Mensaje según código (`oauth_denied`, `oauth_failed`, `account_exists_other_provider`, `email_not_verified`, `email_missing`, `account_disabled`; textos en [04-contenido §5](04-contenido-y-redaccion.md), DP-025) + "Volver a intentar" | 002 |
+| Onboarding | `/onboarding` | Bienvenida con el nombre y un solo paso en el MVP: crear el primer proyecto (nombre y dialecto: SQL Server, Oracle o PostgreSQL, [DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)); el onboarding termina al crearlo. El paso "subir el DDL" se añade cuando exista la feature 004 (CD-006) | 002, 003 |
 | Proyectos | `/projects` | Lista (nombre, fecha, nº tablas/columnas, % confirmado), crear, renombrar, archivar, filtro archivados | 003 |
 | Fuentes | `/p/{id}/sources` | `FileDrop` para DDL y para muestras (elegir tabla), lista de fuentes con estado y cobertura, eliminar; sección Convenciones | 004 |
 | Convenciones | sección de Fuentes | Tabla de reglas (globales de solo lectura + del proyecto editables), aviso de conflictos entre reglas | 004 |

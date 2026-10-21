@@ -25,8 +25,7 @@ frontend/
 │   │   │       ├── review/page.tsx       # Revisión (?column=<uuid>)
 │   │   │       ├── catalog/page.tsx      # Catálogo: lista de tablas
 │   │   │       ├── catalog/[tableId]/page.tsx   # tabla columna por columna (?column=<uuid>)
-│   │   │       ├── sources/page.tsx      # Fuentes: subir DDL/CSV, estado, cobertura
-│   │   │       └── conventions/page.tsx  # Convenciones de nombres
+│   │   │       └── sources/page.tsx      # Fuentes: subir DDL/CSV, estado, cobertura; sección Convenciones (DP-017)
 │   ├── design-system/                    # Nocturne: tokens.css + componentes base y de dominio
 │   │   ├── tokens.css
 │   │   ├── components/                   # Button, Input, Card, Table, Badge, Tabs…
@@ -54,12 +53,12 @@ frontend/
 | Revisión | `/p/{id}/review` | ROS-42…48 | Sí |
 | Catálogo | `/p/{id}/catalog` | ROS-50…55 | Sí |
 | Fuentes | `/p/{id}/sources` | ROS-16, 17, 22 | **No** (necesaria para cargar archivos) |
-| Hallazgos | — | Fase 2 | Sí |
-| Generador | — | Fase 2 | Sí |
+| Hallazgos | — | Fase 2 (no se muestra en el MVP) | Sí |
+| Generador | — | Fase 2 (no se muestra en el MVP) | Sí |
 
-`[NECESITA ACLARACIÓN]` si Hallazgos y Generador se muestran deshabilitados ("Próximamente") u ocultos en el MVP, y si Convenciones es pestaña o sección de Fuentes: [DP-017](../07-registro/02-decisiones-pendientes.md). **Por defecto:** ocultos; Convenciones como sección dentro de Fuentes.
+Decidido en [DP-017](../07-registro/02-decisiones-pendientes.md#dp-017) (CD-012): Hallazgos y Generador **no se muestran** en el MVP (ni deshabilitados ni "Próximamente"); Fuentes es la 4.ª pestaña y Convenciones es una **sección** de Fuentes, sin ruta propia.
 
-Barra superior (del prototipo): marca "Rosetta · MOTOR DE EVIDENCIA", pestañas, insignia del proyecto (en el prototipo `CORE_PRD · sqlserver`; en el MVP: `nombre del proyecto · dialecto`), insignia "solo lectura" e indicador de redacción ("redacción por reglas" en el MVP; ver [04-contenido-y-redaccion.md](../05-diseno/04-contenido-y-redaccion.md)).
+Barra superior (del prototipo): marca "Rosetta · MOTOR DE EVIDENCIA", pestañas, insignia del proyecto (en el prototipo `CORE_PRD · sqlserver`; en el MVP: `nombre del proyecto · dialecto`, con el valor interno `tsql`, `oracle` o `postgres`, [DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)), insignia "solo lectura" e indicador de redacción ("redacción por reglas" en el MVP; ver [04-contenido-y-redaccion.md](../05-diseno/04-contenido-y-redaccion.md)).
 
 ## 3. Estado y datos
 
