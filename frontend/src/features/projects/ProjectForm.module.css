@@ -1,0 +1,80 @@
+/* Formulario compartido (contracts/ui-project-form.md). Solo tokens de Nocturne.
+   EC-024: --nx-text-secondary y --nx-text-muted no llegan a 4,5:1 sobre --nx-surface y el
+   formulario puede ir sobre una superficie (onboarding): los textos usan --nx-text. El error
+   no depende solo del color: lleva texto y una marca lateral.
+   Contraste calculado (WCAG 2.1): --nx-border-strong da 1,6:1 como borde de campo (< 3:1,
+   1.4.11), por eso el campo usa --nx-accent-outline (4,1:1 sobre --nx-bg, 3,6:1 sobre
+   --nx-surface). El botón primario es de contorno (Nocturne §2.3), pero --nx-accent-strong como
+   texto da 4,18:1 sobre --nx-surface: el texto va en --nx-text y el contorno en el acento. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nx-space-2);
+}
+
+.label {
+  color: var(--nx-text);
+  font-size: var(--nx-text-body);
+}
+
+.input {
+  padding: var(--nx-space-3);
+  border: 1px solid var(--nx-accent-outline);
+  border-radius: var(--nx-radius-md);
+  background: var(--nx-surface-raised);
+  color: var(--nx-text);
+  font: inherit;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--nx-danger);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nx-space-4);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nx-space-2);
+  color: var(--nx-text);
+  cursor: pointer;
+}
+
+.error {
+  margin: 0;
+  padding-left: var(--nx-space-3);
+  border-left: 2px solid var(--nx-danger);
+  color: var(--nx-text);
+  font-size: var(--nx-text-caption);
+}
+
+.submit {
+  align-self: flex-start;
+  padding: var(--nx-space-3) var(--nx-space-5);
+  border: 1px solid var(--nx-accent-strong);
+  border-radius: var(--nx-radius-md);
+  background: transparent;
+  color: var(--nx-text);
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--nx-transition);
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--nx-surface-raised);
+}
+
+.submit:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}

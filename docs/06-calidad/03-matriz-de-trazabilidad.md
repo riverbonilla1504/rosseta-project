@@ -25,9 +25,9 @@
 | [ROS-91](../02-requisitos/02-historias-de-usuario.md#ros-91) | Registro y onboarding de cuenta nueva | 002 | 185, 186 | — | — | 01 | — | — | — | ⬜ |
 | [ROS-92](../02-requisitos/02-historias-de-usuario.md#ros-92) | Gestión de sesión y tokens (refresh, expiración, cierre) | 002 | 187, 188 | — | RNF-08 | 08 | — | — | — | ⬜ |
 | [ROS-93](../02-requisitos/02-historias-de-usuario.md#ros-93) | Seguridad del flujo OAuth (PKCE, state, redirect URIs) | 002 | 189, 190 | — | RNF-05…07, 09 | — | — | — | — | ⬜ |
-| [ROS-78](../02-requisitos/02-historias-de-usuario.md#ros-78) | Múltiples proyectos/bases por usuario | 003 | 172, 173, 174 | RN-24 | — | 01 | — | — | — | ⬜ |
-| [ROS-81](../02-requisitos/02-historias-de-usuario.md#ros-81) | Persistir catálogo, evidencia y confirmaciones | 003 | 175, 176, 177 | — | RNF-16, 20 | — | — | — | — | ⬜ |
-| [ROS-84](../02-requisitos/02-historias-de-usuario.md#ros-84) | Seguridad de datos y control de acceso | 003 | 178, 179 | RN-24, RN-25 | RNF-01…04 | 09 | — | — | — | ⬜ |
+| [ROS-78](../02-requisitos/02-historias-de-usuario.md#ros-78) | Múltiples proyectos/bases por usuario | 003 | 172, 173, 174 | RN-24 | — | 01 | 003: FR-001…013, 029 | `specs/003-…/evidence/fr-coverage.md` | — | 🟦 |
+| [ROS-81](../02-requisitos/02-historias-de-usuario.md#ros-81) | Persistir catálogo, evidencia y confirmaciones | 003 | 175, 176, 177 | — | RNF-16, 20 | — | 003: FR-021…028 | `specs/003-…/evidence/fr-coverage.md` | — | 🟦 |
+| [ROS-84](../02-requisitos/02-historias-de-usuario.md#ros-84) | Seguridad de datos y control de acceso | 003 | 178, 179 | RN-24, RN-25 | RNF-01…04 | 09 | 003: FR-014…020 | `specs/003-…/evidence/fr-coverage.md` | — | 🟦 |
 | [ROS-16](../02-requisitos/02-historias-de-usuario.md#ros-16) | Importar esquema / DDL de la base de datos | 004 | 120, 121, 122 | RN-19 | RNF-19 | 02 | — | — | — | ⬜ |
 | [ROS-17](../02-requisitos/02-historias-de-usuario.md#ros-17) | Cargar datos de muestra para perfilado | 004 | 123, 124, 125 | — | RNF-12 | 03 | — | — | — | ⬜ |
 | [ROS-21](../02-requisitos/02-historias-de-usuario.md#ros-21) | Definir catálogo de convenciones de nombres | 004 | 126, 127 | RN-21 | — | — | — | — | — | ⬜ |
@@ -83,8 +83,8 @@
 | Feature | Carpeta | Historias | Sprint | Spec | Plan | Tasks | Analyze | Converge |
 |---|---|---|---|---|---|---|---|---|
 | 001 | `specs/001-design-system-nocturne/` | ROS-74, 75 | 1 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 002 | `specs/002-autenticacion-oauth/` | ROS-89…93 | 1 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| 003 | `specs/003-proyectos-y-nucleo-de-datos/` | ROS-78, 81, 84 | 1 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| 002 | `specs/002-autenticacion-oauth/` | ROS-89…93 | 1 | 🟩 | 🟩 | 🟩 | 🟩 | ⬜ |
+| 003 | `specs/003-proyectos-y-nucleo-de-datos/` | ROS-78, 81, 84 | 1 | 🟩 | 🟩 | 🟩 | 🟩 | ⬜ |
 | 004 | `specs/004-ingesta-de-fuentes/` | ROS-16, 17, 21, 22, 23 | 2 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | 005 | `specs/005-motor-de-evidencia/` | ROS-25…29, 33 | 3 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | 006 | `specs/006-cola-priorizada/` | ROS-36 | 3 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |

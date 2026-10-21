@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 urlpatterns = [
     path("api/", include("apps.core.urls")),
     path("api/", include("apps.accounts.urls")),
+    path("api/", include("apps.projects.urls")),
     # Pública de forma explícita (FR-012): descripción del contrato, sin autenticación.
     path(
         "api/schema/",

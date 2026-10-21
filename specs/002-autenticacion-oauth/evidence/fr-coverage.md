@@ -23,8 +23,8 @@ Un FR sin prueba es un hallazgo y no se cierra la feature.
 | FR-016 | `backend/tests/api/test_me.py` | ✅ |
 | FR-017 | `backend/tests/accounts/test_services.py`<br>`backend/tests/api/test_onboarding.py` | ✅ |
 | FR-018 | `frontend/tests/unit/app-layout-guard.test.tsx`<br>`frontend/tests/unit/auth0-oncallback.test.ts`<br>`frontend/tests/unit/landing.test.tsx` | ✅ |
-| FR-019 | — | ❌ sin prueba |
-| FR-020 | — | ❌ sin prueba |
+| FR-019 | `frontend/tests/unit/onboarding.test.tsx`<br>`frontend/tests/e2e/onboarding.spec.ts` | ✅ |
+| FR-020 | `frontend/tests/unit/onboarding.test.tsx`<br>`frontend/tests/e2e/onboarding.spec.ts` | ✅ |
 | FR-021 | `backend/tests/api/test_onboarding.py`<br>`frontend/tests/unit/app-layout-guard.test.tsx` | ✅ |
 | FR-022 | `frontend/tests/e2e/session.spec.ts`<br>`frontend/tests/unit/api-client.test.ts`<br>`frontend/tests/unit/api-proxy.test.ts`<br>`frontend/tests/unit/middleware.test.ts` | ✅ |
 | FR-023 | `frontend/tests/e2e/session.spec.ts` | ✅ |
@@ -46,4 +46,4 @@ Un FR sin prueba es un hallazgo y no se cierra la feature.
 | FR-039 | `frontend/tests/unit/api-client-denied.test.ts`<br>`frontend/tests/unit/auth-denied-route.test.ts`<br>`frontend/tests/unit/auth-error-page.test.tsx`<br>`frontend/tests/unit/auth0-oncallback.test.ts` | ✅ |
 | FR-040 | `frontend/tests/e2e/a11y.spec.ts`<br>`frontend/tests/unit/login-page.test.tsx` | ✅ |
 
-**Sin prueba:** FR-019, FR-020.
+**Sin prueba:** ninguno (FR-019 y FR-020 se cubrieron el 2026-10-19 con T051 y T052, en la rama de la 003).

@@ -28,6 +28,11 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "apps.core",
     "apps.accounts",
+    "apps.projects",
+    "apps.catalog",
+    "apps.sources",
+    "apps.evidence",
+    "apps.review",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -114,6 +119,11 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Contrato en docs/03-arquitectura/05-api.md",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # Nombres únicos para los enums que comparten nombre de campo (esquema sin avisos, T062).
+    "ENUM_NAME_OVERRIDES": {
+        "HealthStatusEnum": ["ok", "error"],
+        "SourceStatusEnum": "apps.sources.models.SourceStatus",
+    },
 }
 
 # --- Seguridad común (docs/03-arquitectura/07-seguridad-y-autenticacion.md §5) ---
@@ -128,10 +138,12 @@ LOGGING = {
     "filters": {"redact": {"()": "apps.accounts.logging.RedactFilter"}},
     "formatters": {
         "plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"},
-        # Eventos de seguridad con campos cerrados (research R-11).
+        # Eventos de seguridad con campos cerrados (research R-11). resource_id solo lo llevan
+        # los accesos denegados por pertenencia (feature 003, FR-017); el resto imprime "-".
         "security": {
             "format": "%(asctime)s %(levelname)s %(name)s event=%(event)s reason=%(reason)s "
-            "user_id=%(user_id)s path=%(path)s"
+            "user_id=%(user_id)s path=%(path)s resource_id=%(resource_id)s",
+            "defaults": {"resource_id": "-"},
         },
     },
     "handlers": {

@@ -65,3 +65,14 @@ def test_prod_rejects_test_overrides_and_non_https(monkeypatch, restore_settings
 
     with pytest.raises(ImproperlyConfigured):
         _load_prod(monkeypatch, **override)
+
+
+@pytest.mark.story("ROS-84")
+@pytest.mark.fr("003:FR-020")
+def test_prod_forces_https_and_permanent_hsts():
+    """07-seguridad §5: redirección a HTTPS y HSTS de un año con subdominios (feature 003)."""
+    prod = importlib.import_module("config.settings.prod")
+
+    assert prod.SECURE_SSL_REDIRECT is True
+    assert prod.SECURE_HSTS_SECONDS == 31_536_000
+    assert prod.SECURE_HSTS_INCLUDE_SUBDOMAINS is True

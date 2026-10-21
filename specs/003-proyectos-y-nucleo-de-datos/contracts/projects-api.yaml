@@ -1,0 +1,274 @@
+openapi: 3.0.3
+info:
+  title: Rosetta API — proyectos y estado (feature 003)
+  version: 0.1.0
+  description: |
+    Parte del contrato de la API que implementa la feature 003. La fuente de verdad del contrato
+    completo es docs/03-arquitectura/05-api.md; este fragmento lo detalla y NO lo reemplaza.
+    Las partes marcadas (D3), (D4) y (D5) se llevaron a 05-api §2, §3.10 y §4 con CD-013.
+
+    Convenciones (05-api §1): JSON UTF-8, snake_case, fechas ISO 8601 UTC, identificadores UUID,
+    errores con la forma { "error": { "code", "message", "details" } }.
+
+    Aislamiento (FR-014, FR-015): toda operación sobre un proyecto ajeno o inexistente responde
+    404 not_found con el mismo cuerpo; ningún listado incluye recursos de otra persona.
+servers:
+  - url: /
+    description: Mismo origen que el frontend (proxy BFF de la feature 002).
+security:
+  - bearerAuth: []
+paths:
+  /api/projects:
+    get:
+      operationId: listProjects
+      summary: Proyectos de la persona, por última actividad
+      description: |
+        Activos por defecto; con archived=true, solo los archivados (D3). Orden: last_activity_at
+        descendente y luego id (FR-005). Paginación estándar de 05-api §1 (page, page_size ≤ 200).
+        Historia: ROS-78 · Tarea: ROS-173.
+      tags: [proyectos]
+      parameters:
+        - name: archived
+          in: query
+          required: false
+          schema: { type: boolean, default: false }
+        - name: page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: page_size
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Lista de proyectos de la persona autenticada.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, next, previous, results]
+                properties:
+                  count: { type: integer, minimum: 0 }
+                  next: { type: string, nullable: true }
+                  previous: { type: string, nullable: true }
+                  results:
+                    type: array
+                    items: { $ref: "#/components/schemas/ProjectSummary" }
+        "401": { $ref: "#/components/responses/SessionExpired" }
+    post:
+      operationId: createProject
+      summary: Crea un proyecto (nombre y dialecto)
+      description: |
+        El nombre se recorta y debe tener de 1 a 120 caracteres; es único entre los proyectos
+        activos de la persona sin distinguir mayúsculas (FR-001, FR-003, FR-004). El dialecto es
+        obligatorio y no se podrá cambiar (FR-010, DP-019). Historia: ROS-78 · Tarea: ROS-173.
+      tags: [proyectos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [name, source_dialect]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 120 }
+                source_dialect: { $ref: "#/components/schemas/Dialect" }
+      responses:
+        "201":
+          description: Proyecto creado.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectSummary" }
+        "400": { $ref: "#/components/responses/ValidationOrNameTaken" }
+        "401": { $ref: "#/components/responses/SessionExpired" }
+  /api/projects/{project_id}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getProject
+      summary: Detalle de un proyecto propio (también archivado, en solo lectura)
+      tags: [proyectos]
+      responses:
+        "200":
+          description: Proyecto.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectSummary" }
+        "401": { $ref: "#/components/responses/SessionExpired" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: updateProject
+      summary: Renombra, cambia la descripción, archiva o desarchiva
+      description: |
+        Campos admitidos: name, description, archived (D3). source_dialect no se admite (400).
+        Sobre un proyecto archivado solo se admite { "archived": false } con un name opcional;
+        cualquier otro cambio responde 409 project_archived (FR-013). Al desarchivar, si el nombre
+        choca con un proyecto activo responde 400 project_name_taken y no cambia nada; el cliente
+        reenvía con un name nuevo. Historia: ROS-78 · Tarea: ROS-173.
+      tags: [proyectos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              minProperties: 1
+              properties:
+                name: { type: string, minLength: 1, maxLength: 120 }
+                description: { type: string }
+                archived: { type: boolean }
+      responses:
+        "200":
+          description: Proyecto actualizado.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectSummary" }
+        "400": { $ref: "#/components/responses/ValidationOrNameTaken" }
+        "401": { $ref: "#/components/responses/SessionExpired" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/ProjectArchived" }
+  /api/projects/{project_id}/state:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      operationId: getProjectState
+      summary: Estado resumido al abrir el proyecto (D5)
+      description: |
+        Una sola respuesta con el proyecto, la cobertura por nivel, las fuentes, el número de tablas
+        y la cabeza de la cola: las primeras 50 filas de la cola de 05-api §3.6, con su orden (impacto
+        desc, conflicto abierto desc, TABLA.COLUMNA asc). La cobertura tiene la forma de 05-api §3.7
+        sin el desglose por tabla. El catálogo completo se obtiene paginado en su feature.
+        Determinista: dos lecturas sin cambios intermedios devuelven el mismo documento (FR-021,
+        RNF-16). Historia: ROS-81 · Tarea: ROS-177.
+      tags: [proyectos]
+      responses:
+        "200":
+          description: Estado del proyecto.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectState" }
+        "401": { $ref: "#/components/responses/SessionExpired" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: UUID del proyecto. Un valor que no es un UUID también responde 404 not_found.
+      schema: { type: string }
+  schemas:
+    Dialect:
+      type: string
+      enum: [tsql, oracle, postgres]
+      description: Etiquetas en la interfaz "SQL Server", "Oracle", "PostgreSQL" (DP-019).
+    Level:
+      type: string
+      enum: [CONFIRMED, HIGH_UNVALIDATED, INFERRED, HYPOTHESIS, UNKNOWN]
+    ProjectSummary:
+      type: object
+      required: [id, name, description, source_dialect, archived, archived_at, created_at,
+                 last_activity_at, table_count, column_count, confirmed_ratio]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        description: { type: string }
+        source_dialect: { $ref: "#/components/schemas/Dialect" }
+        archived: { type: boolean }
+        archived_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+        last_activity_at: { type: string, format: date-time }
+        table_count: { type: integer, minimum: 0 }
+        column_count: { type: integer, minimum: 0 }
+        confirmed_ratio:
+          type: number
+          minimum: 0
+          maximum: 1
+          nullable: true
+          description: Confirmadas (directas + propagadas, DP-020) / column_count; null si no hay columnas.
+    ProjectState:
+      type: object
+      required: [project, coverage, sources, table_count, queue_head]
+      properties:
+        project: { $ref: "#/components/schemas/ProjectSummary" }
+        coverage:
+          type: object
+          required: [total_columns, by_level]
+          properties:
+            total_columns: { type: integer, minimum: 0 }
+            by_level:
+              type: object
+              description: Las cinco claves siempre presentes, con 0 si no hay columnas en ese nivel.
+              required: [CONFIRMED, HIGH_UNVALIDATED, INFERRED, HYPOTHESIS, UNKNOWN]
+              additionalProperties: false
+              properties:
+                CONFIRMED: { type: integer, minimum: 0 }
+                HIGH_UNVALIDATED: { type: integer, minimum: 0 }
+                INFERRED: { type: integer, minimum: 0 }
+                HYPOTHESIS: { type: integer, minimum: 0 }
+                UNKNOWN: { type: integer, minimum: 0 }
+        sources:
+          type: array
+          description: Orden por created_at y luego id.
+          items:
+            type: object
+            required: [id, kind, status, original_filename, created_at]
+            properties:
+              id: { type: string, format: uuid }
+              kind: { type: string, enum: [SCHEMA_DDL, DATA_SAMPLE] }
+              status: { type: string, enum: [PENDING, PROCESSING, READY, FAILED] }
+              original_filename: { type: string }
+              created_at: { type: string, format: date-time }
+        table_count: { type: integer, minimum: 0 }
+        queue_head:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            required: [column_id, identifier, level, impact, has_open_conflict]
+            properties:
+              column_id: { type: string, format: uuid }
+              identifier: { type: string, description: "TABLA.COLUMNA tal como el origen (RN-17)" }
+              level: { $ref: "#/components/schemas/Level" }
+              impact: { type: integer, minimum: 0 }
+              has_open_conflict: { type: boolean }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            details: { type: object }
+  responses:
+    SessionExpired:
+      description: Sin credencial válida (feature 002).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: |
+        not_found (D4). Mismo cuerpo para un proyecto inexistente, ajeno o con identificador
+        inválido (FR-015). Si el recurso existe y es ajeno, se registra access_denied sin datos
+        personales (FR-017).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationOrNameTaken:
+      description: validation_error (details por campo) o project_name_taken (D4) con details.name.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ProjectArchived:
+      description: project_archived (D4). El proyecto está archivado y solo admite desarchivar.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }

@@ -7,6 +7,39 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.15.0] — 2026-10-20 · CD-016
+
+### Añadido
+- [EC-027](01-errores-conocidos.md#ec-027) (resuelto: `created_at` de `catalog_column_interpretation` en el [diccionario](../04-datos/02-diccionario-de-datos.md)), [EC-028](01-errores-conocidos.md#ec-028), [EC-029](01-errores-conocidos.md#ec-029) y [EC-030](01-errores-conocidos.md#ec-030).
+- [DP-029](02-decisiones-pendientes.md#dp-029) (textos que faltan en proyectos, decidida: aprobados en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md)) y [DP-030](02-decisiones-pendientes.md#dp-030) (access token en el payload RSC de desarrollo, decidida: corregir).
+
+### Cambiado
+- [EC-025](01-errores-conocidos.md#ec-025) resuelto (T062 de la 003).
+- [07-seguridad §5](../03-arquitectura/07-seguridad-y-autenticacion.md): `SECURE_SSL_REDIRECT` activo en producción.
+- [04-frontend §1](../03-arquitectura/04-frontend.md): "no encontrado" vive en `p/not-found.tsx`.
+- [Matriz de trazabilidad](../06-calidad/03-matriz-de-trazabilidad.md): 002 y 003 con spec, plan, tareas y análisis hechos; historias de la 003 en implementación.
+
+## [1.14.0] — 2026-10-19 · CD-015
+
+### Cambiado
+- [DP-028](02-decisiones-pendientes.md#dp-028) decidida: los textos de la pantalla de proyectos y del formulario pasan a [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) tal como se propusieron.
+
+## [1.13.0] — 2026-10-19 · CD-014
+
+### Añadido
+- [EC-026](01-errores-conocidos.md#ec-026): el proxy BFF reenvía el cuerpo de las mutaciones sin `content-length` y Django lo recibe vacío (ROS-188).
+
+## [1.12.0] — 2026-10-14 · CD-013
+
+### Cambiado
+- **Proyectos** (spec 003, aclaraciones del 2026-10-14): `projects_project.last_activity_at` ordena la lista; el nombre es único entre los proyectos activos de la persona sin distinguir mayúsculas ([diccionario](../04-datos/02-diccionario-de-datos.md)); un proyecto archivado es de solo lectura y se puede desarchivar; al crear desde la lista se entra en el proyecto ([03-pantallas §7](../05-diseno/03-pantallas.md)).
+- [05-api](../03-arquitectura/05-api.md): §2 y §3.10 con la lista paginada, `?archived=true`, `PATCH` para desarchivar, la forma del resumen de proyecto y la del estado al abrir; §4 con `project_name_taken` y `project_archived` y `not_found` precisado.
+- [04-frontend §1](../03-arquitectura/04-frontend.md): `p/[projectId]/layout.tsx` y `not-found.tsx`.
+- [03-tareas-mvp](../02-requisitos/03-tareas-mvp.md): ROS-173 (desarchivar), ROS-174 (filtro de archivados y solo lectura), ROS-177 (caché del estado en el cliente).
+
+### Añadido
+- [DP-028](02-decisiones-pendientes.md#dp-028): textos de la pantalla de proyectos y del formulario (propuestas); "Aún no tienes proyectos." en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
+
 ## [1.11.0] — 2026-10-14 · CD-012
 
 ### Cambiado

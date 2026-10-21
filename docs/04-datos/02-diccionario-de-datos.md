@@ -39,8 +39,11 @@ Sin contraseña (`set_unusable_password`): el único método es Auth0 con Google
 | name | varchar(120) | No | Nombre visible (p. ej. `CORE_PRD`) |
 | description | text | No | Puede ser vacío |
 | source_dialect | varchar(20) | No | `tsql` \| `oracle` \| `postgres`; obligatorio al crear el proyecto; el DDL se interpreta con este dialecto ([DP-019](../07-registro/02-decisiones-pendientes.md#dp-019)) |
-| archived_at | timestamptz | Sí | `null` = activo |
+| archived_at | timestamptz | Sí | `null` = activo. Un proyecto archivado es de solo lectura: solo se puede desarchivar |
+| last_activity_at | timestamptz | No | Última actividad: el último cambio en el proyecto o en su contenido (crear, renombrar, archivar o desarchivar, cargar fuentes, acciones de revisión); abrirlo no cuenta. `= created_at` al crear. Ordena la lista de proyectos (CD-013) |
 | created_at, updated_at | timestamptz | No | |
+
+Único parcial `(owner_id, lower(name)) WHERE archived_at IS NULL`: el nombre no se repite entre los proyectos **activos** de una persona, sin distinguir mayúsculas; los archivados no cuentan (CD-013). Índice `(owner_id, last_activity_at DESC)`.
 
 ---
 
@@ -148,7 +151,7 @@ Conclusión vigente sobre la columna (1:1 con `catalog_column`).
 | impact | integer | No | Columnas que desbloquearía (§9 del motor) |
 | engine_version | varchar(20) | No | Versión del motor que calculó |
 | computed_at | timestamptz | No | Último recálculo |
-| updated_at | timestamptz | No | |
+| created_at, updated_at | timestamptz | No | `created_at` añadido en CD-016 (EC-027) |
 
 CHECK: `level = 'CONFIRMED'` ⇔ `confirmed_by_action_id IS NOT NULL` (garantía en BD de RN-02).
 

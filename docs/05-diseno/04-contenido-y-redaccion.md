@@ -78,6 +78,25 @@
 | Cuenta desactivada | "Tu cuenta está desactivada." Sin canal de contacto en el MVP (DP-025, DP-024) |
 | Forma genérica de {proveedor} (cuando no se conoce) | "tu proveedor de acceso" (p. ej. "Cancelaste el inicio de sesión con tu proveedor de acceso.") (DP-025) |
 | Control de cierre de sesión | "Cerrar sesión" (DP-025) |
+| Sin proyectos (lista de proyectos) | "Aún no tienes proyectos." (ROS-174, EC-022) |
+| Pantalla de proyectos (título) | "Proyectos" (DP-028) |
+| Formulario de proyecto: campos y botón | "Nombre del proyecto" · "Dialecto SQL" · "Crear proyecto" (DP-028) |
+| Nombre vacío | "Escribe un nombre para el proyecto." (DP-028) |
+| Nombre de más de 120 caracteres | "El nombre puede tener hasta 120 caracteres." (DP-028) |
+| Sin dialecto | "Elige el dialecto SQL de tu base." (DP-028) |
+| Nombre repetido entre activos | "Ya tienes un proyecto activo con ese nombre. Elige otro." (DP-028) |
+| Columnas de la lista de proyectos | "Nombre" · "Dialecto" · "Última actividad" · "Tablas" · "Columnas" · "Confirmadas"; sin columnas, "–" (DP-028) |
+| Filtro de proyectos | "Ver archivados" / "Ver activos" (DP-028) |
+| Renombrar proyecto | Acción "Renombrar"; diálogo "Renombrar proyecto"; botones "Guardar" y "Cancelar" (DP-028) |
+| Archivar proyecto (confirmación) | Título "Archivar {nombre}"; texto "El proyecto deja de aparecer en tu lista. Sus datos se conservan y puedes desarchivarlo cuando quieras."; botones "Archivar" y "Cancelar" (DP-028) |
+| Proyecto archivado (aviso) | "Proyecto archivado: solo lectura. Desarchívalo para hacer cambios." · acción "Desarchivar" (DP-028) |
+| Desarchivar con nombre ocupado | "Ya tienes un proyecto activo llamado {nombre}. Elige otro nombre para desarchivarlo." (DP-028) |
+| Selector de proyecto (nombre accesible) | "Cambiar de proyecto" (DP-028) |
+| Campo descripción (renombrar proyecto) | Etiqueta "Descripción (opcional)" (DP-029) |
+| Campo que no se puede cambiar | "Este campo no se puede cambiar." (DP-029) |
+| Filtro de archivados sin resultados | "No tienes proyectos archivados." (DP-029) |
+| Proyecto inexistente o ajeno | "Este proyecto no existe o no tienes acceso." · acción "Ir a tus proyectos" (DP-028) |
+| Pestaña cuya pantalla aún no existe | "{Pestaña} aún no está disponible." (temporal, hasta su feature; DP-028) |
 | Dialectos (selector del formulario de proyecto) | "SQL Server", "Oracle", "PostgreSQL"; en la insignia del proyecto se muestra el valor interno `tsql`, `oracle` o `postgres` (DP-019) |
 | Insignia de solo lectura | "solo lectura" (title: "Rosetta nunca escribe en tu base de datos.") |
 | Modo de redacción (MVP) | "redacción por reglas" (title: "Descripciones generadas con plantillas deterministas, sin LLM.") |

@@ -36,6 +36,9 @@
 | [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | **Decidida** |
 | [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | **Decidida** |
 | [DP-027](#dp-027) | ¿Cuánto tiempo guarda el servicio de identidad el nombre, el correo y el avatar, y cómo se borran? | Antes del tenant de producción | Lo que haga el plan de Auth0 por defecto (sin borrado propio) | **Decidida** |
+| [DP-028](#dp-028) | Textos de la pantalla de proyectos y del formulario de proyecto | Sprint 1 (ROS-174, feature 003) | Propuestas de la entrada, marcadas provisionales en el código | **Decidida** |
+| [DP-029](#dp-029) | Textos que faltan en proyectos: campo descripción, campo no admitido y filtro de archivados vacío | Cierre de la 003 | Propuestas de la entrada | **Decidida** |
+| [DP-030](#dp-030) | ¿Se corrige o se acepta en desarrollo el access token en el payload RSC (EC-029)? | Cierre de la 002 | Corregir | **Decidida** |
 
 ---
 
@@ -228,3 +231,55 @@
 - **Recomendación:** **A** en el MVP (sin piezas nuevas), revisándola con [DP-015](#dp-015) antes de producción.
 - **Afecta:** ROS-182, ROS-190, [07-seguridad §7](../03-arquitectura/07-seguridad-y-autenticacion.md), spec 002 (Assumptions).
 - **Decisión (2026-10-14, CD-012, responsable del producto):** **A.** En el MVP se acepta la retención por defecto del plan de Auth0 y se documenta; ante una petición de borrado, el usuario se borra **a mano** en el panel del tenant. Se revisa junto con [DP-015](#dp-015) antes de producción.
+
+<a id="dp-028"></a>
+### DP-028 · Textos de proyectos
+- **Contexto:** la spec 003 (ROS-78, ROS-174) necesita textos que [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) no define. Ya están definidos: las etiquetas de los dialectos (DP-019), "Aún no tienes proyectos." (ROS-174, EC-022), "Todavía no hay evidencia…" y el error genérico. Ningún agente decide el texto de la interfaz.
+- **Pregunta:** ¿se aprueban estos textos, o cuáles cambian? Son **propuestas**; siguen [04-contenido §1](../05-diseno/04-contenido-y-redaccion.md) (secos, breves, qué pasó y qué hacer, tuteo, botones que dicen lo que hacen).
+
+| Situación | Texto propuesto |
+|---|---|
+| Título de la pantalla | "Proyectos" |
+| Campo nombre / campo dialecto | "Nombre del proyecto" / "Dialecto SQL" |
+| Botón de crear (lista y onboarding) | "Crear proyecto" |
+| Nombre vacío | "Escribe un nombre para el proyecto." |
+| Nombre de más de 120 caracteres | "El nombre puede tener hasta 120 caracteres." |
+| Sin dialecto | "Elige el dialecto SQL de tu base." |
+| Nombre repetido entre activos | "Ya tienes un proyecto activo con ese nombre. Elige otro." |
+| Columnas de la lista | "Nombre" · "Dialecto" · "Última actividad" · "Tablas" · "Columnas" · "Confirmadas" |
+| Porcentaje confirmado sin columnas | "–" (como la confianza sin dato del prototipo) |
+| Filtro | "Ver archivados" / "Ver activos" |
+| Renombrar | Acción "Renombrar"; diálogo "Renombrar proyecto"; botones "Guardar" y "Cancelar" |
+| Archivar (confirmación) | Título "Archivar {nombre}"; texto "El proyecto deja de aparecer en tu lista. Sus datos se conservan y puedes desarchivarlo cuando quieras."; botones "Archivar" y "Cancelar" |
+| Aviso en un proyecto archivado | "Proyecto archivado: solo lectura. Desarchívalo para hacer cambios." |
+| Desarchivar | Acción "Desarchivar" |
+| Desarchivar con nombre ocupado | "Ya tienes un proyecto activo llamado {nombre}. Elige otro nombre para desarchivarlo." |
+| Selector de proyecto (nombre accesible) | "Cambiar de proyecto" |
+| Proyecto inexistente o ajeno | "Este proyecto no existe o no tienes acceso." · acción "Ir a tus proyectos" |
+| Pestaña cuya pantalla aún no existe (proyecto con fuentes) | "{Pestaña} aún no está disponible." (temporal, hasta su feature) |
+
+- **Recomendación:** aprobar con los ajustes que indique el responsable de contenido.
+- **Decisión (2026-10-19, CD-015, responsable del producto):** se **aprueban tal cual** los textos de la tabla. Pasan a [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) y el código quita sus marcas `PROVISIONAL (DP-028)`.
+- **Afecta:** ROS-174, ROS-186 (botón del onboarding), [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), spec 003 (FR-003, FR-005, FR-006, FR-012, FR-013, FR-015).
+
+<a id="dp-029"></a>
+### DP-029 · Textos que faltan en proyectos
+- **Contexto:** al implementar la spec 003 aparecieron tres textos que DP-028 no recoge: la API admite cambiar la descripción del proyecto (FR-011) pero la interfaz no la edita por falta de texto; el error `FIELD_NOT_ALLOWED` (un `PATCH` con un campo que no se puede cambiar, p. ej. el dialecto) sigue provisional en `backend/apps/projects/messages.py`; el filtro de archivados vacío no muestra nada.
+
+| Situación | Texto propuesto |
+|---|---|
+| Campo descripción (renombrar proyecto) | Etiqueta "Descripción (opcional)" |
+| Campo que no se puede cambiar (`FIELD_NOT_ALLOWED`) | "Este campo no se puede cambiar." |
+| Filtro de archivados sin resultados | "No tienes proyectos archivados." |
+
+- **Recomendación:** aprobar; con la etiqueta, la interfaz edita la descripción en el diálogo de renombrar (FR-011).
+- **Decisión (2026-10-20, CD-016, responsable del producto):** se **aprueban tal cual**; pasan a [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) y la interfaz edita la descripción en el diálogo de renombrar.
+- **Afecta:** ROS-173, ROS-174, [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), spec 003 (FR-011, FR-012).
+
+<a id="dp-030"></a>
+### DP-030 · Access token en el payload RSC de desarrollo
+- **Contexto:** [EC-029](01-errores-conocidos.md#ec-029). FR-030 de la 002 dice que ninguna credencial es accesible al código de la página; en `next dev` el token viaja en el payload RSC como información de depuración. En producción no.
+- **Opciones:** A) Corregir: ninguna página de servidor espera la credencial durante el render; la llamada al backend con su credencial se hace fuera del árbol de componentes (en el *route handler* del proxy o en el middleware) y la página solo recibe los datos de la cuenta. B) Aceptarlo solo en desarrollo: la prueba E2E se ejecuta contra una build de producción y la spec 002 anota la excepción.
+- **Recomendación:** **A**. Las demos y las E2E se hacen en desarrollo, y FR-030 no tiene excepciones; B obliga a una build de producción con un proveedor simulado, que hoy el SDK rechaza en localhost.
+- **Decisión (2026-10-20, CD-016, responsable del producto):** **A.** Ninguna página de servidor espera la credencial de acceso durante el render; la llamada al backend con credencial se hace fuera del árbol de componentes y la página solo recibe los datos de la cuenta. FR-030 no admite excepciones en desarrollo. Se corrige con una tarea de seguimiento de la 002.
+- **Afecta:** ROS-188, ROS-190, spec 002 (FR-030, SC-005), [07-seguridad §1](../03-arquitectura/07-seguridad-y-autenticacion.md).
