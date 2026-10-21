@@ -12,7 +12,7 @@
 | Sesión del usuario | Robo de refresh token | El refresh vive solo en la sesión cifrada del servidor de Next; rotación con detección de reuso activada en Auth0 |
 | Flujo OAuth | Interceptación del código, CSRF de login, redirect abierto | PKCE (S256) y `state` del SDK de Auth0; callback, logout y orígenes en lista blanca del tenant, sin comodines (ROS-189) |
 | API | Token falsificado o de otra aplicación | Django valida firma RS256 con JWKS del tenant, `iss`, `aud` = Rosetta API, `exp`, algoritmo y `kid` (ROS-181) |
-| Tenant de Auth0 | Cambios no autorizados en la configuración | Acceso al panel con MFA; el MCP de Auth0 solo contra el tenant de **desarrollo** y con permisos mínimos |
+| Tenant de Auth0 | Cambios no autorizados en la configuración | Acceso al panel con MFA; el MCP de Auth0 solo contra el tenant de **desarrollo**, con una aplicación *Machine to Machine* propia (nunca la de Rosetta Web) y permisos mínimos sobre la Management API |
 | Secretos | Filtrado en el repositorio o logs | Variables de entorno, `gitleaks`, filtros de logs (ROS-190) |
 | Archivos subidos | Archivo malicioso / enorme | Límite de tamaño, extensión y tipo; se procesan como texto, nunca se ejecutan; nombre aleatorio en almacenamiento |
 | Datos en tránsito | Escucha | HTTPS obligatorio + HSTS (ROS-179) |
@@ -52,13 +52,14 @@ sequenceDiagram
 - Scopes: `openid profile email offline_access`, con audiencia `AUTH0_AUDIENCE` (Rosetta API). Nada más (RNF-36, ROS-101).
 - Identidad: el usuario local se vincula por **`auth0_sub`**. Si el correo ya existe con otro proveedor, Auth0 crea otra identidad; en el MVP **no** se vinculan automáticamente y Rosetta muestra el error `account_exists_other_provider` (la vinculación es ROS-98, Fase 3). Si para un `auth0_sub` ya conocido el proveedor informa un correo que ya pertenece a otro usuario, se deja entrar, **se conserva el correo anterior** (no se actualiza) y se registra un evento `WARNING` sin datos personales (CD-006).
 - Solo se aceptan correos **verificados**, con el control en dos capas: la Action post-login rechaza `email_verified=false` o sin correo y añade el claim `https://rosetta/email_verified`; Django lo exige verdadero y responde `403 email_not_verified` si falta (CD-008). Ningún componente es el único control.
+- El código de la Acción post-login se versiona en `infra/auth0/actions/rosetta-claims-post-login.js`, se revisa por PR y se despliega **a mano** en el tenant desde ese archivo ([DP-026](../07-registro/02-decisiones-pendientes.md#dp-026), CD-012). Un cambio hecho solo en el panel es una desviación.
 - Cancelar el consentimiento o fallo del proveedor → `/auth/error?code=…` con mensaje claro y botón para reintentar (sin pantalla en blanco ni bucle). Si el backend rechaza la cuenta después de autenticarse (403 `account_*`), `/auth/denied?code=…` cierra la sesión del SDK y lleva a `/auth/error`, para evitar un bucle; la lista blanca de cierre de sesión del tenant es exactamente `/login` y `/auth/error` (CD-007).
 
 ## 3. Sesión y tokens (ROS-92, ROS-187, ROS-188)
 
 | Elemento | Valor |
 |---|---|
-| Sesión | Cookie cifrada del SDK (`__session`), `HttpOnly; Secure; SameSite=Lax`; duración deslizante **14 días**, máximo **30 días** *(provisional, [DP-022](../07-registro/02-decisiones-pendientes.md#dp-022))* |
+| Sesión | Cookie cifrada del SDK (`__session`), `HttpOnly; Secure; SameSite=Lax`; duración deslizante **14 días**, máximo **30 días** ([DP-022](../07-registro/02-decisiones-pendientes.md#dp-022), CD-012) |
 | Access token | JWT **RS256** emitido por Auth0 para la API "Rosetta API"; vida **15 min** (configurado en la API del tenant). Solo existe en el servidor de Next.js |
 | Refresh token | Lo guarda el SDK dentro de la sesión cifrada; **rotación y detección de reuso activadas** en la aplicación del tenant |
 | Renovación | `auth0.getAccessToken()` renueva en silencio cuando el access vence |
@@ -71,6 +72,7 @@ Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route han
 ## 4. Autorización y aislamiento (ROS-84, ROS-178)
 
 - MVP: **un rol** (propietario). Un usuario solo ve sus proyectos (RN-24).
+- Sin consola administrativa en el MVP: no se expone el admin de Django ni ninguna otra; `is_staff` queda en el modelo sin uso ([DP-024](../07-registro/02-decisiones-pendientes.md#dp-024), CD-012).
 - Implementación: todos los modelos con datos de cliente cuelgan de `Project`; sus QuerySets exponen `.for_user(user)` que filtra por `project__owner=user`. Las vistas **solo** usan esos QuerySets (regla B4 en [03-backend.md](03-backend.md)).
 - Recurso ajeno → **404** con el mismo cuerpo que un recurso inexistente.
 - Se registran los intentos denegados (nivel `WARNING`, sin PII: user id, ruta, recurso id).
@@ -95,13 +97,14 @@ Cliente (ROS-188): el navegador llama a `/api/*` del mismo origen; el *route han
 - Secretos: `DJANGO_SECRET_KEY`, `AUTH0_SECRET` (cifra la cookie de sesión), `AUTH0_CLIENT_SECRET`, `DATABASE_URL`, credenciales de almacenamiento, `SENTRY_DSN`. Los secretos de Google y Microsoft **se guardan en el panel de Auth0**, no en Rosetta.
 - Rotación: `AUTH0_CLIENT_SECRET` se rota desde el panel (Auth0 permite dos secretos durante la transición); `AUTH0_SECRET` rotado cierra las sesiones activas (aceptable).
 - `gitleaks` en pre-commit y CI.
-- El MCP de Auth0 guarda su token en el llavero del sistema operativo; al terminar se ejecuta `npx @auth0/auth0-mcp-server logout`.
+- El MCP de Auth0 (solo tenant de desarrollo) usa una aplicación *Machine to Machine* propia con permisos mínimos sobre la Management API (`read:clients`, `update:clients`, `read:resource_servers`, `read:connections`, `read:actions`, `update:actions`, `read:attack_protection`). Queda conectado de forma permanente: un lanzador local, fuera del repositorio, pide un token nuevo con *client credentials* en cada arranque y lo pasa al servidor por variable de entorno (el llavero de Windows no admite el tamaño del token). El secreto de esa aplicación vive solo en variables de entorno del usuario, nunca en el repositorio ni en el chat de un agente; si se expone, se rota (CD-010). Nunca se usa el MCP contra producción.
 
 ## 7. Logs y privacidad
 
 - Prohibido registrar: tokens, cookies, cabecera `Authorization`, códigos OAuth, correos, nombres, **valores de muestras** de clientes (también en los logs del proxy BFF de Next).
 - Filtro de logging (`accounts.logging.RedactFilter`) que enmascara patrones de JWT y correos; prueba que ejecuta peticiones autenticadas y busca esos patrones en los logs capturados (RNF-06).
 - Sentry con `send_default_pii=False` y `before_send` que elimina cuerpos de petición.
+- Datos personales en Auth0 (nombre, correo, avatar): se acepta la retención por defecto del plan de Auth0; ante una petición de borrado, el usuario se borra a mano en el panel del tenant ([DP-027](../07-registro/02-decisiones-pendientes.md#dp-027), CD-012; se revisa con DP-015 antes de producción).
 - Muestras de datos: se guardan el tiempo necesario para perfilar y según la retención que se decida ([DP-013](../07-registro/02-decisiones-pendientes.md)). El perfil guarda agregados y **top valores**; en Fase 2 las columnas PII se enmascaran (ROS-85, RN-26).
 
 ## 8. Archivos subidos

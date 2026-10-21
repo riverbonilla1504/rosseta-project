@@ -4,7 +4,7 @@
 
 Esta guía es el procedimiento del tenant de identidad, la lista de comprobación de configuración que se anexa al acta de verificación (FR-035, ROS-189) y los escenarios que demuestran que la feature funciona. No contiene código de la implementación. Los comandos que dependen de lo que aún no existe (`pnpm e2e`, la pantalla `/login`) se marcan *(disponible al terminar ROS-xxx)*.
 
-> **Seguridad.** Nunca pegues secretos aquí ni en el repositorio. Los valores van en `.env` y `frontend/.env.local` (ambos ignorados por git). El servidor MCP de Auth0 se usa **solo contra el tenant de desarrollo**; al terminar: `npx @auth0/auth0-mcp-server logout`.
+> **Seguridad.** Nunca pegues secretos aquí ni en el repositorio. Los valores van en `.env` y `frontend/.env.local` (ambos ignorados por git). El servidor MCP de Auth0 se usa **solo contra el tenant de desarrollo**, con su propia aplicación *Machine to Machine* y permisos mínimos; queda conectado de forma permanente según [07-seguridad §6](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md) (CD-010).
 
 ## 1. Prerrequisitos
 
@@ -27,7 +27,7 @@ El tenant de desarrollo ya existe (creado el 2026-09-30, [08-infraestructura §4
    - *Allowed Callback URLs*: `{APP_BASE_URL}/auth/callback`
    - *Allowed Logout URLs*: `{APP_BASE_URL}/login` y `{APP_BASE_URL}/auth/error`
    - *Allowed Web Origins* y *Allowed Origins (CORS)*: `{APP_BASE_URL}`
-3. **Refresh token** de la aplicación: rotación activada, detección de reutilización activada, vigencia absoluta de 30 días y de inactividad de 14 (provisional, [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022)).
+3. **Refresh token** de la aplicación: rotación activada, detección de reutilización activada, vigencia absoluta de 30 días y de inactividad de 14 ([DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022)).
 4. **API "Rosetta API"**: identificador = valor de `AUTH0_AUDIENCE`, firma `RS256`, vida del access token de **900 s**, "Allow Offline Access" activado.
 5. **Conexiones**: habilitar `google-oauth2` y la conexión social de Microsoft **solo para "Rosetta Web"**; deshabilitar la base de datos de usuario y contraseña ([DP-014](../../docs/07-registro/02-decisiones-pendientes.md#dp-014)). Microsoft solo con cuentas personales.
 6. **Acción post-login** `rosetta-claims-post-login`: desplegada y añadida al flujo de inicio de sesión. Contrato en [auth-flow.md §7](contracts/auth-flow.md).
@@ -50,7 +50,7 @@ Se rellena por entorno y se **anexa al acta de verificación** de la feature (RO
 | C8 | Base de datos de contraseñas | Deshabilitada para Rosetta Web | Panel › Authentication › Database |
 | C9 | Tipo de cuenta de Microsoft | Solo personales | Registro de la aplicación en Microsoft Entra ID (producción) |
 | C10 | Scopes que pide la aplicación | Solo `openid profile email offline_access` (RNF-36) | Prueba V10 (URL de `/auth/login`) |
-| C11 | Acción post-login | Desplegada y asociada al flujo; deniega correo no verificado o ausente; añade los tres claims | Panel › Actions › Flows › Login |
+| C11 | Acción post-login | Desplegada y asociada al flujo; su código es el de [`infra/auth0/actions/rosetta-claims-post-login.js`](../../infra/auth0/actions/rosetta-claims-post-login.js), que se despliega a mano desde ese archivo ([DP-026](../../docs/07-registro/02-decisiones-pendientes.md#dp-026)); deniega correo no verificado o ausente; añade los tres claims | Panel › Actions › Flows › Login; comparar el código desplegado con el archivo |
 | C12 | Credenciales propias en producción | Conexiones con credenciales de Rosetta, no las de desarrollo de Auth0 | Panel › Authentication › Social (producción) |
 | C13 | Separación de entornos | Tenant de desarrollo distinto del de producción; el MCP no apunta a producción | Dominios distintos en `.env` de cada entorno |
 | C14 | MFA en el panel | Todos los administradores del tenant con segundo factor | Panel › Dashboard Admins |
@@ -107,5 +107,5 @@ Esperado: recorrido acceso → onboarding con la creación de proyecto simulada;
 ## 7. Cierre
 
 1. Rellena la lista de la sección 3 para cada entorno y anéxala al acta de verificación.
-2. Si usaste el MCP de Auth0: `npx @auth0/auth0-mcp-server logout`.
+2. Si el secreto de la aplicación M2M del MCP se expuso (por ejemplo, pegado en un chat), rótalo en el panel y actualiza la variable de entorno del usuario (CD-010).
 3. No dejes sesiones de prueba abiertas en proveedores reales.

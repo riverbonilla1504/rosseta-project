@@ -15,10 +15,10 @@ Origen: Key Entities *Usuario* de la spec · ROS-89, ROS-90, ROS-91, ROS-180, RO
 | `id` | UUID | No | `uuid4` | Clave primaria; los identificadores nunca son predecibles (RNF-04) |
 | `auth0_sub` | texto (≤ 255) | No | — | Identidad asegurada por el proveedor, **única** y estable. Es el campo de identificación (`USERNAME_FIELD`) y la forma de reconocer la cuenta (FR-006) |
 | `email` | texto (≤ 254) | No | — | Correo verificado. **Único sin distinguir mayúsculas** (FR-008). Se guarda tal como llega; la unicidad compara en minúsculas |
-| `full_name` | texto (≤ 200) | No | — | Nombre que entrega el proveedor, truncado a 200. Si el proveedor no lo entrega: **`[PENDIENTE: DP-023]`** |
+| `full_name` | texto (≤ 200) | No | — | Nombre que entrega el proveedor, truncado a 200. Si el proveedor no lo entrega: la parte local del correo, lo que va antes de `@` ([DP-023](../../docs/07-registro/02-decisiones-pendientes.md#dp-023)) |
 | `avatar_url` | texto (≤ 500) | Sí | nulo | Solo `http(s)`; si supera 500 caracteres o no es `http(s)` se guarda nulo (R-03) |
 | `is_active` | booleano | No | `true` | `false` = desactivada: no puede entrar ni usar una sesión abierta (FR-011). No se borran usuarios con acciones auditadas |
-| `is_staff` | booleano | No | `false` | Reservado para soporte interno; **sin uso** en el MVP ([DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024), opción por defecto) |
+| `is_staff` | booleano | No | `false` | Reservado para soporte interno; **sin uso** en el MVP ([DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024), opción A decidida en CD-012) |
 | `onboarding_completed_at` | fecha y hora UTC | Sí | nulo | `nulo` = onboarding **pendiente**; con valor = completado (FR-017, FR-021) |
 | `last_login_at` | fecha y hora UTC | Sí | nulo | Última petición autenticada; se actualiza como máximo una vez por hora |
 | `created_at`, `updated_at` | fecha y hora UTC | No | ahora | Marcas de tiempo estándar |

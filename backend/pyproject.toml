@@ -11,6 +11,7 @@ dependencies = [
     "drf-spectacular>=0.28",
     "gunicorn>=23",
     "psycopg[binary]>=3.2",
+    "pyjwt[crypto]>=2.10",
 ]
 
 [tool.uv]

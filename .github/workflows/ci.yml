@@ -1,6 +1,6 @@
 # CI — docs/03-arquitectura/08-infraestructura-y-entornos.md §5
 # Jobs pendientes (se añaden con su feature): contract (OpenAPI ↔ tipos TS, feature 003),
-# e2e con Playwright + axe (feature 001/002), traceability (tools/check_traceability.py).
+# traceability (tools/check_traceability.py).
 name: ci
 
 on:
@@ -79,6 +79,71 @@ jobs:
         run: pnpm test:coverage
       - name: Build
         run: pnpm build
+      - name: Ningún secreto en el código del navegador (S10, FR-032)
+        run: |
+          if grep -rEl "AUTH0_(CLIENT_)?SECRET" .next/static; then
+            echo "Un secreto de Auth0 llegó al código del navegador" && exit 1
+          fi
+      - name: Archivos locales con secretos ignorados por git (S10)
+        working-directory: .
+        run: |
+          git check-ignore -q frontend/.env.local
+          git check-ignore -q .env
+          git check-ignore -q frontend/.auth0-mcp-state.json
+          git check-ignore -q .auth0-mcp-writes.log
+
+  e2e:
+    # Playwright + axe contra el proveedor simulado (specs/002-autenticacion-oauth, T009).
+    # Falla el PR si falla un flujo o hay una violación seria o crítica de accesibilidad.
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: rosetta
+          POSTGRES_USER: rosetta
+          POSTGRES_PASSWORD: rosetta_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rosetta" --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      DJANGO_SECRET_KEY: ci-only-not-secret
+      DATABASE_URL: postgres://rosetta:rosetta_ci@localhost:5432/rosetta
+      REDIS_URL: redis://localhost:6379/0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+        working-directory: backend
+      - run: uv run python manage.py migrate
+        working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.dev
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: frontend
+      - run: make e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
 
   security:
     runs-on: ubuntu-latest

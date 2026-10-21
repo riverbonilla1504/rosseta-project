@@ -25,16 +25,17 @@
 | [DP-014](#dp-014) | Métodos de acceso del MVP (Apple, correo/contraseña, vinculación) | **Sprint 1** | Solo Google y Microsoft; sin vinculación automática | **Decidida** |
 | [DP-015](#dp-015) | Hosting, almacenamiento de objetos y monitoreo | Fin del MVP | Docker + S3 compatible + Sentry | Abierta |
 | [DP-016](#dp-016) | Fase de ROS-94 frente a ROS-106/108 | Plan Fase 2 | Mover ROS-94 a Fase 3 | **Decidida** |
-| [DP-017](#dp-017) | Navegación del MVP: Hallazgos/Generador y ubicación de Fuentes | Sprint 1 (layout) | Ocultos; Fuentes como pestaña; Convenciones dentro de Fuentes | Abierta |
+| [DP-017](#dp-017) | Navegación del MVP: Hallazgos/Generador y ubicación de Fuentes | Sprint 1 (layout) | Ocultos; Fuentes como pestaña; Convenciones dentro de Fuentes | **Decidida** |
 | [DP-018](#dp-018) | Objetivos cuantitativos y métricas del Panorama | Piloto | Valores propuestos en RNF | Abierta |
-| [DP-019](#dp-019) | Dialectos SQL soportados en el MVP | **Sprint 2** | T-SQL (SQL Server) obligatorio; Oracle y PostgreSQL deseables | Abierta |
+| [DP-019](#dp-019) | Dialectos SQL soportados en el MVP | **Sprint 2** | T-SQL (SQL Server) obligatorio; Oracle y PostgreSQL deseables | **Decidida** |
 | [DP-020](#dp-020) | Cobertura: ¿5 niveles en la barra? ¿cómo se cuentan las propagadas? | Sprint 5 | 5 niveles; confirmadas = directas + propagadas | **Decidida** |
 | [DP-021](#dp-021) | ¿Se usa Jev (TypeSafe AI) como fuente de evidencia en Fase 2? | Fase 2 | No en el MVP; piloto acotado en Fase 2 | **Decidida** |
-| [DP-022](#dp-022) | Duración de la sesión (14 días sin uso, 30 máximo) | Sprint 1 (ROS-187) | 14 / 30 días *(provisional)* | Abierta |
-| [DP-023](#dp-023) | ¿Qué hacer si el proveedor de acceso no entrega el nombre? | Sprint 1 (ROS-185) | — (ver recomendación) | Abierta |
-| [DP-024](#dp-024) | ¿Hace falta un acceso de administración interna en el MVP y cómo se protege? | Sprint 1 (ROS-180) | Consola administrativa no expuesta | Abierta |
-| [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | Abierta |
-| [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | Abierta |
+| [DP-022](#dp-022) | Duración de la sesión (14 días sin uso, 30 máximo) | Sprint 1 (ROS-187) | 14 / 30 días | **Decidida** |
+| [DP-023](#dp-023) | ¿Qué hacer si el proveedor de acceso no entrega el nombre? | Sprint 1 (ROS-185) | — (ver recomendación) | **Decidida** |
+| [DP-024](#dp-024) | ¿Hace falta un acceso de administración interna en el MVP y cómo se protege? | Sprint 1 (ROS-180) | Consola administrativa no expuesta | **Decidida** |
+| [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | **Decidida** |
+| [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | **Decidida** |
+| [DP-027](#dp-027) | ¿Cuánto tiempo guarda el servicio de identidad el nombre, el correo y el avatar, y cómo se borran? | Antes del tenant de producción | Lo que haga el plan de Auth0 por defecto (sin borrado propio) | **Decidida** |
 
 ---
 
@@ -114,6 +115,7 @@
 ### DP-013 · Tamaño máximo y retención de archivos
 - **Preguntas:** tamaño máximo de DDL y CSV; ¿se conserva el archivo original tras procesar? ¿cuánto tiempo se guardan perfiles con top valores (pueden contener datos personales)?
 - **Recomendación:** 20 MB DDL / 200 MB CSV; borrar el CSV original al terminar el perfilado (se conserva el perfil); conservar el DDL (no contiene datos); top valores de columnas PII enmascarados desde que exista ROS-85.
+- **Revisada (2026-10-14, CD-012):** sigue **abierta**; se decide al especificar la feature de ingesta (004, Sprint 2).
 
 <a id="dp-014"></a>
 ### DP-014 · Métodos de acceso del MVP
@@ -127,6 +129,7 @@
 ### DP-015 · Infraestructura de producción
 - **Preguntas:** proveedor (AWS, GCP, Azure, Render, Railway, Fly.io, VPS propio…), almacenamiento S3 compatible, Sentry u otro, presupuesto, región (datos de clientes latinoamericanos).
 - **Recomendación:** decidir antes del Sprint 5 para tener staging durante el QA del MVP.
+- **Revisada (2026-10-14, CD-012):** sigue **abierta** hasta antes del Sprint 5, con el valor por defecto (Docker + S3 compatible + Sentry). Mientras tanto la tarea T089 de la spec 002 (aplicaciones propias de Google y Microsoft y tenant de producción) sigue bloqueada y ROS-182 no pasa a *Listo*.
 
 <a id="dp-016"></a>
 ### DP-016 · Fase de ROS-94
@@ -138,6 +141,7 @@
 ### DP-017 · Navegación del MVP
 - **Preguntas:** ¿Hallazgos y Generador se ocultan o se muestran como "Próximamente"? ¿Fuentes es pestaña propia? ¿Convenciones es pestaña o sección?
 - **Recomendación:** ocultos; Fuentes como 4.ª pestaña; Convenciones como sección de Fuentes.
+- **Decisión (2026-10-14, CD-012, responsable del producto):** Hallazgos y Generador **no se muestran** en el MVP (ni deshabilitados ni "Próximamente"). Pestañas del proyecto: Panorama · Revisión · Catálogo · **Fuentes** (4.ª). Convenciones es una **sección** de Fuentes, sin ruta propia.
 
 <a id="dp-018"></a>
 ### DP-018 · Objetivos cuantitativos
@@ -148,6 +152,7 @@
 ### DP-019 · Dialectos SQL del MVP
 - **Contexto:** ROS-120 pide tolerar Oracle, SQL Server y PostgreSQL; el caso de ejemplo es SQL Server.
 - **Recomendación:** T-SQL obligatorio con pruebas completas; Oracle y PostgreSQL con un DDL de ejemplo cada uno; MySQL "mejor esfuerzo".
+- **Decisión (2026-10-14, CD-012, responsable del producto):** El MVP admite **tres dialectos**: T-SQL (`tsql`, obligatorio, con pruebas completas), Oracle (`oracle`) y PostgreSQL (`postgres`), estos dos con un DDL de ejemplo cada uno. **MySQL queda fuera del MVP** (sale del formulario y de los valores admitidos). El dialecto es **obligatorio al crear el proyecto** (lo declara la persona; `source_dialect` no nulo) y el DDL que se suba después se interpreta con ese dialecto. Etiquetas de la interfaz: **"SQL Server"**, **"Oracle"** y **"PostgreSQL"** en el selector; la insignia del proyecto (mono) muestra el valor interno (`tsql`, `oracle`, `postgres`).
 
 <a id="dp-020"></a>
 ### DP-020 · Cómo se cuenta la cobertura
@@ -168,6 +173,7 @@
 - **Preguntas:** (1) ¿Se confirman 14 días sin uso y 30 de máximo? (2) ¿Algún cliente del sector regulado exigirá un cierre por inactividad mucho más corto?
 - **Recomendación:** mantener 14 / 30 en el MVP y revisarlos con el primer cliente piloto; una inactividad corta configurable por organización va con la Fase 3 (E15).
 - **Afecta:** ROS-187, [RNF-08](../02-requisitos/05-requisitos-no-funcionales.md), spec 002 (FR-024).
+- **Decisión (2026-10-14, CD-012, responsable del producto):** Se **confirman 14 días** sin uso y **30 días** de máximo para el MVP. Se revisan con el primer cliente piloto; una inactividad corta configurable por organización va con la Fase 3 (E15).
 
 <a id="dp-023"></a>
 ### DP-023 · Proveedor sin nombre
@@ -175,6 +181,7 @@
 - **Opciones:** A) usar la parte local del correo como nombre visible (editable en Fase 2, ROS-99). B) Rechazar el acceso con un error claro. C) Permitir nombre vacío (cambia el modelo).
 - **Recomendación:** **A**: no bloquea a nadie y el nombre no es un dato de seguridad. Google y Microsoft casi siempre lo entregan.
 - **Afecta:** ROS-185, [diccionario de datos](../04-datos/02-diccionario-de-datos.md) (`full_name`), spec 002.
+- **Decisión (2026-10-14, CD-012, responsable del producto):** **A.** Si el proveedor no entrega el nombre, el nombre visible es la **parte local del correo** (lo que va antes de `@`); será editable en Fase 2 (ROS-99). `full_name` sigue sin admitir nulos.
 
 <a id="dp-024"></a>
 ### DP-024 · Acceso de administración interna
@@ -182,6 +189,7 @@
 - **Opciones:** A) No exponer ninguna consola administrativa en el MVP (`is_staff` queda en el modelo sin uso). B) Exponerla solo en red interna y con contraseña fuerte y segundo factor. C) Crear una historia nueva de soporte interno.
 - **Recomendación:** **A** para el MVP (Constitución V: menor superficie de ataque); si el piloto exige soporte, abrir una historia con **B**.
 - **Afecta:** ROS-180, [diccionario de datos](../04-datos/02-diccionario-de-datos.md), [07-seguridad](../03-arquitectura/07-seguridad-y-autenticacion.md).
+- **Decisión (2026-10-14, CD-012, responsable del producto):** **A.** El MVP **no expone ninguna consola administrativa**; `is_staff` queda en el modelo sin uso. Si el piloto exige soporte interno, se abre una historia nueva con la opción B.
 
 <a id="dp-025"></a>
 ### DP-025 · Textos de acceso y onboarding
@@ -198,9 +206,12 @@
 | Correo no entregado | "{proveedor} no compartió tu correo y lo necesitamos para crear tu cuenta. Revisa los permisos e inténtalo de nuevo." |
 | Cuenta desactivada | "Tu cuenta está desactivada." `[PENDIENTE: canal de contacto, no definido en el MVP]` |
 | Forma genérica de `{proveedor}` (cuando la pantalla de error no sabe con qué proveedor se intentó entrar) | "tu proveedor de acceso" (por ejemplo: "Cancelaste el inicio de sesión con tu proveedor de acceso.") |
+| Control de cierre de sesión (área privada) | "Cerrar sesión" (añadido por CD-011: FR-025 exige el control y ningún documento define su texto) |
+| Nota de privacidad en `/login`, donde aún no se eligió proveedor | Con la forma genérica queda "…de tu cuenta de tu proveedor de acceso", poco natural. Alternativa: "…de tu cuenta de Google o Microsoft." (observación de CD-011 al implementar la spec 002) |
 
 - **Recomendación:** aprobar con los ajustes que indique el responsable de contenido. Definir junto con los textos los códigos de error nuevos (hoy solo existen `oauth_denied`, `oauth_failed` y `account_exists_other_provider`).
 - **Afecta:** ROS-184, ROS-186, [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), [03-pantallas §7](../05-diseno/03-pantallas.md), spec 002 (FR-002, FR-019, FR-036…FR-038).
+- **Decisión (2026-10-14, CD-012, responsable del producto):** Se **aprueban tal cual** los textos de la tabla, con dos precisiones: (1) la nota de privacidad de `/login`, donde aún no se eligió proveedor, termina "…de tu cuenta de Google o Microsoft."; (2) "Tu cuenta está desactivada." va **sin canal de contacto** en el MVP (se añade cuando exista soporte interno, ver [DP-024](#dp-024)). Los códigos `account_exists_other_provider`, `account_disabled`, `email_missing` y `email_not_verified` dejan de ser provisionales. Textos definitivos en [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md).
 
 <a id="dp-026"></a>
 ### DP-026 · Versionado de la Acción post-login del tenant
@@ -208,3 +219,12 @@
 - **Opciones:** A) Versionar el código de la Acción en el repositorio (por ejemplo `infra/auth0/actions/rosetta-claims-post-login.js`) y desplegarla a mano desde ahí, citando el archivo en el acta. B) Mantenerla solo en el tenant y exportar su código al acta de cada verificación. C) Versionarla y desplegarla desde CI (más piezas y un secreto de gestión nuevo).
 - **Recomendación:** **A**: da revisión y reproducibilidad sin añadir automatización ni secretos (Constitución V y VI).
 - **Afecta:** ROS-182, ROS-183, ROS-189, comprobación C11 de la lista de configuración de la feature 002 (`specs/002-autenticacion-oauth/quickstart.md`) y la estructura del repositorio ([08-infraestructura §1](../03-arquitectura/08-infraestructura-y-entornos.md)).
+- **Decisión (2026-10-14, CD-012, responsable del producto):** **A.** El código de la Acción se versiona en `infra/auth0/actions/rosetta-claims-post-login.js`, se revisa por PR y se despliega **a mano** desde ese archivo; el acta de verificación cita el archivo. Sin despliegue desde CI ni secretos nuevos.
+
+<a id="dp-027"></a>
+### DP-027 · Retención de los datos personales en el servicio de identidad
+- **Contexto:** Auth0 guarda el nombre, el correo y el avatar de cada persona (ADR-0007: encargado del tratamiento). Ningún documento define cuánto tiempo los conserva, qué pasa cuando una cuenta de Rosetta se desactiva ni cómo se atiende una petición de borrado. Se detectó al revisar `checklists/acceso.md` de la spec 002 (CHK038). La región del tenant ya está en [DP-015](#dp-015).
+- **Opciones:** A) Aceptar la retención por defecto del plan de Auth0 y documentarla, con borrado manual en el panel ante una petición. B) Borrar el usuario de Auth0 cuando se desactiva su cuenta en Rosetta (requiere un proceso y permisos de gestión). C) Definir un plazo de retención tras la última actividad.
+- **Recomendación:** **A** en el MVP (sin piezas nuevas), revisándola con [DP-015](#dp-015) antes de producción.
+- **Afecta:** ROS-182, ROS-190, [07-seguridad §7](../03-arquitectura/07-seguridad-y-autenticacion.md), spec 002 (Assumptions).
+- **Decisión (2026-10-14, CD-012, responsable del producto):** **A.** En el MVP se acepta la retención por defecto del plan de Auth0 y se documenta; ante una petición de borrado, el usuario se borra **a mano** en el panel del tenant. Se revisa junto con [DP-015](#dp-015) antes de producción.

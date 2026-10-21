@@ -61,6 +61,6 @@ Tareas técnicas previstas (se crearán en Jira como tipo *Tarea* mediante el CD
 | 7 | CI (lint, tipos, pruebas, cobertura, trazabilidad) | Pipeline en verde con el esqueleto | ✅ creado; pendiente primera ejecución en GitHub |
 | 8 | Estado de Jira *En revisión* (ya existen *Por hacer*, *En curso*, *Listo*) | Flujo del proyecto ROS | ⬜ |
 | 9 | Bloque "Fuente de verdad" en las 190 incidencias de Jira | EC-004 resuelto | ⬜ (CD-001) |
-| 10 | Resolver o aceptar las decisiones pendientes bloqueantes del MVP | DP-001, DP-002, DP-003, DP-011 | 🟨 decididas DP-001/005/009/011/014/016/020/021 (CD-003); DP-003 se decide en ROS-132; DP-013/015/019 abiertas |
+| 10 | Resolver o aceptar las decisiones pendientes bloqueantes del MVP | DP-001, DP-002, DP-003, DP-011 | 🟨 decididas DP-001/005/009/011/014/016/020/021 (CD-003); DP-017/019/022…027 decididas (CD-012); DP-003 se decide en ROS-132; DP-013/015 abiertas |
 | 11 | Obtener los archivos del sistema de diseño (styles.css de Nocturne) | EC-001 resuelto | ⬜ |
 | 12 | Script de auditoría de sincronización | `tools/sync_audit.py` | ⬜ |

@@ -1,0 +1,20 @@
+.message {
+  margin: 0;
+  color: var(--nx-text);
+  text-align: center;
+}
+
+.retry {
+  display: block;
+  padding: var(--nx-space-3) var(--nx-space-4);
+  border-radius: var(--nx-radius-md);
+  background: var(--nx-surface-raised);
+  color: var(--nx-text);
+  text-align: center;
+  text-decoration: none;
+  transition: background var(--nx-transition);
+}
+
+.retry:hover {
+  background: var(--nx-accent-soft);
+}

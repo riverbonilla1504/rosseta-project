@@ -1,17 +1,25 @@
 import type { NextConfig } from "next";
 
 /**
- * El navegador solo habla con el origen de Next.js; /api y /auth se reenvían al backend
- * para que las cookies sean de primer origen y no haga falta CORS (ADR-0006).
+ * Sin rewrites hacia el backend (ADR-0007, D6 del plan de 002): /api/* lo atiende el proxy
+ * BFF (src/app/api/[...path]/route.ts), que añade el access token, y /auth/* lo monta el SDK
+ * de Auth0 en el middleware. Un rewrite de /api saltaría el proxy.
+ *
+ * Cabeceras estáticas de 07-seguridad §5 (FR-034); la CSP con nonce la pone el middleware.
  */
-export function backendRewrites(
-  backendUrl = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:8000",
-) {
-  const base = backendUrl.replace(/\/+$/, "");
-  return [
-    { source: "/api/:path*", destination: `${base}/api/:path*` },
-    { source: "/auth/:path*", destination: `${base}/auth/:path*` },
+function securityHeaders(isProduction: boolean) {
+  const headers = [
+    { key: "X-Frame-Options", value: "DENY" },
+    { key: "X-Content-Type-Options", value: "nosniff" },
+    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   ];
+  if (isProduction) {
+    headers.push({
+      key: "Strict-Transport-Security",
+      value: "max-age=31536000; includeSubDomains",
+    });
+  }
+  return headers;
 }
 
 const nextConfig: NextConfig = {
@@ -19,8 +27,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Django no usa barra final en /api/health; evitar redirecciones 308 de Next.
   skipTrailingSlashRedirect: true,
-  async rewrites() {
-    return backendRewrites();
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders(process.env.NODE_ENV === "production") }];
   },
 };
 

@@ -11,7 +11,7 @@ Los valores marcados **provisional** dependen de una decisión pendiente (DP) y 
 | `/login` | Sí | Pantalla de acceso: "Continuar con Google", "Continuar con Microsoft" y nota de privacidad. Con sesión abierta redirige a `/`. Si llega `notice=session_expired`, muestra encima el aviso de sesión vencida (FR-026). Al pulsar un botón guarda la cookie `rosetta_login_provider` (§4) | FR-001, FR-002, FR-026, FR-040 |
 | `/auth/error?code=<código>` | Sí | Pantalla de error de acceso: mensaje por código y "Volver a intentar" (a `/login`, conservando `returnTo` si es un destino interno) | FR-036…FR-039 |
 | `/auth/denied?code=<código>` | Sí | Sin pantalla: guarda el código en una cookie efímera, cierra la sesión del SDK y redirige a `/auth/error` (§5) | FR-009, FR-011, FR-039 |
-| `/` | No | Resuelve el destino: onboarding pendiente → `/onboarding`; si no → `/projects` | FR-014, FR-018 |
+| `/` | No | Resuelve el destino: onboarding pendiente → `/onboarding`; si no → `/projects`. Tras el acceso, `onCallback` ya resuelve el destino sin pasar por aquí cuando no hay `returnTo` propio (cadena de 6 saltos como máximo, SC-007); `/` queda para la entrada directa y como respaldo | FR-014, FR-018 |
 | `/onboarding` | No | Bienvenida con el nombre y el paso único: crear el primer proyecto | FR-017…FR-021 |
 | `/projects` | No | Lista de proyectos (feature 003) | — |
 
@@ -23,7 +23,7 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 |---|---|
 | `/auth/login` | Inicia el acceso (PKCE `S256` y `state` los pone el SDK, FR-027) |
 | `/auth/callback` | Recibe el código, valida, crea la sesión cifrada y redirige. Aquí actúa `onCallback` |
-| `/auth/logout` | Cierra la sesión de Rosetta y la del servicio de identidad (FR-025); no cierra la de Google ni la de Microsoft. **Siempre se invoca como `/auth/logout?returnTo=/login`**: sin `returnTo` el SDK usa la raíz, que no está en la lista blanca de cierre de sesión (§5), y el servicio de identidad rechazaría el cierre |
+| `/auth/logout` | Cierra la sesión de Rosetta y la del servicio de identidad (FR-025); no cierra la de Google ni la de Microsoft. **Siempre se invoca con `returnTo` = la URL absoluta de `/login`** (`/auth/logout?returnTo={APP_BASE_URL}/login`): sin `returnTo` el SDK usa la raíz, que no está en la lista blanca de cierre de sesión (§5), y el SDK reenvía `returnTo` **tal cual** como `post_logout_redirect_uri`, así que una ruta relativa no coincidiría con la lista blanca, que tiene URLs absolutas (observado en T032) |
 
 ## 3. Reglas del middleware
 
@@ -41,8 +41,8 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 | Elemento | Valor |
 |---|---|
 | Cookie de sesión | `__session`, cifrada con `AUTH0_SECRET`; `HttpOnly` siempre; `SameSite=Lax`; `Secure` activo salvo en desarrollo local (FR-030) |
-| Vigencia deslizante | 14 días sin uso — **provisional (DP-022)** |
-| Vigencia máxima | 30 días desde el inicio — **provisional (DP-022)** |
+| Vigencia deslizante | 14 días sin uso (DP-022) |
+| Vigencia máxima | 30 días desde el inicio (DP-022) |
 | Credencial de acceso | 15 minutos como máximo; solo existe en el servidor de Next.js (FR-023) |
 | Renovación | Silenciosa, la hace el SDK al pedir la credencial; el refresh token rota con detección de reutilización en el tenant (FR-023) |
 | Cookie de transacción de acceso | `__txn_<state>`; caduca a los 600 s (una solicitud de acceso iniciada vale 10 minutos) |
@@ -51,16 +51,16 @@ Cada botón de `/login` navega a `/auth/login?connection=<conexión>&returnTo=<r
 
 ## 5. Códigos de error de acceso
 
-Códigos que entiende `/auth/error`. `{proveedor}` sale de la cookie `rosetta_login_provider` (§4). Los textos viven en `features/auth/copy.ts`; los definitivos dependen de [DP-025](../../../docs/07-registro/02-decisiones-pendientes.md#dp-025).
+Códigos que entiende `/auth/error`. `{proveedor}` sale de la cookie `rosetta_login_provider` (§4). Los textos viven en `features/auth/copy.ts` y son los de [04-contenido §5](../../../docs/05-diseno/04-contenido-y-redaccion.md), aprobados en [DP-025](../../../docs/07-registro/02-decisiones-pendientes.md#dp-025) (CD-012).
 
 | Código | Origen | Cuándo | Camino | Texto |
 |---|---|---|---|---|
 | `oauth_denied` | Proveedor | La persona cancela el consentimiento | `onCallback` → `/auth/error` (FR-036) | "Cancelaste el inicio de sesión con {proveedor}…" (ya definido en `04-contenido`) |
 | `oauth_failed` | Proveedor o SDK | El proveedor no responde o la respuesta es inválida; cualquier fallo no clasificado | `onCallback` → `/auth/error` (FR-037) | "{proveedor} no respondió…" (ya definido); el fallo inesperado usa el error genérico (FR-038) |
-| `email_not_verified` | Acción post-login **o backend (403)** | El proveedor no declara verificado el correo, o la credencial no afirma que lo está (FR-004) | `onCallback` → `/auth/error`; si lo rechaza el backend, `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
-| `email_missing` | Acción post-login o backend | No hay correo en la identidad | `onCallback` o `/auth/denied` | `[PENDIENTE: DP-025]` · **código provisional** |
-| `account_exists_other_provider` | Backend (403) | El correo ya pertenece a una cuenta de otro proveedor (FR-009) | `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` |
-| `account_disabled` | Backend (403) | La cuenta está desactivada (FR-011) | `/auth/denied` → cierre de sesión → `/auth/error` | `[PENDIENTE: DP-025]` · **código provisional** |
+| `email_not_verified` | Acción post-login **o backend (403)** | El proveedor no declara verificado el correo, o la credencial no afirma que lo está (FR-004) | `onCallback` → `/auth/error`; si lo rechaza el backend, `/auth/denied` → cierre de sesión → `/auth/error` | "{proveedor} no confirma que tu correo esté verificado…" (DP-025) |
+| `email_missing` | Acción post-login o backend | No hay correo en la identidad | `onCallback` o `/auth/denied` | "{proveedor} no compartió tu correo…" (DP-025) |
+| `account_exists_other_provider` | Backend (403) | El correo ya pertenece a una cuenta de otro proveedor (FR-009) | `/auth/denied` → cierre de sesión → `/auth/error` | "Ya existe una cuenta con ese correo…" (DP-025) |
+| `account_disabled` | Backend (403) | La cuenta está desactivada (FR-011) | `/auth/denied` → cierre de sesión → `/auth/error` | "Tu cuenta está desactivada." (DP-025) |
 
 ### Por qué existe `/auth/denied`
 
@@ -68,7 +68,7 @@ Cuando el backend rechaza una cuenta, el SDK ya tiene una sesión válida. Sin c
 
 1. Valida `code` contra la lista de §5; cualquier otro valor se trata como `oauth_failed`.
 2. Guarda el código en la cookie efímera `rosetta_auth_error`.
-3. Redirige a `/auth/logout?returnTo=/auth/error`.
+3. Redirige a `/auth/logout?returnTo={APP_BASE_URL}/auth/error` (URL absoluta, ver §2).
 4. `/auth/error` toma el código de la cookie (y la borra) o, si no hay cookie, de la cadena de consulta.
 
 La lista blanca de cierre de sesión del tenant queda con **exactamente** dos destinos: `{APP_BASE_URL}/login` y `{APP_BASE_URL}/auth/error`.
@@ -84,7 +84,7 @@ El token lo emite el tenant para la audiencia de Rosetta API; la Acción post-lo
 | `exp`, `iat` | Sí | Vigencia; tolerancia de reloj de 10 s |
 | `sub` | Sí | Identidad: `auth0_sub` |
 | `https://rosetta/email` | Para crear la cuenta | Correo verificado. Sin él, 403 `email_missing` en un alta |
-| `https://rosetta/name` | Para crear la cuenta | Nombre. Si falta: **`[PENDIENTE: DP-023]`** |
+| `https://rosetta/name` | No | Nombre. Si falta, el backend usa la parte local del correo (DP-023, FR-005) |
 | `https://rosetta/picture` | No | Avatar |
 | `https://rosetta/email_verified` | Sí | Debe ser exactamente `true`. Si falta o no lo es, 403 `email_not_verified` en cualquier petición (FR-004): defensa en profundidad, la Acción post-login no es el único control |
 
@@ -132,10 +132,8 @@ sequenceDiagram
     A-->>U: 302 /auth/callback?code&state
     U->>F: GET /auth/callback
     F->>A: canje del código (code_verifier)
-    F-->>U: sesión cifrada (cookie) · 302 /
-    U->>F: GET /
-    F->>D: GET /api/me (Bearer) — crea la cuenta, onboarding pendiente
-    F-->>U: 302 /onboarding
+    F->>D: onCallback: GET /api/me (Bearer recién obtenido) — crea la cuenta, onboarding pendiente
+    F-->>U: sesión cifrada (cookie) · 302 /onboarding (sin pasar por /; T079/T084, SC-007)
 ```
 
 ### Cuenta rechazada después de autenticarse
@@ -146,11 +144,11 @@ sequenceDiagram
     actor U as Persona
     participant F as Next.js
     participant D as Backend
-    U->>F: GET /
+    U->>F: GET /auth/callback (o cualquier página privada después)
     F->>D: GET /api/me (Bearer)
     D-->>F: 403 account_exists_other_provider
     F-->>U: 302 /auth/denied?code=account_exists_other_provider
-    F-->>U: cookie rosetta_auth_error · 302 /auth/logout?returnTo=/auth/error
+    F-->>U: cookie rosetta_auth_error · 302 /auth/logout?returnTo={APP_BASE_URL}/auth/error
     F-->>U: sesión cerrada · 302 /auth/error
     U->>F: GET /auth/error (lee y borra la cookie)
     F-->>U: mensaje + "Volver a intentar"

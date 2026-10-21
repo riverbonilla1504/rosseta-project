@@ -18,22 +18,26 @@ ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
 
-# django.contrib.auth / admin / sessions se añaden en la feature 002 junto con el
-# modelo de usuario propio (AUTH_USER_MODEL = "accounts.User"), antes de la primera
-# migración de datos de usuario. Ver specs/002-autenticacion-oauth.
+# Sin django.contrib.auth, admin, sessions ni messages: con Auth0 (ADR-0007) no hay
+# sesiones de servidor ni contraseñas, y la consola administrativa no se expone (DP-024,
+# opción A). Ver specs/002-autenticacion-oauth/research.md R-04.
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
     "apps.core",
+    "apps.accounts",
 ]
+
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.core.middleware.JsonContentSecurityPolicyMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -81,9 +85,10 @@ CACHES = {
 
 # --- DRF (docs/03-arquitectura/05-api.md) ---
 REST_FRAMEWORK = {
-    # La autenticación por cookie JWT se configura en la feature 002 (ADR-0006).
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    # Access token de Auth0 que añade el proxy BFF de Next.js (ADR-0007, feature 002).
+    "DEFAULT_AUTHENTICATION_CLASSES": ["apps.accounts.authentication.Auth0JWTAuthentication"],
+    # Denegar por defecto (FR-012): las únicas rutas públicas lo declaran de forma explícita.
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "UNAUTHENTICATED_USER": None,
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": [
@@ -95,6 +100,14 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "apps.core.exceptions.api_exception_handler",
 }
+
+# --- Auth0 (ADR-0007; specs/002-autenticacion-oauth/contracts/auth-flow.md §8) ---
+AUTH0_DOMAIN = env("AUTH0_DOMAIN", default="")
+AUTH0_AUDIENCE = env("AUTH0_AUDIENCE", default="")
+# Solo pruebas y E2E pueden sobreescribir emisor y JWKS; producción exige https (prod.py).
+AUTH0_ISSUER = env("AUTH0_ISSUER", default=f"https://{AUTH0_DOMAIN}/")
+AUTH0_JWKS_URL = env("AUTH0_JWKS_URL", default=f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
+AUTH0_CLAIMS_NAMESPACE = "https://rosetta/"
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Rosetta API",
@@ -108,11 +121,29 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-# --- Logs: JSON a stdout, sin PII (se endurece en la feature 002) ---
+# --- Logs a stdout sin tokens ni datos personales (FR-033, RNF-06; 07-seguridad §7) ---
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {"plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
-    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "plain"}},
+    "filters": {"redact": {"()": "apps.accounts.logging.RedactFilter"}},
+    "formatters": {
+        "plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"},
+        # Eventos de seguridad con campos cerrados (research R-11).
+        "security": {
+            "format": "%(asctime)s %(levelname)s %(name)s event=%(event)s reason=%(reason)s "
+            "user_id=%(user_id)s path=%(path)s"
+        },
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "plain", "filters": ["redact"]},
+        "security": {
+            "class": "logging.StreamHandler",
+            "formatter": "security",
+            "filters": ["redact"],
+        },
+    },
+    "loggers": {
+        "rosetta.security": {"handlers": ["security"], "level": "INFO", "propagate": False},
+    },
     "root": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
 }

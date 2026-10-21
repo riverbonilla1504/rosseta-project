@@ -28,7 +28,7 @@ Cubre los 40 FR y los 10 criterios de éxito de la spec. Las decisiones y lo que
 
 **Performance Goals**: sin metas de tiempo definidas ([DP-018](../../docs/07-registro/02-decisiones-pendientes.md#dp-018)); la spec no inventa umbrales. Restricción técnica propia: la validación del token no añade llamadas de red por petición (JWKS en caché) y cada petición autenticada cuesta **una** consulta a la base de datos.
 
-**Constraints**: el access token vive ≤ 15 min y solo en el servidor de Next.js (FR-023, FR-030); sesión de 14 días sin uso y 30 máximo (**provisional**, DP-022); ningún secreto en el repositorio (FR-032); ningún token ni dato personal en los registros (FR-033); cobertura mínima backend 85 % y frontend 80 % (Constitución, RNF-31).
+**Constraints**: el access token vive ≤ 15 min y solo en el servidor de Next.js (FR-023, FR-030); sesión de 14 días sin uso y 30 máximo (DP-022, confirmada en CD-012); ningún secreto en el repositorio (FR-032); ningún token ni dato personal en los registros (FR-033); cobertura mínima backend 85 % y frontend 80 % (Constitución, RNF-31).
 
 **Scale/Scope**: 5 historias, 11 subtareas, 3 pantallas, 2 endpoints (`/api/me`, `/api/me/onboarding/complete`), 1 tabla, 1 proxy, 1 middleware. El plan gratuito de Auth0 cubre 25.000 usuarios activos al mes (ADR-0007).
 
@@ -58,7 +58,7 @@ La constitución no permite que un `plan.md` contradiga `docs/03-arquitectura/`.
 |---|---|---|---|---|
 | D1 | Sin sesión, la persona va a **`/login?returnTo=`**, no a `/auth/login?returnTo=` | [04-frontend §4](../../docs/03-arquitectura/04-frontend.md), [07-seguridad §3](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md), actividad de ROS-188 | `/auth/login` sin `connection` abre la pantalla alojada por Auth0, no la de Rosetta: contradice FR-002 y FR-040 ([research R-06](research.md#r-06--dónde-se-protege-cada-ruta-y-a-dónde-se-redirige)) | 04-frontend, 07-seguridad, 03-tareas-mvp (ROS-188) |
 | D2 | **CSP con nonce** en el middleware y `script-src` explícito | [07-seguridad §5](../../docs/03-arquitectura/07-seguridad-y-autenticacion.md): la CSP no tiene `script-src` | Con `default-src 'self'` Next.js no ejecutaría sus propios scripts en línea ([research R-10](research.md#r-10--cabeceras-de-seguridad)) | 07-seguridad §5 |
-| D3 | `GET /api/me` incluye `avatar_url`; códigos nuevos: `account_disabled`, `email_missing` (403), `email_not_verified`, `forbidden_origin`, `identity_unavailable`, `backend_unavailable` (**provisionales hasta DP-025**) | [05-api §2 y §4](../../docs/03-arquitectura/05-api.md) no detallan la respuesta de `/api/me` ni estos códigos | Las specs no cambian el contrato sin tocar antes `05-api` (cabecera de ese documento) | 05-api |
+| D3 | `GET /api/me` incluye `avatar_url`; códigos nuevos: `account_disabled`, `email_missing` (403), `email_not_verified`, `forbidden_origin`, `identity_unavailable`, `backend_unavailable` (provisionales hasta DP-025; definidos en CD-012) | [05-api §2 y §4](../../docs/03-arquitectura/05-api.md) no detallan la respuesta de `/api/me` ni estos códigos | Las specs no cambian el contrato sin tocar antes `05-api` (cabecera de ese documento) | 05-api |
 | D4 | Lista blanca de cierre de sesión con **dos** destinos (`/login` y `/auth/error`) y ruta `/auth/denied` | [08-infraestructura §3](../../docs/03-arquitectura/08-infraestructura-y-entornos.md) menciona solo `/login` | Evita el bucle de FR-039 sin comodines ([research R-07](research.md#r-07--errores-de-acceso-y-cómo-llegan-a-la-pantalla-de-error)) | 08-infraestructura §3, 04-frontend (estructura) |
 | D5 | Variables solo de pruebas: `AUTH0_ISSUER`, `AUTH0_JWKS_URL`, `E2E_ALLOW_INSECURE_IDP` | [08-infraestructura §4](../../docs/03-arquitectura/08-infraestructura-y-entornos.md) no las lista | E2E con proveedor simulado ([research R-13](research.md#r-13--proveedor-simulado-y-pruebas-e2e)); producción las rechaza | 08-infraestructura §4 |
 | D6 | El frontend **no** reescribe `/api` ni `/auth` hacia el backend | [08-infraestructura §3](../../docs/03-arquitectura/08-infraestructura-y-entornos.md): "Reescribe `/api` y `/auth` a `backend:8000`" (texto de ADR-0006) | ADR-0007 y 04-frontend §4 ya lo dicen distinto; un rewrite saltaría el proxy | 08-infraestructura §3 |
@@ -67,12 +67,14 @@ La constitución no permite que un `plan.md` contradiga `docs/03-arquitectura/`.
 
 | DP | Estado | Valor que usa el plan mientras tanto | Qué bloquea |
 |---|---|---|---|
-| [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022) · duración de la sesión | Abierta | 14 días sin uso, 30 de máximo | Nada |
-| [DP-023](../../docs/07-registro/02-decisiones-pendientes.md#dp-023) · proveedor sin nombre | Abierta, **sin valor por defecto** | Ninguno: no se decide | Solo el caso "nombre ausente" de ROS-185; se deja como tarea bloqueada y `/speckit-analyze` la señalará |
-| [DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024) · administración interna | Abierta | Opción A: sin consola, sin `admin` ni `sessions` | Nada (si se elige B, se reabre R-04) |
-| [DP-025](../../docs/07-registro/02-decisiones-pendientes.md#dp-025) · textos y códigos de error | Abierta | Textos ya definidos en `04-contenido`; códigos nuevos **provisionales** | Los textos definitivos de seis mensajes, antes de cerrar ROS-184 |
+| [DP-022](../../docs/07-registro/02-decisiones-pendientes.md#dp-022) · duración de la sesión | **Decidida** (CD-012): 14 / 30 | 14 días sin uso, 30 de máximo | Nada (T088 sin cambios) |
+| [DP-023](../../docs/07-registro/02-decisiones-pendientes.md#dp-023) · proveedor sin nombre | **Decidida** (CD-012): opción A | Parte local del correo como nombre | T037 (desbloqueada) |
+| [DP-024](../../docs/07-registro/02-decisiones-pendientes.md#dp-024) · administración interna | **Decidida** (CD-012): opción A | Sin consola, sin `admin` ni `sessions` | Nada (R-04 no se reabre) |
+| [DP-025](../../docs/07-registro/02-decisiones-pendientes.md#dp-025) · textos y códigos de error | **Decidida** (CD-012): aprobados | Textos de `04-contenido §5`; códigos definitivos | T085 (desbloqueada) |
 | [DP-015](../../docs/07-registro/02-decisiones-pendientes.md#dp-015) · hosting y región | Abierta | Tenant de desarrollo en EE. UU. | Solo la región del tenant de producción |
-| [DP-019](../../docs/07-registro/02-decisiones-pendientes.md#dp-019) · dialectos SQL | Abierta | La lista la aporta la feature 003 | El selector de dialecto del onboarding |
+| [DP-019](../../docs/07-registro/02-decisiones-pendientes.md#dp-019) · dialectos SQL | **Decidida** (CD-012): `tsql`, `oracle`, `postgres`; obligatorio | El formulario lo aporta la feature 003 | El selector de dialecto del onboarding (T055, T087, feature 003) |
+| [DP-026](../../docs/07-registro/02-decisiones-pendientes.md#dp-026) · versionar la Acción post-login | **Decidida** (CD-012): opción A | `infra/auth0/actions/`, despliegue manual | T100 (nueva) |
+| [DP-027](../../docs/07-registro/02-decisiones-pendientes.md#dp-027) · retención en el servicio de identidad | **Decidida** (CD-012): opción A | Retención por defecto del plan; borrado manual | Nada |
 
 ## Hallazgos del esqueleto que este plan corrige
 

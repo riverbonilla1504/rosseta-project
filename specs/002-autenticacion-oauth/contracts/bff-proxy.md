@@ -22,7 +22,7 @@ El navegador solo habla con el origen de Next.js. Todo lo que empieza por `/api/
 |---|---|
 | Destino | `BACKEND_INTERNAL_URL` + la misma ruta y cadena de consulta. El anfitrión de destino es fijo; nunca se deriva de la petición |
 | Credencial | `Authorization: Bearer <access token>`, obtenido en el servidor con la renovación silenciosa del SDK (FR-022). Cualquier `Authorization` que traiga el navegador se **descarta** |
-| Cabeceras reenviadas (lista cerrada) | `accept`, `accept-language`, `content-type`, `if-none-match`, `x-request-id` (se genera si falta) |
+| Cabeceras reenviadas (lista cerrada) | `accept`, `accept-language`, `content-length`, `content-type`, `if-none-match`, `x-request-id` (se genera si falta). `content-length` es necesaria para que Django reciba el cuerpo de las mutaciones ([EC-026](../../../docs/07-registro/01-errores-conocidos.md#ec-026)) |
 | Cabeceras que nunca se reenvían | `cookie`, `authorization` del navegador, `host`, `origin`, `referer` |
 | Cuerpo | Se reenvía en *streaming* (necesario para cargas multipart de las features siguientes) |
 | Tiempo de espera | 30 s por petición (valor técnico provisional) |

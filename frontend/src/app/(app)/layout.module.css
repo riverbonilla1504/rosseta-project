@@ -1,0 +1,15 @@
+.shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--nx-space-3) var(--nx-space-6);
+  background: var(--nx-surface);
+}
+
+.logout {
+  color: var(--nx-text); /* contraste AA sobre --nx-surface (ver login/page.module.css) */
+  font-size: var(--nx-text-caption);
+}
