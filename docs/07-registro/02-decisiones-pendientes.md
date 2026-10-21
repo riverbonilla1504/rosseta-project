@@ -36,7 +36,7 @@
 | [DP-025](#dp-025) | Textos de acceso y onboarding (frase de valor, privacidad, bienvenida, errores) | Sprint 1 (ROS-184, ROS-186) | Propuestas de la entrada | **Decidida** |
 | [DP-026](#dp-026) | ¿Se versiona en el repositorio el código de la Acción post-login del tenant? | Antes del tenant de producción | Solo en el tenant (opción B) | **Decidida** |
 | [DP-027](#dp-027) | ¿Cuánto tiempo guarda el servicio de identidad el nombre, el correo y el avatar, y cómo se borran? | Antes del tenant de producción | Lo que haga el plan de Auth0 por defecto (sin borrado propio) | **Decidida** |
-| [DP-028](#dp-028) | Textos de la pantalla de proyectos y del formulario de proyecto | Sprint 1 (ROS-174, feature 003) | Propuestas de la entrada, marcadas provisionales en el código | Abierta |
+| [DP-028](#dp-028) | Textos de la pantalla de proyectos y del formulario de proyecto | Sprint 1 (ROS-174, feature 003) | Propuestas de la entrada, marcadas provisionales en el código | **Decidida** |
 
 ---
 
@@ -257,4 +257,5 @@
 | Pestaña cuya pantalla aún no existe (proyecto con fuentes) | "{Pestaña} aún no está disponible." (temporal, hasta su feature) |
 
 - **Recomendación:** aprobar con los ajustes que indique el responsable de contenido.
+- **Decisión (2026-10-19, CD-015, responsable del producto):** se **aprueban tal cual** los textos de la tabla. Pasan a [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) y el código quita sus marcas `PROVISIONAL (DP-028)`.
 - **Afecta:** ROS-174, ROS-186 (botón del onboarding), [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md), spec 003 (FR-003, FR-005, FR-006, FR-012, FR-013, FR-015).

@@ -7,6 +7,11 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.14.0] — 2026-10-19 · CD-015
+
+### Cambiado
+- [DP-028](02-decisiones-pendientes.md#dp-028) decidida: los textos de la pantalla de proyectos y del formulario pasan a [04-contenido §5](../05-diseno/04-contenido-y-redaccion.md) tal como se propusieron.
+
 ## [1.13.0] — 2026-10-19 · CD-014
 
 ### Añadido
