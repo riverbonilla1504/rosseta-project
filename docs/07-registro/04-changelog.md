@@ -7,6 +7,20 @@
 >
 > Cada entrada referencia su `CD-NNN` cuando aplica.
 
+## [1.6.0] — 2026-10-01 · CD-007
+
+### Cambiado
+- **Redirección sin sesión:** a `/login?returnTo=` (pantalla de acceso de Rosetta), no a `/auth/login?returnTo=` (que abriría la pantalla alojada por Auth0). Afecta [04-frontend §4](../03-arquitectura/04-frontend.md), [07-seguridad §3](../03-arquitectura/07-seguridad-y-autenticacion.md) y las actividades de ROS-181 y ROS-188.
+- **CSP** de [07-seguridad §5](../03-arquitectura/07-seguridad-y-autenticacion.md): con nonce por petición y `script-src` explícito en Next.js; `default-src 'none'` en las respuestas JSON de Django.
+- **Contrato** ([05-api](../03-arquitectura/05-api.md)): nueva §3.9 (`/api/me` y `/api/me/onboarding/complete`, con `avatar_url`) y códigos de error `account_exists_other_provider` (ahora 403), `account_disabled`, `email_missing`, `email_not_verified`, `forbidden_origin`, `identity_unavailable` y `backend_unavailable` (los tres primeros nuevos, **provisionales hasta [DP-025](02-decisiones-pendientes.md#dp-025)**).
+- **Lista blanca de cierre de sesión** con `/login` y `/auth/error`, sin comodines ([08-infraestructura §3](../03-arquitectura/08-infraestructura-y-entornos.md), ROS-182).
+- [08-infraestructura §3](../03-arquitectura/08-infraestructura-y-entornos.md): el frontend ya no "reescribe `/api` y `/auth`" (texto de ADR-0006); sirve `/auth/*` con el SDK y `/api/*` con el proxy BFF.
+- [03-backend §6](../03-arquitectura/03-backend.md): un código propio de la excepción tiene prioridad sobre el código por defecto de su estado HTTP.
+
+### Añadido
+- Ruta `/auth/denied` (cuenta rechazada por el backend: cierra la sesión y lleva a `/auth/error`) en [04-frontend](../03-arquitectura/04-frontend.md) y como actividad de ROS-184.
+- Variables solo de pruebas `AUTH0_ISSUER`, `AUTH0_JWKS_URL` y `E2E_ALLOW_INSECURE_IDP` ([08-infraestructura §4](../03-arquitectura/08-infraestructura-y-entornos.md)).
+
 ## [1.5.0] — 2026-10-01 · CD-006
 
 ### Decidido
