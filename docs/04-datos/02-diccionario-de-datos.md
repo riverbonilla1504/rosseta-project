@@ -151,7 +151,7 @@ Conclusión vigente sobre la columna (1:1 con `catalog_column`).
 | impact | integer | No | Columnas que desbloquearía (§9 del motor) |
 | engine_version | varchar(20) | No | Versión del motor que calculó |
 | computed_at | timestamptz | No | Último recálculo |
-| updated_at | timestamptz | No | |
+| created_at, updated_at | timestamptz | No | `created_at` añadido en CD-016 (EC-027) |
 
 CHECK: `level = 'CONFIRMED'` ⇔ `confirmed_by_action_id IS NOT NULL` (garantía en BD de RN-02).
 

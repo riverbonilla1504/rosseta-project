@@ -42,8 +42,12 @@
 | [EC-022](#ec-022) | Voseo en el estado vacío de proyectos de ROS-174 | diseño | S4 | Resuelto | — |
 | [EC-023](#ec-023) | `check-prerequisites.sh --template` exige `plan.md` antes de que exista | herramienta | S4 | Mitigado | — |
 | [EC-024](#ec-024) | `--nx-text-secondary` y `--nx-text-muted` no cumplen 4,5:1 sobre `--nx-surface` | diseño | S3 | Mitigado | ROS-168, RNF-24 |
-| [EC-025](#ec-025) | `HealthView` hace fallar la generación del esquema OpenAPI | herramienta | S4 | Abierto | RNF-34 |
+| [EC-025](#ec-025) | `HealthView` hace fallar la generación del esquema OpenAPI | herramienta | S4 | Resuelto | — |
 | [EC-026](#ec-026) | El proxy BFF reenvía el cuerpo de las mutaciones sin `content-length` y Django lo recibe vacío | código | S2 | Resuelto | — |
+| [EC-027](#ec-027) | `catalog_column_interpretation.created_at` existe en la base y no en el diccionario | datos | S4 | Resuelto | — |
+| [EC-028](#ec-028) | `ruff check` no queda limpio por un I001 previo en una prueba de seguridad | herramienta | S4 | Abierto | Tarea técnica |
+| [EC-029](#ec-029) | En `next dev` el access token aparece en el payload RSC de las páginas privadas | seguridad | S2 | Abierto | [DP-030](02-decisiones-pendientes.md#dp-030), 002 (FR-030) |
+| [EC-030](#ec-030) | `smoke-idp.spec.ts` depende del estado de onboarding de una identidad compartida | pruebas | S3 | Abierto | 002 (T de seguimiento) |
 
 ---
 
@@ -209,6 +213,7 @@
 - **Descripción:** `manage.py spectacular` informa "unable to guess serializer" para `apps.core.views.HealthView` (esqueleto de la fase 0.5): es un `APIView` sin `serializer_class` ni `extend_schema`, y el esquema sale sin la respuesta de `/api/health`.
 - **Impacto:** RNF-34 (contrato documentado y coincidente con [05-api](../03-arquitectura/05-api.md)); hoy no rompe nada porque la prueba de contrato de 002 solo cubre `/api/me`.
 - **Resolución propuesta:** tarea técnica que documente la respuesta de `/api/health` con `extend_schema` (sin cambiar su comportamiento).
+- **Resolución (2026-10-20, CD-016):** T062 de la spec 003 (`f9591cc`): `HealthView` con `extend_schema` y `ENUM_NAME_OVERRIDES`; `spectacular --fail-on-warn --validate` limpio.
 
 <a id="ec-026"></a>
 ### EC-026 · El proxy BFF reenvía el cuerpo de las mutaciones sin `content-length`
@@ -217,6 +222,31 @@
 - **Impacto:** ninguna operación que envíe JSON desde el navegador funciona: crear un proyecto (spec 003, historia 1) falla de punta a punta aunque sus pruebas unitarias pasen; bloquea T032 y T036 de la 003 y el E2E-01 (T087 de la 002).
 - **Resolución propuesta:** reenviar `content-length` en las mutaciones, con prueba roja previa, en un commit propio `fix(auth): ROS-188` en la rama de la 003 y llevado a la rama 002 por cherry-pick (autorizado por la persona el 2026-10-19).
 - **Resolución (2026-10-19, CD-014):** prueba roja y `fix(auth): ROS-188` en la rama de la historia 2 de la 003 (`a1a94de`, `a6fdcf2`) y cherry-pick a `002-autenticacion-oauth` (`57020f0`, `04dd464`); `content-length` añadida a la lista cerrada del contrato `specs/002-autenticacion-oauth/contracts/bff-proxy.md`. En la 002: la prueba falla sin el arreglo y pasa con él (30/30), suite unitaria 160/160.
+
+<a id="ec-027"></a>
+### EC-027 · `created_at` de `catalog_column_interpretation` fuera del diccionario
+- **Tipo / Sev.:** datos · S4 — **Detectado:** 2026-10-20 (T063 de la spec 003, `evidence/model-vs-dictionary.md`)
+- **Descripción:** el modelo hereda `TimeStampedModel` y la tabla tiene `created_at`; el diccionario solo lista `updated_at` para esta tabla, aunque su convención común pide ambos.
+- **Resolución (2026-10-20, CD-016):** se añade `created_at` al diccionario (la convención común ya lo pedía); el código no cambia.
+
+<a id="ec-028"></a>
+### EC-028 · `ruff check` con un I001 previo
+- **Tipo / Sev.:** herramienta · S4 — **Detectado:** 2026-10-20 (T065 de la spec 003)
+- **Descripción:** `backend/tests/security/test_logging_redaction.py:69` tiene imports sin ordenar (I001) desde antes de la 003 (`ca95c45`); `ruff check .` no queda limpio.
+- **Resolución propuesta:** tarea técnica de una línea (`ruff check --fix` sobre ese archivo) en la rama donde se toque esa prueba.
+
+<a id="ec-029"></a>
+### EC-029 · Access token en el payload RSC de `next dev`
+- **Tipo / Sev.:** seguridad · S2 — **Detectado:** 2026-10-20 (E2E `security.spec.ts:49` de la spec 002, al existir `/onboarding`)
+- **Descripción:** en la build de desarrollo de React, el payload RSC de cada página de servidor que espera `auth0.getAccessToken()` incluye `{"token":"eyJ…"}` como información de depuración de lo esperado (comprobado en `/`, `/projects`, `/onboarding` y `/p/{id}`). La build de producción de React no emite esa información. No se pudo comprobar con `next build` porque el SDK rechaza el proveedor simulado en localhost.
+- **Impacto:** FR-030 y SC-005 de la 002 ("ninguna credencial accesible al código de la página") no se cumplen en desarrollo, que es donde se hacen las demos y las E2E. La prueba solo pasaba porque `/onboarding` daba 404.
+- **Resolución propuesta:** [DP-030](02-decisiones-pendientes.md#dp-030) decidió **corregir** (opción A): ninguna página de servidor espera la credencial en el render. Tarea de seguimiento de la 002.
+
+<a id="ec-030"></a>
+### EC-030 · `smoke-idp.spec.ts` depende de una identidad compartida
+- **Tipo / Sev.:** pruebas · S3 — **Detectado:** 2026-10-20 (T065 de la spec 003)
+- **Descripción:** `smoke-idp.spec.ts:13` y `:45` (002:FR-027, FR-028) entran como `google-oauth2|e2e-default` y esperan `/onboarding`; en la base de desarrollo esa cuenta ya completó el onboarding (2026-10-19), así que el acceso va a `/projects` y `waitForURL` agota los 60 s.
+- **Resolución propuesta:** identidad única por ejecución en esas pruebas (tarea de seguimiento de la 002); no cambia comportamiento.
 
 ---
 

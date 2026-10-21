@@ -92,6 +92,9 @@
 | Proyecto archivado (aviso) | "Proyecto archivado: solo lectura. Desarchívalo para hacer cambios." · acción "Desarchivar" (DP-028) |
 | Desarchivar con nombre ocupado | "Ya tienes un proyecto activo llamado {nombre}. Elige otro nombre para desarchivarlo." (DP-028) |
 | Selector de proyecto (nombre accesible) | "Cambiar de proyecto" (DP-028) |
+| Campo descripción (renombrar proyecto) | Etiqueta "Descripción (opcional)" (DP-029) |
+| Campo que no se puede cambiar | "Este campo no se puede cambiar." (DP-029) |
+| Filtro de archivados sin resultados | "No tienes proyectos archivados." (DP-029) |
 | Proyecto inexistente o ajeno | "Este proyecto no existe o no tienes acceso." · acción "Ir a tus proyectos" (DP-028) |
 | Pestaña cuya pantalla aún no existe | "{Pestaña} aún no está disponible." (temporal, hasta su feature; DP-028) |
 | Dialectos (selector del formulario de proyecto) | "SQL Server", "Oracle", "PostgreSQL"; en la insignia del proyecto se muestra el valor interno `tsql`, `oracle` o `postgres` (DP-019) |
